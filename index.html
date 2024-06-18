@@ -259,17 +259,12 @@
                     <p class="text">
                         To effectively evaluate visual representations and MLLMs, we first need to select benchmarks that accurately assess the <i>multimodal</i> 
                         capabilities of these models. We use a suite of commonly used benchmarks and begin by analysing the benchmarks themselves.
-                        Here, we train MLLMs with 15 different vision backbones from a variety of model families using a 2-stage instruction tuning process: 
-                        first training connector on 1.2M adapter data from ShareGPT-4V followed by fine-tuning both the connector and LLM on 737K instruction tuning data.
+                        Here, we train MLLMs with 15 different vision backbones from a variety of model families using a 2-stage instruction tuning process.
                     <br><br>
-                        <strong>Who's answering the question: the LLM or MLLM?</strong> Over the years in vision-language research, 
-                        a persistent challenge has been determining whether each benchmark <em>truly</em> needs visual input for answering the question. 
-                        In this study, we also compare the performance of MLLMs with and without visual input. 
+                        <strong>Who's answering the question: the LLM or MLLM?</strong> 
                         For each of the 15 trained MLLMs, we disable the visual input and evaluate them across all benchmarks. 
                         Additionally, we calculate the expected score by randomly guessing. 
-                        These three conditions are visualized in <a href="#fig:comparison">Figure 1</a> (left), with benchmarks sorted by the difference between the average score with vision enabled and disabled. 
                         As shown in <a href="#fig:comparison">Figure 1</a> (left), SQA-I, MMMU, and AI2D have less than a 5-point gap between vision enabled and disabled, suggesting that these benchmarks may not significantly rely on visual input. 
-                        V-star exhibits a 10-point gap, but it shows no gap between vision-disabled and random guessing, indicating that an LLM alone cannot solve the questions. 
                         TextVQA and GQA both demonstrate a nearly 40-point positive gap between random guessing and vision-disabled scores, implying a strong language bias in these benchmarks. 
                         On the other hand, benchmarks like MMVP and MME show that vision-disabled performance is notably worse than random guessing, suggesting that accurate visual grounding is particularly crucial for these tasks.        
                     </p>
