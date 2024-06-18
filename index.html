@@ -197,7 +197,6 @@
                 <img src="static/img/IT_Data_logo.PNG" alt="IT Data Logo">
             </a>           
 
-
             <a href="#sec:inst_tuning">
                 <img src="static/img/IT_Recipe_logo.PNG" alt="IT Recipe Logo">
             </a>
@@ -213,16 +212,30 @@
             the design choices for vision components are often insufficiently explored and disconnected from visual representation learning research. 
             This gap hinders accurate sensory grounding in real-world scenarios. 
 
-            
-            
-
             <br><br>
+            Cambrian-1 is structured around five key pillars, each offering important insights into the design space of MLLMs:
+            <ul>
+                <li><strong>Visual Representations</strong>: We explore various vision encoders and their combinations. (see <a href="#visual_representations">§Evaluating Visual Representations through MLLMs</a>)</li>
+                <li><strong>Connector Design</strong>: We design a new dynamic and spatially-aware connector that integrates vision features with LLMs while reducing the number of tokens. (see <a href="#connector_design">§Spatial Vision Aggregator</a>)</li>
+                <li><strong>Instruction Tuning Data</strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing. (see <a href="#instruction_data">§Instruction Tuning Data for Training MLLMs</a>)</li>
+                <li><strong>Instruction Tuning Recipes</strong>: We discuss instruction tuning strategies and practices.</li>
+                <li><strong>Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench". (see <a href="#cv-bench">§Analysis the Benchmark and Cambrian Vision-Centric Benchmark (CV-Bench)</a>)</li>
+            </ul>
+        </p>
+
+        <p class="text abstract">
+            To this end, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs. See <a href="#State-of-the-art-MLLM-performance">§State-of-the-art MLLM performance</a>. We provide model weights, code, supporting tools, datasets, and detailed instruction-tuning and evaluation recipes. We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning.
+            
+            <!-- To this end, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs (see <a href="#sota">&sect;State-of-the-art MLLM performance</a>). We provide model weights, code, supporting tools, datasets, and detailed instruction-tuning and evaluation recipes. 
+            We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning. -->
+
+            <!-- <br><br>
             Our study uses LLMs and visual instruction tuning as an interface to evaluate various visual representations,
             offering new insights into different models and architectures—self-supervised, strongly supervised, 
             or combinations thereof—based on experiments with over 15 vision models.
             We critically examine existing MLLM benchmarks, addressing the difficulties involved in consolidating and 
             interpreting results from various tasks and introduce a new visioncentric benchmark “CV-Bench”.
-            We also discuss instruction tuning strategies and practices (see <a href="#visual_representations">&sect;Evaluating Visual Representations through MLLMs</a>).
+            We also discuss instruction tuning strategies and practices .
             <br><br>
             To further improve visual grounding, we propose the Spatial Vision Aggregator (SVA), 
             a dynamic and spatially-aware connector that integrates high-resolution vision features 
@@ -234,7 +247,7 @@
             Collectively, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs
             (see <a href="#sota">&sect;State-of-the-art MLLM performance</a>). 
             We provide model weights, code, supporting tools, datasets, and detailed instruction-tuning and evaluation recipes. 
-            We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning.
+            We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning. -->
         </p>
 
         <hr>
@@ -248,7 +261,7 @@
                 and diminish insights gained from extensive visual representation learning research.
             </p>
             <div id="sec:benchmarking" class="sub-section">
-                <h2 class="text">Benchmarking the Benchmarks</h2>
+                <h2 class="text">Analysising the Benchmarks</h2>
                     <p class="text">
                         To effectively evaluate visual representations and MLLMs, we first need to select benchmarks that accurately assess the <i>multimodal</i> 
                         capabilities of these models. We use a suite of commonly used benchmarks and begin by benchmarking the benchmarks themselves.

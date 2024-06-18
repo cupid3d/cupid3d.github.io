@@ -24,6 +24,20 @@ body {
 }
 
 
+
+.image-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 20px; /* Padding around the images */
+}
+
+.image-row img {
+  height: 71px; /* Set a fixed height for all images */
+  width: auto; /* Adjust width to maintain aspect ratio */
+  margin: 0 5px; /* Space between images */
+}
 .header-content h1 {
   font-size: 1.5em; /* Adjust font size for small screens */
   margin-bottom: 0.5em;
