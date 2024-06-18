@@ -254,11 +254,17 @@
 
         <div id='visual_representations' class="vision-block">
             
+            <h1 class="text">Evaluating Visual Representations through MLLMs</h1>
+            <p class="text">
+                Current MLLMs predominantly rely on CLIP as the visual encoder due to its pre-alignment with language and ease of adaptation to the LLM token space. 
+                However, strong language priors can be a double-edged sword---they compensate for deficiencies in learning effective visual representations 
+                and diminish insights gained from extensive visual representation learning research.
+            </p>
             <div id="sec:benchmarking" class="sub-section">
                 <h2 class="text">Analysising the Benchmarks</h2>
                     <p class="text">
                         To effectively evaluate visual representations and MLLMs, we first need to select benchmarks that accurately assess the <i>multimodal</i> 
-                        capabilities of these models. We use a suite of commonly used benchmarks and begin by analysing the benchmarks themselves.
+                        capabilities of these models. We use a suite of commonly used benchmarks and begin by benchmarking the benchmarks themselves.
                         Here, we train MLLMs with 15 different vision backbones from a variety of model families using a 2-stage instruction tuning process: 
                         first training connector on 1.2M adapter data from ShareGPT-4V followed by fine-tuning both the connector and LLM on 737K instruction tuning data.
                     <br><br>
@@ -394,12 +400,6 @@
                     which prohibits testing on some larger vision models under current sharding strategies.
                 </p>
             </div>
-            <!-- <h1 class="text">Evaluating Visual Representations through MLLMs</h1>
-            <p class="text">
-                Current MLLMs predominantly rely on CLIP as the visual encoder due to its pre-alignment with language and ease of adaptation to the LLM token space. 
-                However, strong language priors can be a double-edged sword---they compensate for deficiencies in learning effective visual representations 
-                and diminish insights gained from extensive visual representation learning research.
-            </p> -->
             <div id='visual-representation' class="viusal-representation-block">
             <h2 class="text">MLLMs as a Vision Model Evaluator </h2>
                 
