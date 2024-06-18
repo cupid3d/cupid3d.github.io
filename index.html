@@ -186,12 +186,36 @@
             </div>
         </div> -->
 
+        <div class="image-row">
+            <a href="#visual-representation">
+                <img src="static/img/visual_representation_logo.PNG" alt="Visual Representation Logo">
+            </a>         
+            <a href="#connector_design">
+                <img src="static/img/connector_logo.PNG" alt="Connector Logo">
+            </a>
+            <a href="#instruction_data">
+                <img src="static/img/IT_Data_logo.PNG" alt="IT Data Logo">
+            </a>           
+
+
+            <a href="#sec:inst_tuning">
+                <img src="static/img/IT_Recipe_logo.PNG" alt="IT Recipe Logo">
+            </a>
+            <a href="#sec:benchmarking">
+                <img src="static/img/eval_logo.PNG" alt="Eval Logo">
+            </a>
+        </div>
+
         <p class="text abstract">
 
             We introduce Cambrian-1, a family of multimodal LLMs (MLLMs) designed with a <strong>vision-<i>centric</i></strong> approach. 
             While stronger language models can enhance multimodal capabilities, 
             the design choices for vision components are often insufficiently explored and disconnected from visual representation learning research. 
             This gap hinders accurate sensory grounding in real-world scenarios. 
+
+            
+            
+
             <br><br>
             Our study uses LLMs and visual instruction tuning as an interface to evaluate various visual representations,
             offering new insights into different models and architectures—self-supervised, strongly supervised, 
@@ -304,6 +328,8 @@
                         </tbody>
                     </table>
             </div>
+            <div id="sec:inst_tuning" class="sub-section">
+
             <h2 class="text">Instruction Tuning Recipes </h2>
                 <p class="text">
                     MLLMs start with pre-trained LLM and vision backbones, connecting these modules with a connector such as a projector (MLP). 
@@ -360,6 +386,8 @@
                     We note that unfreezing the vision backbone introduces additional computational overhead, 
                     which prohibits testing on some larger vision models under current sharding strategies.
                 </p>
+            </div>
+            <div id='visual-representation' class="viusal-representation-block">
             <h2 class="text">MLLMs as a Vision Model Evaluator </h2>
                 
                 <p class="text">
@@ -450,6 +478,7 @@
                     Therefore, we seek a more effective strategy that fully leverages model combinations with less information loss and more flexibility.
                 </p>
 
+        </div>
         </div>
 
         <div id='connector_design' class="connector-block">
