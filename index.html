@@ -428,7 +428,7 @@
                 
                 <p class="text">
                     MLLMs explore new aspects of vision models beyond traditional benchmarks like ImageNet-1k, using a 2-stage instruction tuning with 1.2M adapter data and 737K fine-tuning data. 
-                    Our evaluations show language-supervised models, particularly those trained on text-heavy datasets like LAION, outperform non-CLIP models across all categories, especially in chart and OCR tasks. Despite the smaller dataset size of SSL models like DINOv2, they perform competitively in vision-centric benchmarks. 
+                    Our evaluations show language-supervised models outperform non-CLIP models across all categories, especially in chart and OCR tasks. Despite the smaller dataset size of SSL models like DINOv2, they perform competitively in vision-centric benchmarks. 
                 </p>
                 <!-- <p class="text">
                     We evaluate the results on benchmarks detailed in <a href="#sec:benchmarking">Benchmarking the benchmarks</a>, 
@@ -462,7 +462,7 @@
                     <strong>Bridging the gap between CLIP and SSL models</strong> 
                     In the above, we observe that DINOv2 stands midway between SSL models and CLIP models on general VQA and knowledge VQA tasks, 
                     even outperforming some CLIP models on vision-centric benchmarks with higher resolution. 
-                    we investigate unfreezing the vision backbones and increasing the amount of visual fine-tuning data to bridge this gap. 
+                    We investigate unfreezing the vision backbones and increasing the amount of visual fine-tuning data to bridge this gap. 
                     <!-- Specifically, we scale up the instruction tuning data from 0.7M to 5M,  -->
                     In <a href="#fig:bridgegap">Figure 5</a>, we observe that by unfreezing the vision backbone, 
                     the DINOv2-based MLLM fine-tuned with 5M data surpasses the MLLM trained with a CLIP model on 0.7M data. 
