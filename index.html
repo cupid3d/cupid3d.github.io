@@ -210,7 +210,6 @@
             We introduce Cambrian-1, a family of multimodal LLMs (MLLMs) designed with a <strong>vision-<i>centric</i></strong> approach. 
             While stronger language models can enhance multimodal capabilities, 
             the design choices for vision components are often insufficiently explored and disconnected from visual representation learning research. 
-            This gap hinders accurate sensory grounding in real-world scenarios. 
 
             <br><br>
             Cambrian-1 is structured around five key pillars, each offering important insights into the design space of MLLMs:
@@ -224,8 +223,11 @@
         </p>
 
         <p class="text abstract">
-            To this end, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs. See <a href="#State-of-the-art-MLLM-performance">§State-of-the-art MLLM performance</a>. We provide model weights, code, supporting tools, datasets, and detailed instruction-tuning and evaluation recipes. We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning.
-            
+            To this end, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs. See <a href="#State-of-the-art-MLLM-performance">§State-of-the-art MLLM performance</a>. 
+            We provide <a href="https://huggingface.co/nyu-visionx" target="_blank">model weights</a>, 
+            <a href="https://github.com/cambrian-mllm/cambrian" target="_blank">code</a>, 
+            <a href="https://huggingface.co/nyu-visionx" target="_blank">datasets</a>, 
+            and detailed instruction-tuning and evaluation recipes. We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning.            
             <!-- To this end, Cambrian-1 not only achieves state-of-the-art performances but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs (see <a href="#sota">&sect;State-of-the-art MLLM performance</a>). We provide model weights, code, supporting tools, datasets, and detailed instruction-tuning and evaluation recipes. 
             We hope our release will inspire and accelerate advancements in multimodal systems and visual representation learning. -->
 
@@ -255,12 +257,13 @@
         <div id='visual_representations' class="vision-block">
             
             <div id="sec:benchmarking" class="sub-section">
-                <h2 class="text">Analyzing the Benchmarks</h2>
+                <h1 class="text">Analyzing the Benchmarks</h1>
+
                     <p class="text">
-                        To effectively evaluate visual representations and MLLMs, we first need to select benchmarks that accurately assess the <i>multimodal</i> 
+                        <!-- To effectively evaluate visual representations and MLLMs, we first need to select benchmarks that accurately assess the <i>multimodal</i> 
                         capabilities of these models. We use a suite of commonly used benchmarks and begin by analysing the benchmarks themselves.
                     
-                        
+                         -->
                         <p class="text">
                         <strong>Who's answering: LLM or MLLM?:</strong> Disabling visuals in 14 MLLMs shows MMMU and AI2D are less dependent on visuals, while MMVP and MME exhibit significant performance drops, confirming their effective evaluation of visual inputs.</li>
                         </p>
@@ -301,8 +304,10 @@
                     </div> -->
             </div>
             <div id="cv-bench" class="sub-section">
-                <h2 class="text">Cambrian Vision-Centric Benchmark (CV-Bench) </h2>
-                    <p class="text">
+
+                    <p class="text">                <strong>Cambrian Vision-Centric Benchmark (CV-Bench) </strong>
+
+
                         To address the scarcity of vision-centric benchmarks, we introduce the Cambrian Vision-Centric Benchmark (CV-Bench), repurposing standard vision tasks for multimodal evaluation. CV-Bench contains approximately 2600 vision-centric VQA questions, addressing the issue of insufficient questions in previous benchmark.
                     </p>
 
@@ -346,9 +351,10 @@
             </div>
             <div id="sec:inst_tuning" class="sub-section">
 
-            <h2 class="text">Instruction Tuning Recipes </h2>
+            <h1 class="text">Instruction Tuning Recipes </h1>
                 <p class="text">
-                    MLLMs connects pre-trained LLM and vision backbones using a connector like an MLP projector. Initially, the connector is pre-trained between the frozen LLM and vision backbones using adapter data, followed by fine-tuning the connector and LLM with instruction tuning data, while the vision encoder remains frozen. Various studies have suggested different optimal training methodologies for MLLMs, which we further investigate through extensive experiments. We tune a set of MLLMs using Vicuna-7B as the LLM backbone and 15 different vision models as visual encoders, utilizing a 737K instruction tuning data mix and consistent hyperparameters to evaluate different tuning strategies.
+                    MLLMs connects pre-trained LLM and vision backbones using a connector like an MLP projector. Various studies have suggested different optimal training methodologies for MLLMs, which we further investigate through extensive experiments.
+                     <!-- We tune a set of MLLMs using Vicuna-7B as the LLM backbone and 15 different vision models as visual encoders, utilizing a 737K instruction tuning data mix and consistent hyperparameters to evaluate different tuning strategies. -->
                 </p>
                 <!-- <p>MLLMs integrate pre-trained LLM and vision backbones using a connector like an MLP projector. Initially, the connector is pre-trained between the frozen LLM and vision backbones using adapter data, followed by fine-tuning the connector and LLM with instruction tuning data, while the vision encoder remains frozen. Various studies have suggested different optimal training methodologies for MLLMs, which we further investigate through extensive experiments. We tune a set of MLLMs using Vicuna-7B as the LLM backbone and 15 different vision models as visual encoders, utilizing a 737K instruction tuning data mix and consistent hyperparameters to evaluate different tuning strategies.</p>
                 <p class="text">
@@ -412,13 +418,13 @@
                 and diminish insights gained from extensive visual representation learning research.
             </p> -->
             <div id='visual-representation' class="viusal-representation-block">
-            <h2 class="text">MLLMs as a Vision Model Evaluator </h2>
+            <h1 class="text">MLLMs as a Vision Model Evaluator </h1>
                 
                 <p class="text">
-                    As discussed in earlier sections, MLLMs provide a new interface to explore aspects of vision models beyond traditional benchmarks like ImageNet-1k linear probing. 
-                    We study the 2-stage instruction tuning setting using 1.2M adapter data, 737K fine-tuning data, and frozen visual encoders to allow comparison of the widest range of models.
+                    MLLMs explore new aspects of vision models beyond traditional benchmarks like ImageNet-1k, using a 2-stage instruction tuning with 1.2M adapter data and 737K fine-tuning data. 
+                    Our evaluations show language-supervised models, particularly those trained on text-heavy datasets like LAION, outperform non-CLIP models across all categories, especially in chart and OCR tasks. Despite the smaller dataset size of SSL models like DINOv2, they perform competitively in vision-centric benchmarks. 
                 </p>
-                <p class="text">
+                <!-- <p class="text">
                     We evaluate the results on benchmarks detailed in <a href="#sec:benchmarking">Benchmarking the benchmarks</a>, 
                     calculating the average performance for each category and visualize the results in <a href="#fig:mllm_as_interface">Figure 4</a>.
                     Our findings highlight the advantages of language-supervised models over non-CLIP models across all benchmark categories, 
@@ -437,7 +443,7 @@
                     high-resolution image postprocessing and can produce superior results on OCR&Chart and Vision-Centric benchmarks. 
                     In vision-centric benchmarks, the gap between language-supervised and other types of vision models is smaller, 
                     with a well-trained self-supervised DINOv2 model even outperforming some language-supervised models.
-                </p>
+                </p> -->
                 <div id="fig:mllm_as_interface" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
                         <img data-zoomable="" style="width: 100%;" src="static/img/mllm_as_interface.png">
@@ -450,11 +456,8 @@
                     <strong>Bridging the gap between CLIP and SSL models</strong> 
                     In the above, we observe that DINOv2 stands midway between SSL models and CLIP models on general VQA and knowledge VQA tasks, 
                     even outperforming some CLIP models on vision-centric benchmarks with higher resolution. 
-                    Here, we study whether the continued finetuning of an MLLM based on an SSL model can achieve performance similar to that of CLIP models. 
-                    Given that DINOv2 is trained with much less data compared to CLIP models, 
                     we investigate unfreezing the vision backbones and increasing the amount of visual fine-tuning data to bridge this gap. 
-                    Specifically, we scale up the instruction tuning data from 0.7M to 5M, 
-                    and instruction tune MLLMs with (1) a DINOv2 ViT-L/14@336 encoder and (2) with a CLIP ViT-L/14@336 encoder in both frozen and unfrozen settings.
+                    <!-- Specifically, we scale up the instruction tuning data from 0.7M to 5M,  -->
                     In <a href="#fig:bridgegap">Figure 5</a>, we observe that by unfreezing the vision backbone, 
                     the DINOv2-based MLLM fine-tuned with 5M data surpasses the MLLM trained with a CLIP model on 0.7M data. 
                     Additionally, the gap between DINOv2 and the CLIP models is reduced under the 5M data experiment setting.
@@ -468,15 +471,12 @@
                     </figcaption>
                 </div>
             
-                <h2 id="sec:model_ensemble" class="text">Combining Multiple Vision Encoders </h2>
+                <!-- <h2 id="sec:model_ensemble" class="text">Combining Multiple Vision Encoders </h2> -->
                 <p class="text">
+                    <strong>Combining Multiple Vision Encoders </strong>
                     As observed in <a href="#fig:mllm_as_interface">Figure 4</a>, different vision models excel in different aspects of MLLM performance. 
-                    In this study, we explore the potential of combining multiple vision encoders to leverage their distinctive representations, aiming to build a more capable MLLM.
-                </p>
-            
-                <p class="text">
-                    Given that different vision encoders use varying architectures and image resolutions, we interpolate the output visual tokens to a fixed number, 576, in this subsection. 
-                    We then concatenate these tokens along the feature dimension, following a method similar to A-MoF. 
+                    We explore the potential of combining multiple vision encoders to leverage their distinctive representations.
+                    Given that different vision encoders use varying architectures and image resolutions, we interpolate the output visual tokens to a fixed number, 576.
                     The results are tabulated in <a href="#tab:model_ensemble">Table 2</a>, where we observe consistent performance improvements with the addition of more models.
                 </p>
 
@@ -490,11 +490,11 @@
                     </figcaption>
                 </div>
             
-                <p class="text">
+                <!-- <p class="text">
                     Our study indicates that adding a non-language-supervised model (DINOv2) can improve benchmark performance, 
                     especially in vision-centric tasks. Notably, even OCR benchmarks benefit from incorporating DINOv2. 
                     This highlights the importance of self-supervised learning models in complementing language-supervised models to achieve robust multimodal understanding. 
-                </p>
+                </p> -->
             
                 <p class="text">
                     However, this strategy has two limitations: 1) it employs interpolation, which can potentially lead to information loss, 
@@ -514,14 +514,14 @@
                 First, we encode spatial inductive bias by explicitly localizing the aggregation space for each token in the query.
                 Second, we perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly refer necessary visual information.
             </p>
-            <p class="text">
+            <!-- <p class="text">
                 Our new formulation flexibly handles different numbers of vision encoders with varying feature resolutions and remains aware of the spatial structure of visual data throughout the vision information aggregation in the LLM. We elaborate our method below.
                 To facilitate cross-attention-based information aggregation, we create a <em>C</em>-dimension learnable latent token <strong>x</strong> ∈ ℝ<sup>C</sup> that is repeated <em>L</em> × <em>L</em> times to form a 2D grid, serving as the query <strong>X</strong> ∈ ℝ<sup>L<sup>2</sup> × C</sup>. The set of visual features <strong>F</strong> from <em>N</em> vision encoders serve as the context (i.e., key and value). We ensure the output resolution of every vision encoder is a multiple of <em>L</em>. Formally, the feature map of the <em>k</em>-th vision encoder (<strong>F</strong><sub>k</sub>) has a resolution of <em>m<sub>k</sub> L</em> × <em>m<sub>k</sub> L</em> × <em>C</em>, where <em>m<sub>k</sub></em> is a positive integer multiplier.
             </p>
             <strong class="text">Spatial inductive bias.</strong>
             <p class="text">
                 To maintain the spatial structure during cross-attention, we align each token in the query with a specific sub-region of the feature maps in all vision encoders. Formally, a token at row <em>i</em> and column <em>j</em> in the query <strong>x</strong><sub>i,j</sub> corresponds to the sub-region <strong>F</strong><sub>k</sub>[<em>m<sub>k</sub> · i:m<sub>k</sub> · (i+1), m<sub>k</sub> · j:m<sub>k</sub> · (j+1)</em>] ∈ ℝ<sup>m<sub>k</sub><sup>2</sup> × C</sup> of the <em>k</em>-th vision feature map. As a result, a token <strong>x</strong><sub>i,j</sub> aggregates a total of ∑<sub>k</sub> m<sub>k</sub><sup>2</sup> features from <em>N</em> vision encoders through cross-attention (see <a href="#fig:vision_connector">Figure 6-left</a>).
-            </p>
+            </p> -->
             <div id="fig:vision_connector" style="display: flex; flex-direction: column; align-items: center;">
                 <div style="display: flex; justify-content: center; width: 120%;">
                     <img data-zoomable="" style="width: 100%;" src="static/img/vision_connector_v7.png">
@@ -531,9 +531,9 @@
                 </figcaption>
             </div>
 
-            <p class="text">
+            <!-- <p class="text">
                 Specifically, the updated query vector <strong>q<sup>*</sup></strong><sub>i,j</sub> at position (<em>i,j</em>) is computed as:
-            </p>
+            </p> -->
             <!-- <div class="equation">
                 <pre>
                     <strong>q<sup>*</sup></strong><sub>i,j</sub> = softmax(<strong>q</strong><sub>i,j</sub> · [<strong>k</strong><sub>i,j,1</sub>, <strong>k</strong><sub>i,j,2</sub>, ..., <strong>k</strong><sub>i,j,N</sub>]<sup>⊤</sup> / √<em>C</em>) [<strong>v</strong><sub>i,j,1</sub>, <strong>v</strong><sub>i,j,2</sub>, ..., <strong>v</strong><sub>i,j,N</sub>],</pre>
@@ -545,7 +545,7 @@
                     <strong>v</strong><sub>i,j,k</sub> = <strong>W<sup>V</sup></strong><sub>k</sub> <strong>F</strong><sub>k</sub>[<em>m<sub>k</sub> · i:m<sub>k</sub> · (i+1), m<sub>k</sub> · j:m<sub>k</sub> · (j+1)</em>] ∈ ℝ<sup>m<sub>k</sub><sup>2</sup>×C</sup>
                 </pre>
             </div> -->
-            <div class="equation">
+            <!-- <div class="equation">
                 \[
                 \mathbf{q^{*}}_{i,j} = \text{softmax}\left(\frac{\mathbf{q}_{i,j} \cdot \left[\mathbf{k}_{i,j,1}, \mathbf{k}_{i,j,2}, \ldots, \mathbf{k}_{i,j,N}\right]^\top}{\sqrt{C}}\right) \left[\mathbf{v}_{i,j,1}, \mathbf{v}_{i,j,2}, \ldots, \mathbf{v}_{i,j,N}\right],
                 \]
@@ -566,7 +566,7 @@
             <strong class="text">Multi-layer vision aggregation.</strong>
             <p class="text">
                 Although our proposal effectively aggregates features from multiple vision encoders, there is still potential information loss when processing high-resolution input (<em>i.e.</em> <em>m<sub>k</sub></em> is large) or when there are multiple vision encoders (<em>i.e.</em> <em>N</em> is large). This results in a single token having to handle a larger amount of context information during aggregation. To alleviate this, we enable cross-attention to occur multiple times by inserting our proposal within the LLM layers, allowing the model to refer to the uncompressed visual information consistently (see <a href="#fig:vision_connector">Figure 6-right</a>).
-            </p>
+            </p> -->
         </div>
 
         <div id="instruction_data" class="data-block">
@@ -574,20 +574,18 @@
             <p class="text">
                 Previous work highlights the importance of data in training MLLMs, but explicit investigations are limited. 
                 In this study, we gather all available instruction tuning data and examine data curation by enhancing diversity, balancing sources, and improving mixtures. 
-                Unless specified otherwise, experiments involve fine-tuning on the Vicuna-7B-1.5 model and OpenAI's CLIP ViT-L/14@336px model.
+                
             </p>
     
             <div class="subsection">
-                <h2 class="text">Data Collection</h2>
+                <h3 class="text">Data Collection</h3>
                 <p class="text" id="data_collection">
                     <strong>Collecting Instruction Tuning Data from existing data sources</strong> 
-                    Unlike language data, multimodal (visual) instruction-tuning data is much rarer and harder to collect. 
-                    To address this, we use existing multimodal benchmarks and datasets involving visual interaction data,
+                    We first use existing multimodal benchmarks and datasets involving visual interaction data,
                     such as Visual Question Answering (VQA) and OCR data. 
-                    Previous work also highlights the catastrophic forgetting that commonly occurs when fine-tuning multimodal LLMs. 
                     We also collect a small volume of high-quality language-only instruction-following data to maintain its language ability. 
-                    Data are categorized into General conversation, OCR, Counting, Code, Math, Science, and Language-only data. 
-                    We list the data sources in <a href="#fig:cambrian7m">Figure 7</a>.
+                    <!-- Data are categorized into General conversation, OCR, Counting, Code, Math, Science, and Language-only data.  -->
+                    <!-- We list the data sources in <a href="#fig:cambrian7m">Figure 7</a>. -->
                 </p>
                 <div id="fig:cambrian7m" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
@@ -599,15 +597,15 @@
                 </div>
                 <p class="text">
                     <strong>Targeted Internet Data Collection Engine</strong> 
-                    We introduce a data engine designed to create large-scale, reliable, 
-                    high-quality knowledge-based multimodal instruction tuning data (see <a href="#fig:dataengine">Figure 8</a>).
-                    The engine selects a target field and subfield, such as "Physics," 
+                    We also introduce a data engine designed to create large-scale, reliable, 
+                    high-quality knowledge-based multimodal instruction tuning data.
+                    <!-- The engine selects a target field and subfield, such as "Physics," 
                     and uses an LLM like GPT-4 to identify topics (e.g., "Newton’s Laws"). 
                     It searches reliable sources like Wikipedia for each topic. 
                     We find that Wikipedia cites exhibit high-correlated text-image associations. 
                     The parser extracts image-caption-text tuples and feeds the caption-text to an LLM, such as GPT-3., 
                     to generate instruction-type Q&A pairs about the image. 
-                    These Q&A pairs and the image form our VQA dataset.
+                    These Q&A pairs and the image form our VQA dataset. -->
                      <!-- Details are in <a href="#Appendix:DataEngine">Appendix: Data Engine</a>. -->
                 </p>
                 <div id="fig:dataengine" style="display: flex; flex-direction: column; align-items: center;">
@@ -628,7 +626,7 @@
             </div>
     
             <div id="sec:data_curation" class="subsection">
-                <h2 class="text">Data Curation</h2>
+                <h3 class="text">Data Curation</h3>
                 <p class="text">
                     Cambrian-10M is a large pool of instruction tuning data sourced from a variety of data sources, 
                     with an unbalanced data ratio between categories. 
@@ -638,9 +636,10 @@
                 <p class="text" id="data_curation">
                     <strong>Data Balancing</strong> 
                     We follow previous work to set thresholds t 
-                    for the number of data points from a single data source. To study the effect of the number t, 
+                    for the number of data points from a single data source. 
+                    <!-- To study the effect of the number t, 
                     we plot the cumulative sum of counts for entries sorted by counts from tail to head 
-                    (see Visualization in <a href="#fig:filter_k">Figure 9</a>). 
+                    (see Visualization in <a href="#fig:filter_k">Figure 9</a>).  -->
                     We choose t = 150k, 250k, 350k, and 450k in this section and observe an 
                     elbow effect in <a href="#tab:data_balance_result">Table 3</a>. 
                     We find that a threshold between 250k and 350k works the best for Cambrian-10M.
@@ -665,19 +664,19 @@
 
                 <p class="text">
                     <strong>Data Ratio</strong> 
-                    Unlike previous works in VLM data curation<d-cite key="xu2023demystifying"></d-cite> <d-cite key="gadre2024datacomp"></d-cite>, 
+                    <!-- Unlike previous works in VLM data curation<d-cite key="xu2023demystifying"></d-cite> <d-cite key="gadre2024datacomp"></d-cite>, 
                     which curate noisy raw image-text pairs by scraping the internet, 
-                    Cambrian-10M is designed for visual instruction tuning. 
-                    Given the various capabilities of different types of data, it is essential to balance the ratio of these data types. 
+                    Cambrian-10M is designed for visual instruction tuning.  -->
+                    Given the various capabilities of different types of visual instruction tuning data, it is essential to balance the ratio of these data types. 
                     We conduct pilot experiments with a fixed dataset size of 1350k, 
                     examining the impact of different data ratios on downstream performance. 
                     We visualize the results in <a href="#fig:data_ratio">Figure 10</a> and summarize our findings as follows: 
                     (i) Balancing General, OCR, and Language data is crucial. 
-                    The model's OCR capability is proportional to the OCR data ratio; 
-                    however, an excessive OCR ratio compromises general VQA and vision-centric performance.
+                    <!-- The model's OCR capability is proportional to the OCR data ratio; 
+                    however, an excessive OCR ratio compromises general VQA and vision-centric performance. -->
                     (ii) Performance on knowledge-intensive tasks is influenced by multiple factors, 
                     often requiring a mix of OCR, chart, reasoning, and general perception. 
-                    Increasing the science data ratio can help, but a very low ratio leads to poor performance.
+                    <!-- Increasing the science data ratio can help, but a very low ratio leads to poor performance. -->
                 </p>
                 
                 <div id="fig:data_ratio" style="display: flex; flex-direction: column; align-items: center;">
@@ -708,28 +707,29 @@
             </div>
     
             <div class="subsection">
-                <h2 class="text">Resolving "Answer Machine Phenomenon" with System Prompts</h2>
+                <h3 class="text">Resolving "Answer Machine Phenomenon" with System Prompts</h3>
                 <p class="text">
                     Here, we explore and analyze a phenomenon we term the "answer machine phenomenon." 
                     We observe that a well-trained MLLM excels in visual question answering 
                     but lacks basic conversational abilities (see examples in <a href="#fig:sysprompt">Figure 5</a>). 
-                    The model tends to output shorter responses.
-                    This discrepancy arises because benchmark questions typically require responses that are limited to 
+                    <!-- The model tends to output shorter responses. -->
+                    <!-- This discrepancy arises because benchmark questions typically require responses that are limited to 
                     a single option, choice, or word, which diverges from the broader and actual use cases of MLLMs. 
-                    Similar phenomena have been discussed in other LLM studies.
+                    Similar phenomena have been discussed in other LLM studies. -->
                 </p>
     
                 <p class="text">
-                    We suspect that this issue stems from the instruction tuning data containing an excessive number of short-response VQA tasks, 
-                    leading to catastrophic forgetting in LLMs.
+                    <!-- We suspect that this issue stems from the instruction tuning data containing an excessive number of short-response VQA tasks, 
+                    leading to catastrophic forgetting in LLMs. -->
                     To address this, we find that incorporating additional system prompts during training mitigates this phenomenon. 
                     We append prompts such as "<em>Answer the question using a single word or phrase.</em>" 
                     before questions that generate a single word or phrase in the response. 
                     We observe that after integrating these system prompts, the model's benchmark performance remains unchanged, 
-                    while its conversational ability significantly improves. For example, in <a href="#fig:sysprompt">Figure 11</a>, 
+                    while its conversational ability significantly improves. 
+                    <!-- For example, in <a href="#fig:sysprompt">Figure 11</a>, 
                     models with system prompts tend to output longer and more engaging outputs while answering the questions correctly. 
                     It also encourages the model to improve on reasoning-related tasks such as math problems by outputting a series of thoughts, 
-                    and then output the answer.
+                    and then output the answer. -->
                 </p>
                 <div id="fig:sysprompt" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
@@ -741,9 +741,9 @@
                     </figcaption>
                 </div>
     
-                <p class="text">
+                <!-- <p class="text">
                     Further, this underscores the necessity to develop evaluation protocols like the Chatbot Arena, despite the challenges in collecting large-scale, actual use cases of multimodal data.
-                </p>
+                </p> -->
             </div>
         </div>
 
@@ -767,6 +767,15 @@
                     Table 5: Performance improves with better instruction tuning data curation.
                 </figcaption>
             </div>
+            <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;">
+                <div style="display: flex; justify-content: center; width: 140%;">
+                <img data-zoomable="" style="width: 100%;" src="static/img/comparison.PNG">
+                </div>
+                <figcaption style="text-align: center; width: 140%;">
+                    Figure 12: Cambrian-1 outperforms other open-source models and achieves comparable performance with proprietary models.
+                </figcaption>
+            </div>
+
         </div>
 
         <div id="conclusion" style="position: relative; margin-top: 40px; margin-bottom: 0px;">
