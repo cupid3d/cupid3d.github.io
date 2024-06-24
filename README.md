@@ -1,4 +1,4 @@
-# VisionX Cambrian Webpage
+# Cambrian-1 Webpage
 
 ### local development:
 run a local http server to preview the webpage
