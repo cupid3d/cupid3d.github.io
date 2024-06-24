@@ -45,7 +45,6 @@ body {
 }
 
 .header-content h2 {
-  color: #FFD28F;
   margin-bottom: 0.5em;
   line-height: 1.2;
 }
@@ -170,11 +169,7 @@ body {
 }
 
 .byline-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start; /* Align columns by the top */
-  max-width: 1000px; /* Adjust as needed for your design */
-  margin: 0 auto; /* Center the container */
+    text-align: center;  /* Center align the text */
 }
 
 .byline-column {
@@ -216,10 +211,18 @@ body {
 
 
 .author-link, .affiliation-link {
-  color: #666; /* Set the color to match the other text */
-  text-decoration: none; /* Removes the underline */
-  border-bottom: none;
-  cursor: pointer; /* Changes cursor to pointer to indicate link */
+    font-size: larger;
+    color: black; /* Set the color to match the other text */
+    text-decoration: none; /* Removes the underline */
+    border-bottom: none;
+    cursor: pointer; /* Changes cursor to pointer to indicate link */
+    white-space: nowrap;  /* Prevent breaking names across lines */
+}
+
+#affiliation {
+    font-size: 1.2em;
+    /* bold */
+    font-weight: bold;
 }
 
 .author-link:hover, .affiliation-link:hover {
