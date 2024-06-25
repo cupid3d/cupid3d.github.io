@@ -147,13 +147,13 @@
 
             <br><br>
             Cambrian-1 is structured around five key pillars, each offering important insights into the design space of MLLMs:
-            <ul>
+            <ol class="text">
                 <li><strong>Visual Representations</strong>: We explore various vision encoders and their combinations. (see <a href="#visual_representations">§Evaluating Visual Representations through MLLMs</a>)</li>
                 <li><strong>Connector Design</strong>: We design a new dynamic and <i>spatially-aware</i> connector that integrates visual features from several models with LLMs while reducing the number of tokens. (see <a href="#connector_design">§Spatial Vision Aggregator</a>)</li>
                 <li><strong>Instruction Tuning Data</strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing. (see <a href="#instruction_data">§Instruction Tuning Data for Training MLLMs</a>)</li>
                 <li><strong>Instruction Tuning Recipes</strong>: We discuss instruction tuning strategies and practices. (see <a href="#sec:inst_tuning">§Instruction Tuning Recipes</a>) </li> 
                 <li><strong>Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench". (see <a href="#cv-bench">§Analysis the Benchmark and Cambrian Vision-Centric Benchmark (CV-Bench)</a>)</li>
-            </ul>
+            </ol>
         </p>
 
         <p class="click-hint" style="width: 85%;"><strong><img src="static/img/icons/click.gif" style="width: 1.5rem">
@@ -512,8 +512,10 @@
             <p class="text">
                 To effectively aggregate features from multiple vision encoders and reduce information loss during interpolation, we use a set of learnable latent queries that interact with multiple vision features through cross-attention layers<d-cite key="dai2024instructblip"></d-cite>.
                 In particular, our approach incorporates two new vision-centric design principles: 
-                First, we encode spatial inductive bias by explicitly localizing the aggregation space for each token in the query.
-                Second, we perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly refer necessary visual information.
+                <ol class="text">
+                    <li>We encode spatial inductive bias by explicitly localizing the aggregation space for each token in the query.</li>
+                    <li>We perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly refer necessary visual information.</li>
+                </ol>
             </p>
             <!-- <p class="text">
                 Our new formulation flexibly handles different numbers of vision encoders with varying feature resolutions and remains aware of the spatial structure of visual data throughout the vision information aggregation in the LLM. We elaborate our method below.
@@ -531,43 +533,6 @@
                     Figure 6: Spatial Vision Aggregator (SVA).
                 </figcaption>
             </div>
-
-            <!-- <p class="text">
-                Specifically, the updated query vector <strong>q<sup>*</sup></strong><sub>i,j</sub> at position (<em>i,j</em>) is computed as:
-            </p> -->
-            <!-- <div class="equation">
-                <pre>
-                    <strong>q<sup>*</sup></strong><sub>i,j</sub> = softmax(<strong>q</strong><sub>i,j</sub> · [<strong>k</strong><sub>i,j,1</sub>, <strong>k</strong><sub>i,j,2</sub>, ..., <strong>k</strong><sub>i,j,N</sub>]<sup>⊤</sup> / √<em>C</em>) [<strong>v</strong><sub>i,j,1</sub>, <strong>v</strong><sub>i,j,2</sub>, ..., <strong>v</strong><sub>i,j,N</sub>],</pre>
-            </div>
-            <div class="equation">
-                <pre>
-                    <strong>q</strong><sub>i,j</sub> = <strong>W<sup>Q</sup></strong> <strong>x</strong><sub>i,j</sub> ∈ ℝ<sup>1×C</sup>,
-                    <strong>k</strong><sub>i,j,k</sub> = <strong>W<sup>K</sup></strong><sub>k</sub> <strong>F</strong><sub>k</sub>[<em>m<sub>k</sub> · i:m<sub>k</sub> · (i+1), m<sub>k</sub> · j:m<sub>k</sub> · (j+1)</em>] ∈ ℝ<sup>m<sub>k</sub><sup>2</sup>×C</sup>,
-                    <strong>v</strong><sub>i,j,k</sub> = <strong>W<sup>V</sup></strong><sub>k</sub> <strong>F</strong><sub>k</sub>[<em>m<sub>k</sub> · i:m<sub>k</sub> · (i+1), m<sub>k</sub> · j:m<sub>k</sub> · (j+1)</em>] ∈ ℝ<sup>m<sub>k</sub><sup>2</sup>×C</sup>
-                </pre>
-            </div> -->
-            <!-- <div class="equation">
-                \[
-                \mathbf{q^{*}}_{i,j} = \text{softmax}\left(\frac{\mathbf{q}_{i,j} \cdot \left[\mathbf{k}_{i,j,1}, \mathbf{k}_{i,j,2}, \ldots, \mathbf{k}_{i,j,N}\right]^\top}{\sqrt{C}}\right) \left[\mathbf{v}_{i,j,1}, \mathbf{v}_{i,j,2}, \ldots, \mathbf{v}_{i,j,N}\right],
-                \]
-            </div>
-            <div class="equation">
-                \[
-                \begin{align*}
-                \mathbf{q}_{i,j} &= \mathbf{W}^Q \mathbf{x}_{i,j} \in \mathbb{R}^{1 \times C}, \\
-                \mathbf{k}_{i,j,k} &= \mathbf{W}^K_{k} \mathbf{F}_{k}[m_{k} \cdot i : m_{k} \cdot (i+1),\ m_{k} \cdot j : m_{k} \cdot (j+1)] \in \mathbb{R}^{m_k^2 \times C}, \\
-                \mathbf{v}_{i,j,k} &= \mathbf{W}^V_{k} \mathbf{F}_{k}[m_{k} \cdot i : m_{k} \cdot (i+1),\ m_{k} \cdot j : m_{k} \cdot (j+1)] \in \mathbb{R}^{m_k^2 \times C}.
-                \end{align*}
-                \]
-            </div>
-            
-            <p class="text">
-                Here, <strong>q</strong><sub>i,j</sub> is the query vector at position (<em>i,j</em>), calculated using the query projection matrix <strong>W<sup>Q</sup></strong> ∈ ℝ<sup>C × C</sup>. The key vectors <strong>k</strong><sub>i,j,k</sub> and value vectors <strong>v</strong><sub>i,j,k</sub> are computed for each vision encoder <em>k</em> using their respective key and value projection matrices <strong>W<sup>K</sup></strong><sub>k</sub> ∈ ℝ<sup>C × C</sup> and <strong>W<sup>V</sup></strong><sub>k</sub> ∈ ℝ<sup>C × C</sup>. Since ∑<sub>k</sub> m<sub>k</sub><sup>2</sup> features are aggregated into a single token, we effectively reduce the number of tokens.
-            </p>
-            <strong class="text">Multi-layer vision aggregation.</strong>
-            <p class="text">
-                Although our proposal effectively aggregates features from multiple vision encoders, there is still potential information loss when processing high-resolution input (<em>i.e.</em> <em>m<sub>k</sub></em> is large) or when there are multiple vision encoders (<em>i.e.</em> <em>N</em> is large). This results in a single token having to handle a larger amount of context information during aggregation. To alleviate this, we enable cross-attention to occur multiple times by inserting our proposal within the LLM layers, allowing the model to refer to the uncompressed visual information consistently (see <a href="#fig:vision_connector">Figure 6-right</a>).
-            </p> -->
         </div>
 
         <div id="instruction_data" class="data-block">
