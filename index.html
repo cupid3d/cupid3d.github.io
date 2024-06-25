@@ -563,7 +563,7 @@
                     <strong>Cambrian-10M</strong> 
                     To this end, we create a large pool of instruction tuning data, which we refer to as Cambrian-10M. 
                     This pool contains approximately 9784k data points, offering a diverse range of data for our work and future research. 
-                    We also visualize its composition in <a href="#fig:cambrian7m">Figure 7</a>.
+                    We visualize its composition in <a href="#fig:cambrian7m">Figure 7</a>.
                 </p>
             </div>
     
@@ -579,12 +579,8 @@
                     <strong>Data Balancing</strong> 
                     We follow previous work to set thresholds t 
                     for the number of data points from a single data source. 
-                    <!-- To study the effect of the number t, 
-                    we plot the cumulative sum of counts for entries sorted by counts from tail to head 
-                    (see Visualization in <a href="#fig:filter_k">Figure 9</a>).  -->
                     We choose t = 150k, 250k, 350k, and 450k in this section and observe an 
-                    elbow effect in <a href="#tab:data_balance_result">Table 3</a>. 
-                    We find that a threshold between 250k and 350k works the best for Cambrian-10M.
+                    elbow effect in <a href="#tab:data_balance_result">Table 3</a>&mdash;finding that a threshold between 250k and 350k work the best for Cambrian-10M.
                 </p>
                 <div id="fig:filter_k" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 100%;">
@@ -596,9 +592,6 @@
                 </div>
                 <br>
                 <div id="tab:data_balance_result" style="display: flex; flex-direction: column; align-items: center;">
-                    <!-- <div style="display: flex; justify-content: center; width: 100%;">
-                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/table/data_filter_k.png">
-                    </div> -->
                     <div class="table-container">
                         <table class="data-table">
                           <thead>
@@ -655,19 +648,13 @@
 
                 <p class="text">
                     <strong>Data Ratio</strong> 
-                    <!-- Unlike previous works in VLM data curation<d-cite key="xu2023demystifying"></d-cite> <d-cite key="gadre2024datacomp"></d-cite>, 
-                    which curate noisy raw image-text pairs by scraping the internet, 
-                    Cambrian-10M is designed for visual instruction tuning.  -->
                     Given the various capabilities of different types of visual instruction tuning data, it is essential to balance the ratio of these data types. 
                     We conduct pilot experiments with a fixed dataset size of 1350k, 
                     examining the impact of different data ratios on downstream performance. 
                     We visualize the results in <a href="#fig:data_ratio">Figure 10</a> and summarize our findings as follows: 
                     (i) Balancing General, OCR, and Language data is crucial. 
-                    <!-- The model's OCR capability is proportional to the OCR data ratio; 
-                    however, an excessive OCR ratio compromises general VQA and vision-centric performance. -->
                     (ii) Performance on knowledge-intensive tasks is influenced by multiple factors, 
                     often requiring a mix of OCR, chart, reasoning, and general perception. 
-                    <!-- Increasing the science data ratio can help, but a very low ratio leads to poor performance. -->
                 </p>
                 
                 <div id="fig:data_ratio" style="display: flex; flex-direction: column; align-items: center;">
@@ -681,9 +668,8 @@
 
                 <p class="text">
                     <strong>Cambrian-7M</strong> 
-                    We follow the identified data ratio and apply the data filtering technique while curating to that ratio. 
-                    In the end, we obtain Cambrian-7M. In <a href="#tab:data_ratio_result">Table 4</a>, 
-                    we observe improvements by scaling up and curating better data, even with less quantity.
+                    By applying data filtering to Cambrian-10M with our identified data ratio, we create a smaller but higher-quality dataset called Cambrian-7M.
+                    <a href="#tab:data_ratio_result">Table 4</a> showcases the benefits of a well-balanced and carefully curated dataset. Despite having fewer samples, Cambrian-7M demonstrates improved performance.
                 </p>
                 <div id="tab:data_ratio_result" style="display: flex; flex-direction: column; align-items: center;">
                     <div class="table-container">
@@ -735,12 +721,10 @@
             </div>
     
             <div class="subsection">
-                <h3 class="text">Resolving "Answer Machine Phenomenon" with System Prompts</h3>
+                <h3 class="text">Alleviating the "Answer Machine Phenomenon" via System Prompts</h3>
                 <p class="text">
-                    Here, we explore and analyze a phenomenon we term the "answer machine phenomenon." 
-                    We observe that a well-trained MLLM excels in visual question answering 
-                    but lacks basic conversational abilities (see examples in <a href="#fig:sysprompt">Figure 5</a>). 
-
+                    Here, we investigate a phenomenon we term the "answer machine phenomenon." 
+                    We observe that a well-trained MLLM may excel at VQA benchmarks, but lack basic conversational abilities and default to outputting short, curt responses (see examples in <a href="#fig:sysprompt">Figure 5</a>). 
                 </p>
     
                 <p class="text">
@@ -767,17 +751,12 @@
             <p class="text">
                 Finally, we leverage the insights from all of our previous studies to train a high-performance Cambrian model.
                 We train with three different sizes of LLM backbones: LLaMA-3-Instruct-8B, Vicuna-1.5-13B, and Hermes-2-Yi-34B.
-                We have a vision combination of four models—SigLIP, CLIP, DINOv2, and OpenCLIP ConvNeXt 
+                We have a vision combination of four models&mdash;SigLIP, CLIP, DINOv2, and OpenCLIP ConvNeXt 
                 (see <a href="#sec:model_ensemble">Combining Multiple Vision Encoders</a>) with <a href="#connector_design">Spatial Vision Aggregator</a>.
                 We use 2.5M adapter data and Cambrian-7M instruction tuning data (see <a href="#sec:data_curation">Data Curation</a>).
-                We evaluate our models on the <a href="#sec:benchmarking">categorized benchmarks</a>. 
-                We show the results in <a href="#tab:final_table">Table 5</a>. Cambrian-1 exceeds other open-source models such as LLaVA-NeXT and Mini-Gemini. 
-                Cambrian-1 also achieves comparable performance on a number of benchmarks with the best proprietary models such as GPT-4V, Gemini-Pro, and MM-1.
+                We evaluate our models on the <a href="#sec:benchmarking">categorized benchmarks</a>, and tabulate the results in <a href="#tab:final_table">Table 5</a>. Cambrian-1 exceeds other open-source models such as LLaVA-NeXT and Mini-Gemini, and achieves comparable performance on a number of benchmarks with the best proprietary models such as GPT-4V, Gemini-Pro, and MM-1.
             </p>
             <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;" class="figure">
-                <!-- <div style="display: flex; justify-content: center; width: 140%;">
-                <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/table/final_result.png">
-                </div> -->
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -1205,7 +1184,7 @@
         <div id="conclusion" style="position: relative; margin-top: 40px; margin-bottom: 0px;">
             <h2 class="text" style="margin-top:0px; margin-bottom:10px">Conclusion</h2>
             <p class="text">
-                To conclude, Cambrian-1 introduces a family of state-of-the-art MLLM models that achieve top performance across diverse benchmarks 
+                To conclude, Cambrian-1 is a family of state-of-the-art MLLMs that achieve top performance across diverse benchmarks 
                 and excel in visual-centric tasks. We provide model weights, open-source code, datasets, and detailed recipes for model training and evaluation. 
                 We hope our work will strengthen the open research community and accelerate research in both visual representation learning and multimodal systems.
             </p>
