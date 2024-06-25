@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 <div class="header-image">
-                    <img src="static/img/cambrian.png" alt="Teaser Image" class="teaser-image">
+                    <img draggable="false" src="static/img/cambrian.png" alt="Teaser Image" class="teaser-image">
                 </div>
             </div>
         </div>
@@ -212,7 +212,7 @@
 
                     <div id="fig:comparison" style="display: flex; flex-direction: column; align-items: center;">
                         <div style="display: flex; justify-content: center; width: 140%;">
-                            <img data-zoomable="" style="width: 100%;" src="static/img/bench_cat.png" alt="benchmark category">
+                            <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/bench_cat.png" alt="benchmark category">
                         </div>
                         <figcaption style="text-align: left; width: 140%;">
                             Figure 1: Left: Performance comparison of MLLMs with visual input enabled and disabled across various benchmarks. Right: Principal component analysis displaying clusters of benchmarks based on performance metrics, with bubble size corresponding to benchmark size.
@@ -229,7 +229,7 @@
 
                     <div id="fig:cvcb" style="display: flex; flex-direction: column; align-items: center;">
                         <div style="display: flex; justify-content: center; width: 140%;">
-                            <img data-zoomable="" style="width: 100%;" src="static/img/cvcb.PNG" alt="benchmark category">
+                            <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/cvcb.PNG" alt="benchmark category">
                         </div>
                         <figcaption style="text-align: left; width: 140%;">
                             Figure 2: Example questions in CV-Bench that focuses of 2D and 3D visual understanding.                        </figcaption>
@@ -256,7 +256,7 @@
                 </p>
                 <div id="fig:studyadapter" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
-                        <img data-zoomable="" style="width: 100%;" src="static/img/performance_plot.png">
+                        <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/performance_plot.png">
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 3: MLLMs benefit from pre-training the adapter with more data.
@@ -292,7 +292,7 @@
                 </p>
                 <div id="fig:narrowgap" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
-                        <img data-zoomable="" style="width: 100%;" src="static/img/bridge_gap.png">
+                        <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/bridge_gap.png">
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 5: By unfreezing the visual backbone and fine-tuning on 5M examples, the gap between CLIP and DINOv2 can be narrowed.
@@ -491,12 +491,6 @@
                     </figcaption>
                 </div>
             
-                <!-- <p class="text">
-                    Our study indicates that adding a non-language-supervised model (DINOv2) can improve benchmark performance, 
-                    especially in vision-centric tasks. Notably, even OCR benchmarks benefit from incorporating DINOv2. 
-                    This highlights the importance of self-supervised learning models in complementing language-supervised models to achieve robust multimodal understanding. 
-                </p> -->
-            
                 <p class="text">
                     However, this strategy has two limitations: 1) it employs interpolation, which can potentially lead to information loss, 
                     especially on vision encoders with high-resolution feature maps, and 2) it treats each model equally by simple concatenation. 
@@ -517,17 +511,9 @@
                     <li>We perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly refer necessary visual information.</li>
                 </ol>
             </p>
-            <!-- <p class="text">
-                Our new formulation flexibly handles different numbers of vision encoders with varying feature resolutions and remains aware of the spatial structure of visual data throughout the vision information aggregation in the LLM. We elaborate our method below.
-                To facilitate cross-attention-based information aggregation, we create a <em>C</em>-dimension learnable latent token <strong>x</strong> ∈ ℝ<sup>C</sup> that is repeated <em>L</em> × <em>L</em> times to form a 2D grid, serving as the query <strong>X</strong> ∈ ℝ<sup>L<sup>2</sup> × C</sup>. The set of visual features <strong>F</strong> from <em>N</em> vision encoders serve as the context (i.e., key and value). We ensure the output resolution of every vision encoder is a multiple of <em>L</em>. Formally, the feature map of the <em>k</em>-th vision encoder (<strong>F</strong><sub>k</sub>) has a resolution of <em>m<sub>k</sub> L</em> × <em>m<sub>k</sub> L</em> × <em>C</em>, where <em>m<sub>k</sub></em> is a positive integer multiplier.
-            </p>
-            <strong class="text">Spatial inductive bias.</strong>
-            <p class="text">
-                To maintain the spatial structure during cross-attention, we align each token in the query with a specific sub-region of the feature maps in all vision encoders. Formally, a token at row <em>i</em> and column <em>j</em> in the query <strong>x</strong><sub>i,j</sub> corresponds to the sub-region <strong>F</strong><sub>k</sub>[<em>m<sub>k</sub> · i:m<sub>k</sub> · (i+1), m<sub>k</sub> · j:m<sub>k</sub> · (j+1)</em>] ∈ ℝ<sup>m<sub>k</sub><sup>2</sup> × C</sup> of the <em>k</em>-th vision feature map. As a result, a token <strong>x</strong><sub>i,j</sub> aggregates a total of ∑<sub>k</sub> m<sub>k</sub><sup>2</sup> features from <em>N</em> vision encoders through cross-attention (see <a href="#fig:vision_connector">Figure 6-left</a>).
-            </p> -->
             <div id="fig:vision_connector" style="display: flex; flex-direction: column; align-items: center;">
                 <div style="display: flex; justify-content: center; width: 120%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/vision_connector_v7.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/sva.png" draggable="false">
                 </div>
                 <figcaption style="text-align: center; width: 120%;">
                     Figure 6: Spatial Vision Aggregator (SVA).
@@ -550,12 +536,10 @@
                     We first use existing multimodal benchmarks and datasets involving visual interaction data,
                     such as Visual Question Answering (VQA) and OCR data. 
                     We also collect a small volume of high-quality language-only instruction-following data to maintain its language ability. 
-                    <!-- Data are categorized into General conversation, OCR, Counting, Code, Math, Science, and Language-only data.  -->
-                    <!-- We list the data sources in <a href="#fig:cambrian7m">Figure 7</a>. -->
                 </p>
                 <div id="fig:cambrian7m" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/cambrian_7m.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/cambrian_7m.png">
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 7: Cambrian-7M: A Large-Scale Curated Instruction Tuning Dataset for Training MLLM.
@@ -565,18 +549,10 @@
                     <strong>Targeted Internet Data Collection Engine</strong> 
                     We also introduce a data engine designed to create large-scale, reliable, 
                     high-quality knowledge-based multimodal instruction tuning data.
-                    <!-- The engine selects a target field and subfield, such as "Physics," 
-                    and uses an LLM like GPT-4 to identify topics (e.g., "Newton’s Laws"). 
-                    It searches reliable sources like Wikipedia for each topic. 
-                    We find that Wikipedia cites exhibit high-correlated text-image associations. 
-                    The parser extracts image-caption-text tuples and feeds the caption-text to an LLM, such as GPT-3., 
-                    to generate instruction-type Q&A pairs about the image. 
-                    These Q&A pairs and the image form our VQA dataset. -->
-                     <!-- Details are in <a href="#Appendix:DataEngine">Appendix: Data Engine</a>. -->
                 </p>
                 <div id="fig:dataengine" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/dataenginefigurepdf_crop.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/dataenginefigurepdf_crop.png">
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 8: Targeted Internet Data Collection Engine.
@@ -612,7 +588,7 @@
                 </p>
                 <div id="fig:filter_k" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 100%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/Cumulative_Sum_of_Counts.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/Cumulative_Sum_of_Counts.png">
                     </div>
                     <figcaption style="text-align: center; width: 100%;">
                         Figure 9: Data Balancing via Applying Thresholds on Data Sources.
@@ -621,7 +597,7 @@
                 <br>
                 <div id="tab:data_balance_result" style="display: flex; flex-direction: column; align-items: center;">
                     <!-- <div style="display: flex; justify-content: center; width: 100%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/table/data_filter_k.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/table/data_filter_k.png">
                     </div> -->
                     <div class="table-container">
                         <table class="data-table">
@@ -696,7 +672,7 @@
                 
                 <div id="fig:data_ratio" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 100%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/data_mixture_ratio_w_avg_score.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/data_mixture_ratio_w_avg_score.png">
                     </div>
                     <figcaption style="text-align: center; width: 100%;">
                         Figure 10: Exploring instruction tuning data mixture ratios.
@@ -710,9 +686,6 @@
                     we observe improvements by scaling up and curating better data, even with less quantity.
                 </p>
                 <div id="tab:data_ratio_result" style="display: flex; flex-direction: column; align-items: center;">
-                    <!-- <div style="display: flex; justify-content: center; width: 100%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/table/data_ratio_result.png">
-                    </div> -->
                     <div class="table-container">
                         <table class="data-table">
                           <thead>
@@ -767,38 +740,25 @@
                     Here, we explore and analyze a phenomenon we term the "answer machine phenomenon." 
                     We observe that a well-trained MLLM excels in visual question answering 
                     but lacks basic conversational abilities (see examples in <a href="#fig:sysprompt">Figure 5</a>). 
-                    <!-- The model tends to output shorter responses. -->
-                    <!-- This discrepancy arises because benchmark questions typically require responses that are limited to 
-                    a single option, choice, or word, which diverges from the broader and actual use cases of MLLMs. 
-                    Similar phenomena have been discussed in other LLM studies. -->
+
                 </p>
     
                 <p class="text">
-                    <!-- We suspect that this issue stems from the instruction tuning data containing an excessive number of short-response VQA tasks, 
-                    leading to catastrophic forgetting in LLMs. -->
                     To address this, we find that incorporating additional system prompts during training mitigates this phenomenon. 
                     We append prompts such as "<em>Answer the question using a single word or phrase.</em>" 
                     before questions that generate a single word or phrase in the response. 
                     We observe that after integrating these system prompts, the model's benchmark performance remains unchanged, 
                     while its conversational ability significantly improves. 
-                    <!-- For example, in <a href="#fig:sysprompt">Figure 11</a>, 
-                    models with system prompts tend to output longer and more engaging outputs while answering the questions correctly. 
-                    It also encourages the model to improve on reasoning-related tasks such as math problems by outputting a series of thoughts, 
-                    and then output the answer. -->
                 </p>
                 <div id="fig:sysprompt" style="display: flex; flex-direction: column; align-items: center;">
                     <div style="display: flex; justify-content: center; width: 140%;">
-                    <img data-zoomable="" style="width: 100%;" src="static/img/sysprompt.png">
+                    <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/sysprompt.png">
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 11: Incorporating System Prompt in Instruction Tuning Data alleviates “Answer
                         Machine Phenomenon”.
                     </figcaption>
                 </div>
-    
-                <!-- <p class="text">
-                    Further, this underscores the necessity to develop evaluation protocols like the Chatbot Arena, despite the challenges in collecting large-scale, actual use cases of multimodal data.
-                </p> -->
             </div>
         </div>
 
@@ -816,7 +776,7 @@
             </p>
             <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;" class="figure">
                 <!-- <div style="display: flex; justify-content: center; width: 140%;">
-                <img data-zoomable="" style="width: 100%;" src="static/img/table/final_result.png">
+                <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/table/final_result.png">
                 </div> -->
                 <div class="table-container">
                     <table class="data-table">
@@ -1233,7 +1193,7 @@
             <p style="padding: 1em"></p>
             <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;">
                 <div style="display: flex; justify-content: center; width: 140%;">
-                <img data-zoomable="" style="width: 100%;" src="static/img/comparison.PNG">
+                <img data-zoomable="" draggable="false"style="width: 100%;" src="static/img/comparison.PNG">
                 </div>
                 <figcaption style="text-align: center; width: 140%;">
                     Figure 12: Cambrian-1 outperforms other open-source models and achieves comparable performance with proprietary models.
