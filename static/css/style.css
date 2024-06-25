@@ -7,7 +7,7 @@ body {
     /* background-color: #265073; */
 
     /* background: linear-gradient(127deg, #265073 0%, #596FB7 45%, #C6CF9B 70%, rgb(244,234,203) 100%); */
-    background: linear-gradient(55deg, #265073 0%, #596FB7 50%, #FEAE6F 80%, rgb(244,234,203) 100%);
+    background: linear-gradient(-235deg, #000000 10%, #122153 55%, #FEAE6F 85%, rgb(244,234,203) 100%);
     
 }
 
@@ -104,8 +104,8 @@ body {
 .button-container a.button {
   background-color: #FFF0CE; /* Yellow background */
   color: #000; /* Black text */
-  border: 2px solid #ffc107; /* Orange border */
-  border: 2px solid #ffc107; /* Orange border */
+  border: 1px solid #ffc107; /* Orange border */
+  border: 1px solid #ffc107; /* Orange border */
   /* border-radius: 25px; Rounded borders */
   border-radius: 12px; Rounded borders
   padding: 10px 20px; /* Top and bottom padding, left and right padding */
@@ -169,6 +169,8 @@ body {
 }
 
 .byline-container {
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
     text-align: center;  /* Center align the text */
 }
 
@@ -217,12 +219,13 @@ body {
     border-bottom: none;
     cursor: pointer; /* Changes cursor to pointer to indicate link */
     white-space: nowrap;  /* Prevent breaking names across lines */
+    /* Increase vertical spacing */
 }
 
 #affiliation {
-    font-size: 1.2em;
+    font-size: 1.425em;
     /* bold */
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 .author-link:hover, .affiliation-link:hover {
@@ -467,7 +470,7 @@ blockquote.storytext:before {
   margin-right: 5px;  /* Increases the right margin */
   cursor: pointer;
   border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px #999; /* Subtle shadow */
+  box-shadow: 0 2px #999; /* Subtle shadow */
   transition: all 0.3s ease; /* Smooth transition for hover effect */
 }
 
@@ -976,11 +979,6 @@ aside blockquote {
   right: -35%;
 }
 
-@media (max-width: 1180px) {
-    div.bm_city_fig > aside {
-        display: none;
-    }
-}
 
 .click-hint{
   display: block;
