@@ -1275,68 +1275,20 @@ div.takeaway-tags img {
   }
 }
 
-.agent-block {
-    position: relative;
-    padding-bottom: 2em;
-    padding-top: 1em;
+iframe {
+    width: 1250px;
+    height: 650px;
+    border: none;
 }
 
-#geo, .geo {
-    position: relative;
-    padding-top: 1em;
-    
-    .grey-overlay {
-        background-color: rgba(227, 242, 233, 0.5);
+/* Responsive design */
+@media screen and (max-width: 1200px) {
+    .data-table {
+        display: block;
+        overflow-x: scroll;
     }
-    .text {
-        margin-bottom: 0px;
-        padding-bottom: 1em;
-    }
-}
 
-#language, .language {
-    position: relative;
-    padding-top: 1em;
-    
-    .grey-overlay {
-        background-color: rgba(227, 237, 248, 0.2);
+    iframe {
+        width: 99%;
     }
-    .text {
-        margin-bottom: 0px;
-        padding-bottom: 1em;
-    }
-    hr {
-        margin-top: 30px;
-    }
-}
-
-#vision, .vision {
-    position: relative;
-    padding-top: 1em;
-    
-    .grey-overlay {
-        background-color: rgba(254, 237, 237, 0.5);
-    }
-    .text {
-        margin-bottom: 0px;
-        padding-bottom: 1em;
-    }
-}
-
-#collaboration, .collaboration {
-    position: relative;
-    padding-top: 1em;
-    
-    .grey-overlay {
-        background-color: rgba(255, 246, 232, 0.5);
-    }
-    .text {
-        margin-bottom: 0px;
-        padding-bottom: 1em;
-    }
-}
-
-
-.agent-block > .grey-overlay {
-    border-bottom: 0.2px solid rgba(129, 126, 126, 0.25);
 }

@@ -390,30 +390,8 @@
                     MLLMs explore new aspects of vision models beyond traditional benchmarks like ImageNet-1k, using a 2-stage instruction tuning with 1.2M adapter data and 737K fine-tuning data. 
                     Our evaluations show language-supervised models outperform non-CLIP models across all categories, especially in chart and OCR tasks. Despite the smaller dataset size of SSL models like DINOv2, they perform competitively in vision-centric benchmarks. 
                 </p>
-                <!-- <p class="text">
-                    We evaluate the results on benchmarks detailed in <a href="#sec:benchmarking">Benchmarking the benchmarks</a>, 
-                    calculating the average performance for each category and visualize the results in <a href="#fig:mllm_as_interface">Figure 4</a>.
-                    Our findings highlight the advantages of language-supervised models over non-CLIP models across all benchmark categories, 
-                    with significantly better performance on chart and OCR-related benchmarks. 
-                    We hypothesize that this is due to CLIP's <em>training data</em>, such as LAION, 
-                    containing abundant OCR and text-heavy data, whereas SSL and other vision models primarily train on natural images with significantly less text content. 
-                    It is also noteworthy that language-supervised models are typically trained with a very large pool of data, 
-                    ranging from 400 million to 10 billion samples, 
-                    whereas the largest vision self-supervised training dataset, like DINOv2, consists of only <em>142 million samples</em>. 
-                    The performance comparison in <a href="#fig:mllm_as_interface">Figure 4</a> between DINOv2, other SSL models, 
-                    and language-supervised models underscores the potential for training superior vision-only models with more data and improved techniques. 
-                    Additionally, we observe that higher-resolution models particularly enhance performance on chart and vision-centric benchmarks
-                    while remaining neutral on general VQA and knowledge-based VQAs. 
-                    While the majority of the backbones we examine are ViT-based, 
-                    <strong>ConvNet-based architectures</strong> (such as OpenCLIP ConvNeXt) are inherently well-suited for 
-                    high-resolution image postprocessing and can produce superior results on OCR&Chart and Vision-Centric benchmarks. 
-                    In vision-centric benchmarks, the gap between language-supervised and other types of vision models is smaller, 
-                    with a well-trained self-supervised DINOv2 model even outperforming some language-supervised models.
-                </p> -->
                 <div id="fig:mllm_as_interface" style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="display: flex; justify-content: center; width: 140%;">
-                        <img data-zoomable="" style="width: 100%;" src="static/img/mllm_as_interface.png">
-                    </div>
+                    <iframe src="static/img/tuning_recipes_plot.html" width="1200" height="600"></iframe>
                     <figcaption style="text-align: center; width: 140%;">
                         Figure 4: MLLMs as an interface to evaluate visual representations.
                     </figcaption>
