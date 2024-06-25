@@ -1275,20 +1275,69 @@ div.takeaway-tags img {
   }
 }
 
+/* tables */
+
+.table-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    max-width: 100%;
+    margin: 0 auto;
+    -webkit-overflow-scrolling: touch; /* for smoother scrolling on iOS */
+}
+
+.data-table {
+    border-collapse: separate;
+    border-spacing: 5px;
+    margin: 0 auto;
+    font-size: 14px;
+    min-width: 100%;
+    width: max-content;
+}
+
+.data-table td {
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    text-align: center !important;
+}
+
+.data-table td, .data-table th {
+    padding: 0.25em 0.5em;
+}
+
+.data-table th:first-child, .data-table td:first-child {
+    text-align: right !important;
+    font-weight: bold;
+}
+
+.highlight {
+    background-color: #D2EBD8;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+    font-weight: 500;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 600px) {
+    .data-table {
+        font-size: 1em;
+    }
+    
+    .data-table td, .data-table th {
+        padding: 0.2em 0.4em;
+        font-size: 0.8em;
+    }
+    
+    iframe {
+        width: 99%;
+    }
+}
+
 iframe {
     width: 1250px;
     height: 650px;
     border: none;
-}
-
-/* Responsive design */
-@media screen and (max-width: 1200px) {
-    .data-table {
-        display: block;
-        overflow-x: scroll;
-    }
-
-    iframe {
-        width: 99%;
-    }
 }

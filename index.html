@@ -428,8 +428,181 @@
                 </p>
 
                 <div id="tab:model_ensemble" style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="display: flex; justify-content: center; width: 140%;">
-                        <img data-zoomable="" style="width: 100%;" src="static/img/table/1.2m_pretrain.png">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th colspan="1" class="section-border">Vision Backbone</th>
+                                <th colspan="1" class="section-border"></th>
+                                <th colspan="4" class="section-border">General</th>
+                                <th colspan="4" class="section-border">Knowledge</th>
+                                <th colspan="4" class="section-border">OCR & Chart</th>
+                                <th colspan="4">Vision-Centric</th>
+                            </tr>
+                            <tr>
+                                <th class="section-border">Encoders</th>
+                                <th class="section-border"><b>Average</b></th>
+                                <th>MME<sup>P</sup></th>
+                                <th>MMB</th>
+                                <th>SEED<sup>I</sup></th>
+                                <th class="section-border">GQA</th>
+                                <th>SQA<sup>I</sup></th>
+                                <th>MMMU<sup>V</sup></th>
+                                <th>MathVista<sup>M</sup></th>
+                                <th class="section-border">AI2D</th>
+                                <th>ChartQA</th>
+                                <th>OCRBench</th>
+                                <th>TextVQA</th>
+                                <th class="section-border">DocVQA</th>
+                                <th>MMVP</th>
+                                <th>RealWorldQA</th>
+                                <th>CV-Bench<sup>2D</sup></th>
+                                <th>CV-Bench<sup>3D</sup></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="section-border">SigLIP+DINOv2</td>
+                                <td class="section-border">51.61</td>
+                                <td>1,432.02</td>
+                                <td>61.28</td>
+                                <td>65.99</td>
+                                <td class="section-border">63.30</td>
+                                <td>68.82</td>
+                                <td>35.69</td>
+                                <td>29.40</td>
+                                <td class="section-border">60.01</td>
+                                <td>43.00</td>
+                                <td>35.70</td>
+                                <td>60.40</td>
+                                <td class="section-border">37.54</td>
+                                <td>30.00</td>
+                                <td>53.99</td>
+                                <td>55.52</td>
+                                <td>53.58</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">SigLIP+DINOv2+ConvNext</td>
+                                <td class="section-border">54.52</td>
+                                <td>1,503.51</td>
+                                <td>63.83</td>
+                                <td>67.97</td>
+                                <td class="section-border">63.95</td>
+                                <td>70.40</td>
+                                <td class="highlight">35.99</td>
+                                <td>29.30</td>
+                                <td class="section-border">60.69</td>
+                                <td>48.20</td>
+                                <td>36.90</td>
+                                <td>64.97</td>
+                                <td class="section-border">45.53</td>
+                                <td class="highlight">34.67</td>
+                                <td>58.69</td>
+                                <td>55.74</td>
+                                <td>60.33</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">SigLIP+DINOv2+ConvNext+CLIP</td>
+                                <td class="section-border highlight">54.74</td>
+                                <td>1,479.46</td>
+                                <td>63.32</td>
+                                <td>67.63</td>
+                                <td class="section-border highlight">64.04</td>
+                                <td class="highlight">71.39</td>
+                                <td>35.49</td>
+                                <td>29.10</td>
+                                <td class="section-border">59.88</td>
+                                <td>50.24</td>
+                                <td class="highlight">39.60</td>
+                                <td>64.55</td>
+                                <td class="section-border">46.12</td>
+                                <td>32.67</td>
+                                <td class="highlight">58.95</td>
+                                <td>58.54</td>
+                                <td class="highlight">60.42</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">SigLIP+ConvNext</td>
+                                <td class="section-border">54.53</td>
+                                <td>1,494.97</td>
+                                <td class="highlight">64.60</td>
+                                <td>67.98</td>
+                                <td class="section-border">63.58</td>
+                                <td>71.05</td>
+                                <td>34.90</td>
+                                <td>29.80</td>
+                                <td class="section-border">60.85</td>
+                                <td>50.64</td>
+                                <td>38.00</td>
+                                <td>64.53</td>
+                                <td class="section-border">46.52</td>
+                                <td>32.00</td>
+                                <td>57.91</td>
+                                <td class="highlight">58.83</td>
+                                <td>56.58</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">CLIP+ConvNext</td>
+                                <td class="section-border">54.45</td>
+                                <td class="highlight">1,511.08</td>
+                                <td>63.83</td>
+                                <td>67.41</td>
+                                <td class="section-border">63.63</td>
+                                <td>70.80</td>
+                                <td>35.09</td>
+                                <td>30.40</td>
+                                <td class="section-border">59.91</td>
+                                <td>51.32</td>
+                                <td>35.00</td>
+                                <td>64.45</td>
+                                <td class="section-border">47.88</td>
+                                <td>33.33</td>
+                                <td>57.25</td>
+                                <td>56.32</td>
+                                <td>59.08</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">SigLIP+DINOv2+ConvNext</td>
+                                <td class="section-border">53.78</td>
+                                <td>1,450.64</td>
+                                <td>63.57</td>
+                                <td>67.79</td>
+                                <td class="section-border">63.63</td>
+                                <td>71.34</td>
+                                <td>34.80</td>
+                                <td>30.20</td>
+                                <td class="section-border highlight">61.04</td>
+                                <td>49.32</td>
+                                <td>37.70</td>
+                                <td>64.05</td>
+                                <td class="section-border">45.83</td>
+                                <td>30.00</td>
+                                <td>56.21</td>
+                                <td>58.08</td>
+                                <td>54.33</td>
+                            </tr>
+                            <tr>
+                                <td class="section-border">SigLIP+CLIP+ConvNext</td>
+                                <td class="section-border">54.53</td>
+                                <td>1,507.28</td>
+                                <td>63.23</td>
+                                <td class="highlight">68.64</td>
+                                <td class="section-border">63.63</td>
+                                <td>71.10</td>
+                                <td>35.89</td>
+                                <td class="highlight">30.90</td>
+                                <td class="section-border">59.97</td>
+                                <td class="highlight">52.36</td>
+                                <td>38.50</td>
+                                <td class="highlight">65.40</td>
+                                <td class="section-border highlight">47.92</td>
+                                <td>28.67</td>
+                                <td>57.25</td>
+                                <td>57.66</td>
+                                <td>55.92</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <figcaption style="text-align: center; width: 140%;">
                         Table 2: All Benchmark Results for Model Ensemble with 1.2M Adapter Data + 737K
@@ -599,11 +772,60 @@
                         Figure 9: Data Balancing via Applying Thresholds on Data Sources.
                     </figcaption>
                 </div>
-
+                <br>
                 <div id="tab:data_balance_result" style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="display: flex; justify-content: center; width: 100%;">
+                    <!-- <div style="display: flex; justify-content: center; width: 100%;">
                     <img data-zoomable="" style="width: 100%;" src="static/img/table/data_filter_k.png">
-                    </div>
+                    </div> -->
+                    <div class="table-container">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th>Average</th>
+                              <th>General</th>
+                              <th>Knowledge</th>
+                              <th>OCR & Chart</th>
+                              <th>Vision-Centric</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>150k</td>
+                              <td>53.7</td>
+                              <td>68.0</td>
+                              <td>51.3</td>
+                              <td>45.2</td>
+                              <td>50.5</td>
+                            </tr>
+                            <tr>
+                              <td>250k</td>
+                              <td class="highlight">54.3</td>
+                              <td class="highlight">68.1</td>
+                              <td>51.5</td>
+                              <td>45.3</td>
+                              <td>52.2</td>
+                            </tr>
+                            <tr>
+                              <td>350k</td>
+                              <td>54.3</td>
+                              <td>67.4</td>
+                              <td>51.4</td>
+                              <td class="highlight">46.0</td>
+                              <td class="highlight">52.3</td>
+                            </tr>
+                            <tr>
+                              <td>450k</td>
+                              <td>54.2</td>
+                              <td>68.0</td>
+                              <td class="highlight">52.2</td>
+                              <td>45.5</td>
+                              <td>50.7</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
                     <figcaption style="text-align: center; width: 100%;">
                         Table 3: Threshold 𝑡 value between 250k and 350k obtains better performance.
                     </figcaption>
@@ -642,9 +864,49 @@
                     we observe improvements by scaling up and curating better data, even with less quantity.
                 </p>
                 <div id="tab:data_ratio_result" style="display: flex; flex-direction: column; align-items: center;">
-                    <div style="display: flex; justify-content: center; width: 100%;">
+                    <!-- <div style="display: flex; justify-content: center; width: 100%;">
                     <img data-zoomable="" style="width: 100%;" src="static/img/table/data_ratio_result.png">
-                    </div>
+                    </div> -->
+                    <div class="table-container">
+                        <table class="data-table">
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th>Average</th>
+                              <th>General</th>
+                              <th>Knowledge</th>
+                              <th>OCR & Chart</th>
+                              <th>Vision-Centric</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>LLaVA-665K</td>
+                              <td>40.7</td>
+                              <td>64.7</td>
+                              <td>45.2</td>
+                              <td>20.8</td>
+                              <td>32.0</td>
+                            </tr>
+                            <tr>
+                              <td>Cambrian-10M</td>
+                              <td>54.8</td>
+                              <td>68.7</td>
+                              <td>51.6</td>
+                              <td class="highlight">47.3</td>
+                              <td>51.4</td>
+                            </tr>
+                            <tr>
+                              <td>Cambrian-7M</td>
+                              <td class="highlight">55.9</td>
+                              <td class="highlight">69.6</td>
+                              <td class="highlight">52.6</td>
+                              <td class="highlight">47.3</td>
+                              <td class="highlight">54.1</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     <figcaption style="text-align: center; width: 100%;">
                         Table 4: Performance improves with better instruction tuning data curation.
                     </figcaption>
