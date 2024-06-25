@@ -968,14 +968,423 @@
                 We show the results in <a href="#tab:final_table">Table 5</a>. Cambrian-1 exceeds other open-source models such as LLaVA-NeXT and Mini-Gemini. 
                 Cambrian-1 also achieves comparable performance on a number of benchmarks with the best proprietary models such as GPT-4V, Gemini-Pro, and MM-1.
             </p>
-            <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;">
-                <div style="display: flex; justify-content: center; width: 140%;">
-                <img data-zoomable="" style="width: 100%;" src="static/img/table/final_result.png">
+            <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;" class="figure">
+                <!-- <div style="display: flex; justify-content: center; width: 140%;">
+                <img data-zoomable="" style="width: 100%;" src="static/img/table/final_result.png"> -->
+                </div>
+                <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Model</th>
+                        <th colspan="5">General</th>
+                        <th colspan="5">Knowledge</th>
+                        <th colspan="5">OCR & Chart</th>
+                        <th colspan="5">Vision-Centric</th>
+                    </tr>
+                    <tr>
+                        <th>Method</th>
+                        <th class="rotate"># Vis Tok.</th>
+                        <th class="rotate">Avg</th>
+                        <th class="rotate">MME<sup>P</sup></th>
+                        <th class="rotate">MMB</th>
+                        <th class="rotate">SEED<sup>I</sup></th>
+                        <th class="rotate">GQA</th>
+                        <th class="rotate">Avg</th>
+                        <th class="rotate">SQA<sup>I</sup></th>
+                        <th class="rotate">MMMU<sup>V</sup></th>
+                        <th class="rotate">MathVista<sup>M</sup></th>
+                        <th class="rotate">AI2D</th>
+                        <th class="rotate">Avg</th>
+                        <th class="rotate">ChartQA</th>
+                        <th class="rotate">OCRBench</th>
+                        <th class="rotate">TextVQA</th>
+                        <th class="rotate">DocVQA</th>
+                        <th class="rotate">Avg</th>
+                        <th class="rotate">MMVP</th>
+                        <th class="rotate">RealworldQA</th>
+                        <th class="rotate">CV-Bench<sup>2D</sup></th>
+                        <th class="rotate">CV-Bench<sup>3D</sup></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>GPT-4V</td>
+                        <td>UNK.</td>
+                        <td>63.0</td>
+                        <td>1409.4</td>
+                        <td>75.8</td>
+                        <td>69.1</td>
+                        <td>36.8</td>
+                        <td>65.2</td>
+                        <td>75.7</td>
+                        <td>56.8</td>
+                        <td>49.9</td>
+                        <td>78.2</td>
+                        <td>77.4</td>
+                        <td>78.5</td>
+                        <td>64.5</td>
+                        <td>78.0</td>
+                        <td>88.4</td>
+                        <td>62.4</td>
+                        <td>50.0</td>
+                        <td>61.4</td>
+                        <td>64.3</td>
+                        <td>73.8</td>
+                    </tr>
+                    <tr>
+                        <td>Gemini-1.0 Pro</td>
+                        <td>UNK.</td>
+                        <td>-</td>
+                        <td>1496.6</td>
+                        <td>73.6</td>
+                        <td>70.7</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>79.5</td>
+                        <td>47.9</td>
+                        <td>45.2</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>65.9</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Gemini-1.5 Pro</td>
+                        <td>UNK.</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>58.5</td>
+                        <td>52.1</td>
+                        <td>80.3</td>
+                        <td>-</td>
+                        <td>81.3</td>
+                        <td>-</td>
+                        <td>73.5</td>
+                        <td>86.5</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>67.5</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Grok-1.5</td>
+                        <td>UNK.</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>53.6</td>
+                        <td>52.8</td>
+                        <td>88.3</td>
+                        <td>-</td>
+                        <td>76.1</td>
+                        <td>-</td>
+                        <td>78.1</td>
+                        <td>85.6</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>68.7</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>MM-1-8B</td>
+                        <td>144</td>
+                        <td>-</td>
+                        <td>1529.3</td>
+                        <td>72.3</td>
+                        <td>69.9</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>72.6</td>
+                        <td>37.0</td>
+                        <td>35.9</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>MM-1-30B</td>
+                        <td>144</td>
+                        <td>-</td>
+                        <td>1637.6</td>
+                        <td>75.1</td>
+                        <td>72.1</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>81.0</td>
+                        <td>44.7</td>
+                        <td>39.4</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr class="highlight-gray">
+                        <td colspan="22"><i>Base LLM: Llama-3-Ins-8B</i></td>
+                    </tr>
+                    <tr>
+                        <td>Mini-Gemini-HD-8B</td>
+                        <td>2880</td>
+                        <td>72.7</td>
+                        <td><b>1606.0</b></td>
+                        <td>72.7</td>
+                        <td>73.2</td>
+                        <td>64.5</td>
+                        <td>55.7</td>
+                        <td>75.1</td>
+                        <td>37.3</td>
+                        <td>37.0</td>
+                        <td><b>73.5</b></td>
+                        <td>62.9</td>
+                        <td>59.1</td>
+                        <td>47.7</td>
+                        <td>70.2</td>
+                        <td>74.6</td>
+                        <td>51.5</td>
+                        <td>18.7</td>
+                        <td>62.1</td>
+                        <td>62.2</td>
+                        <td>63.0</td>
+                    </tr>
+                    <tr>
+                        <td>LLaVA-NeXT-8B</td>
+                        <td>2880</td>
+                        <td>72.5</td>
+                        <td>1603.7</td>
+                        <td>72.1</td>
+                        <td>72.7</td>
+                        <td><b>65.2</b></td>
+                        <td>55.6</td>
+                        <td>72.8</td>
+                        <td>41.7</td>
+                        <td>36.3</td>
+                        <td>71.6</td>
+                        <td>63.9</td>
+                        <td>69.5</td>
+                        <td>49.0</td>
+                        <td>64.6</td>
+                        <td>72.6</td>
+                        <td>56.6</td>
+                        <td>38.7</td>
+                        <td>60.1</td>
+                        <td>62.2</td>
+                        <td>65.3</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>Cambrian-1-8B</td>
+                        <td class="highlight-blue">576</td>
+                        <td><b>73.1</b></td>
+                        <td>1,547.1</td>
+                        <td><b>75.9</b></td>
+                        <td><b>74.7</b></td>
+                        <td>64.6</td>
+                        <td><b>61.3</b></td>
+                        <td><b>80.4</b></td>
+                        <td><b>42.7</b></td>
+                        <td><b>49.0</b></td>
+                        <td>73.0</td>
+                        <td><b>71.3</b></td>
+                        <td><b>73.3</b></td>
+                        <td><b>62.4</b></td>
+                        <td><b>71.7</b></td>
+                        <td><b>77.8</b></td>
+                        <td><b>65.0</b></td>
+                        <td><b>51.3</b></td>
+                        <td><b>64.2</b></td>
+                        <td><b>72.3</b></td>
+                        <td><b>72.0</b></td>
+                    </tr>
+                    <tr class="highlight-gray">
+                        <td colspan="22"><i>Base LLM: Vicuna-1.5-13B</i></td>
+                    </tr>
+                    <tr>
+                        <td>Mini-Gemini-HD-13B</td>
+                        <td>2880</td>
+                        <td>70.7</td>
+                        <td>1597.0</td>
+                        <td>68.6</td>
+                        <td>70.6</td>
+                        <td>63.7</td>
+                        <td>54.1</td>
+                        <td>71.9</td>
+                        <td>37.3</td>
+                        <td>37.0</td>
+                        <td>70.1</td>
+                        <td>60.8</td>
+                        <td>56.6</td>
+                        <td>46.6</td>
+                        <td>70.2</td>
+                        <td>69.8</td>
+                        <td>49.4</td>
+                        <td>19.3</td>
+                        <td>57.5</td>
+                        <td>53.6</td>
+                        <td>67.3</td>
+                    </tr>
+                    <tr>
+                        <td>LLaVA-NeXT-13B</td>
+                        <td>2880</td>
+                        <td>69.9</td>
+                        <td>1575.0</td>
+                        <td>70.0</td>
+                        <td>65.6</td>
+                        <td><b>65.4</b></td>
+                        <td>53.7</td>
+                        <td>73.5</td>
+                        <td>36.2</td>
+                        <td>35.1</td>
+                        <td>70.0</td>
+                        <td>62.9</td>
+                        <td>62.2</td>
+                        <td>51.4</td>
+                        <td>67.1</td>
+                        <td>70.9</td>
+                        <td>55.9</td>
+                        <td>36.0</td>
+                        <td>59.1</td>
+                        <td>62.7</td>
+                        <td>65.7</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>Cambrian-1-13B</td>
+                        <td class="highlight-blue">576</td>
+                        <td><b>73.7</b></td>
+                        <td><b>1,610.4</b></td>
+                        <td><b>75.7</b></td>
+                        <td><b>74.4</b></td>
+                        <td>64.3</td>
+                        <td><b>60.2</b></td>
+                        <td><b>79.3</b></td>
+                        <td><b>40.0</b></td>
+                        <td><b>48.0</b></td>
+                        <td><b>73.6</b></td>
+                        <td><b>71.3</b></td>
+                        <td><b>73.8</b></td>
+                        <td><b>61.9</b></td>
+                        <td><b>72.8</b></td>
+                        <td><b>76.8</b></td>
+                        <td><b>62.2</b></td>
+                        <td><b>41.3</b></td>
+                        <td><b>63.0</b></td>
+                        <td><b>72.5</b></td>
+                        <td><b>71.8</b></td>
+                    </tr>
+                    <tr class="highlight-gray">
+                        <td colspan="22"><i>Base LLM: Hermes2-Yi-34B</i></td>
+                    </tr>
+                    <tr>
+                        <td>Mini-Gemini-HD-34B</td>
+                        <td>2880</td>
+                        <td>76.2</td>
+                        <td>1659.0</td>
+                        <td>80.6</td>
+                        <td>75.3</td>
+                        <td>65.8</td>
+                        <td>62.4</td>
+                        <td>77.7</td>
+                        <td>48.0</td>
+                        <td>43.4</td>
+                        <td><b>80.5</b></td>
+                        <td>68.1</td>
+                        <td>67.6</td>
+                        <td>51.8</td>
+                        <td>74.1</td>
+                        <td><b>78.9</b></td>
+                        <td>63.8</td>
+                        <td>37.3</td>
+                        <td>67.2</td>
+                        <td>71.5</td>
+                        <td>79.2</td>
+                    </tr>
+                    <tr>
+                        <td>LLaVA-NeXT-34B</td>
+                        <td>2880</td>
+                        <td>76.0</td>
+                        <td>1633.2</td>
+                        <td>79.3</td>
+                        <td><b>75.9</b></td>
+                        <td><b>67.1</b></td>
+                        <td>62.5</td>
+                        <td>81.8</td>
+                        <td>46.7</td>
+                        <td>46.5</td>
+                        <td>74.9</td>
+                        <td>67.7</td>
+                        <td>68.7</td>
+                        <td>54.5</td>
+                        <td>69.5</td>
+                        <td>78.1</td>
+                        <td>64.0</td>
+                        <td>47.3</td>
+                        <td>61.0</td>
+                        <td>73.0</td>
+                        <td>74.8</td>
+                    </tr>
+                    <tr class="highlight-green">
+                        <td>Cambrian-1-34B</td>
+                        <td class="highlight-blue">576</td>
+                        <td><b>76.8</b></td>
+                        <td><b>1689.3</b></td>
+                        <td><b>81.4</b></td>
+                        <td>75.3</td>
+                        <td>65.8</td>
+                        <td><b>67.0</b></td>
+                        <td><b>85.6</b></td>
+                        <td><b>49.7</b></td>
+                        <td><b>53.2</b></td>
+                        <td>79.7</td>
+                        <td><b>71.9</b></td>
+                        <td><b>75.6</b></td>
+                        <td><b>60.0</b></td>
+                        <td><b>76.7</b></td>
+                        <td>75.5</td>
+                        <td><b>68.5</b></td>
+                        <td><b>52.7</b></td>
+                        <td><b>67.8</b></td>
+                        <td><b>74.0</b></td>
+                        <td><b>79.7</b></td>
+                    </tr>
+                    </tbody>
+                </table>
                 </div>
                 <figcaption style="text-align: center; width: 140%;">
                     Table 5: Performance improves with better instruction tuning data curation.
                 </figcaption>
             </div>
+            <br>
             <div id="tab:final_table" style="display: flex; flex-direction: column; align-items: center;">
                 <div style="display: flex; justify-content: center; width: 140%;">
                 <img data-zoomable="" style="width: 100%;" src="static/img/comparison.PNG">

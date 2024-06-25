@@ -1278,40 +1278,58 @@ div.takeaway-tags img {
 /* tables */
 
 .table-container {
-    overflow-x: auto;
+    overflow: auto;
     overflow-y: hidden;
+    max-width: 90vw;
     white-space: nowrap;
-    max-width: 100%;
-    margin: 0 auto;
     -webkit-overflow-scrolling: touch; /* for smoother scrolling on iOS */
 }
 
 .data-table {
     border-collapse: separate;
-    border-spacing: 5px;
+    border-spacing: 2.5px;
     margin: 0 auto;
-    font-size: 14px;
+    font-size: 12px;
     min-width: 100%;
-    width: max-content;
+    /* width: max-content; */
+    width: 100%;
+    line-height: 1.25;
+    border-collapse: separate;
 }
 
 .data-table td {
     font-feature-settings: 'tnum';
     font-variant-numeric: tabular-nums;
-    text-align: center !important;
+    text-align: center;
 }
 
 .data-table td, .data-table th {
-    padding: 0.25em 0.5em;
+    padding: 0.25em 0.25em;
 }
 
 .data-table th:first-child, .data-table td:first-child {
-    text-align: right !important;
+    text-align: right;
     font-weight: bold;
 }
 
 .highlight {
-    background-color: #D2EBD8;
+    /* background-color: #D2EBD8; */
+    background-color: #e6ffe6;
+    font-weight: bold;
+}
+
+.highlight-green {
+    background-color: #e6ffe6;
+    font-weight: bold;
+}
+
+.highlight-gray td {
+    background-color: #f2f2f2;
+    text-align: left !important;
+}
+
+.highlight-blue {
+    background-color: #e6f2ff;
 }
 
 caption {
@@ -1323,7 +1341,7 @@ caption {
 /* Mobile-specific styles */
 @media screen and (max-width: 600px) {
     .data-table {
-        font-size: 1em;
+        font-size: 0.8em;
     }
     
     .data-table td, .data-table th {
