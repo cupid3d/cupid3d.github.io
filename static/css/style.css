@@ -91,8 +91,10 @@ body {
 }
 
 .button-container {
-  margin-top: 20px; /* Add margin above the buttons */
-  margin-bottom: 20px; /* Add margin below the buttons */
+    margin-top: 20px; /* Add margin above the buttons */
+    margin-bottom: 20px; /* Add margin below the buttons */
+    /* center */
+    text-align: center;
 }
 
 .button-container a.button {
@@ -102,14 +104,13 @@ body {
 }
 
 .button-container a.button {
-  background-color: #FFF0CE; /* Yellow background */
+  background-color: #FFF0CE;
   color: #000; /* Black text */
-  border: 1px solid #ffc107; /* Orange border */
-  border: 1px solid #ffc107; /* Orange border */
+  border: 2px solid rgba(255, 193, 7, 0.5);
   /* border-radius: 25px; Rounded borders */
-  border-radius: 12px; Rounded borders
+  border-radius: 20px; /* Rounded borders */
   padding: 10px 20px; /* Top and bottom padding, left and right padding */
-  margin: 2px; /* Space between the buttons */
+  margin: 5px 2px; /* Space between the buttons */
   text-decoration: none; /* Remove the underline from links */
   display: inline-block; /* Display links as inline blocks */
   font-weight: bold; /* Make the text bold */
@@ -174,43 +175,6 @@ body {
     text-align: center;  /* Center align the text */
 }
 
-.byline-column {
-  /* Columns will take up width based on their content */
-  display: flex;
-  flex-direction: column;
-  text-align: left; /* All text within columns left-aligned */
-}
-
-.byline-column h3 {
-  margin-bottom: 10px; /* Space between the header and the content */
-  color: #333; /* Dark grey color for the text */
-  font-size: 1.15em; /* Adjust the font size as needed */
-}
-
-.byline-column p {
-  color: #666; /* Lighter grey color for the text */
-  font-size: 1em; /* Adjust the font size as needed */
-  margin: 0px 0; /* Space between paragraphs */
-}
-
-@media (max-width: 768px) {
-
-  .byline-column {
-    margin-bottom: 20px; /* Space between columns */
-    flex: 1;
-  }
-
-  .byline-column h3 {
-    font-size: 16px;
-  }
-
-  .byline-column p {
-    font-size: 14px;
-    line-height: 1em;
-    margin-bottom: 0.45em;
-  }
-}
-
 
 .author-link, .affiliation-link {
     font-size: larger;
@@ -220,10 +184,19 @@ body {
     cursor: pointer; /* Changes cursor to pointer to indicate link */
     white-space: nowrap;  /* Prevent breaking names across lines */
     /* Increase vertical spacing */
+    line-height: 2.3rem; /* Increase line height for better readability */
+
+}
+
+.author-note {
+    font-size: 0.9rem;
+    color: #999; /* Light grey color for the text */
+    margin-top: 0.25em; /* Space above the note */
+    margin-bottom: 0.25em; /* Space below the note */
 }
 
 #affiliation {
-    font-size: 1.425em;
+    font-size: 1.6em;
     /* bold */
     font-weight: bolder;
 }
@@ -231,6 +204,7 @@ body {
 .author-link:hover, .affiliation-link:hover {
   text-decoration: underline; /* Adds underline on hover for visual feedback */
   border-bottom: none;
+  color: #007bff;
 }
 
 
