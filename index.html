@@ -55,10 +55,10 @@
                         Cambrian-1 is structured around five key pillars:
                         <ul style="color: #FFF7D4">
                             <li><strong style="color: #ffe099">Visual Representations</strong>: We explore various vision encoders and their combinations.
-                            <li><strong style="color: #ffe099">Connector Design</strong>: We design a new dynamic and spatially-aware connector that integrates vision features with LLMs while reducing the number of tokens.
+                            <li><strong style="color: #ffe099">Connector Design</strong>: We design a new dynamic and <i>spatially-aware</i> connector that integrates visual features from several models with LLMs while reducing the number of tokens.
                             <li><strong style="color: #ffe099">Instruction Tuning Data</strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing. 
                             <li><strong style="color: #ffe099">Instruction Tuning Recipes</strong>: We discuss instruction tuning strategies and practices. 
-                            <li><strong style="color: #ffe099">Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench".
+                            <li><strong style="color: #ffe099">Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark, "CV-Bench".
                         </ul>
                     </p>
                     <div class="button-container">
@@ -84,18 +84,18 @@
                             <span>Code</span>
                         </a>
                         <br>
-                        <a href="https://huggingface.co/collections/nyu-visionx/cambrian-data-6667ce801e179b4fbe774e11" class="button" target="_blank">
-                            <span class="icon is-small">
-                                <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face logo" style="height: 1em;">
-                            </span>
-                            <span>Datasets</span>
-                        </a>                        
                         <a href="https://huggingface.co/collections/nyu-visionx/cambrian-1-models-666fa7116d5420e514b0f23c" class="button" target="_blank">
                             <span class="icon is-small">
                                 <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face logo" style="height: 1em;">
                             </span>
                             <span>Checkpoints</span>
                         </a>
+                        <a href="https://huggingface.co/collections/nyu-visionx/cambrian-data-6667ce801e179b4fbe774e11" class="button" target="_blank">
+                            <span class="icon is-small">
+                                <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face logo" style="height: 1em;">
+                            </span>
+                            <span>Data</span>
+                        </a>                        
                         <a href="https://huggingface.co/datasets/nyu-visionx/CV-Bench" class="button" target="_blank">
                             <span class="icon is-small">
                                 <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face logo" style="height: 1em;">
@@ -151,29 +151,37 @@
             Cambrian-1 is structured around five key pillars, each offering important insights into the design space of MLLMs:
             <ul>
                 <li><strong>Visual Representations</strong>: We explore various vision encoders and their combinations. (see <a href="#visual_representations">§Evaluating Visual Representations through MLLMs</a>)</li>
-                <li><strong>Connector Design</strong>: We design a new dynamic and spatially-aware connector that integrates vision features with LLMs while reducing the number of tokens. (see <a href="#connector_design">§Spatial Vision Aggregator</a>)</li>
+                <li><strong>Connector Design</strong>: We design a new dynamic and <i>spatially-aware</i> connector that integrates visual features from several models with LLMs while reducing the number of tokens. (see <a href="#connector_design">§Spatial Vision Aggregator</a>)</li>
                 <li><strong>Instruction Tuning Data</strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing. (see <a href="#instruction_data">§Instruction Tuning Data for Training MLLMs</a>)</li>
                 <li><strong>Instruction Tuning Recipes</strong>: We discuss instruction tuning strategies and practices. (see <a href="#sec:inst_tuning">§Instruction Tuning Recipes</a>) </li> 
                 <li><strong>Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench". (see <a href="#cv-bench">§Analysis the Benchmark and Cambrian Vision-Centric Benchmark (CV-Bench)</a>)</li>
             </ul>
         </p>
 
-        <div class="image-row">
-            <a href="#visual-representation">
-                <img src="static/img/visual_representation_logo.PNG" alt="Visual Representation Logo">
-            </a>         
-            <a href="#connector_design">
-                <img src="static/img/connector_logo.PNG" alt="Connector Logo">
-            </a>
-            <a href="#instruction_data">
-                <img src="static/img/IT_Data_logo.PNG" alt="IT Data Logo">
-            </a>           
+        <p class="click-hint" style="width: 85%;"><strong><img src="static/img/icons/click.gif" style="width: 1.5rem">
+            Click to jump to each section.
+        </strong></p>
 
-            <a href="#sec:inst_tuning">
-                <img src="static/img/IT_Recipe_Logo.PNG" alt="IT Recipe Logo">
+        <div class="icon-row">
+            <a href="#visual-representation" class="icon-link">
+                <img src="static/img/icons/visual.svg" alt="Visual Representation Logo" class="icon">
+                Visual<br>Representations
             </a>
-            <a href="#sec:benchmarking">
-                <img src="static/img/eval_logo.PNG" alt="Eval Logo">
+            <a href="#connector_design" class="icon-link">
+                <img src="static/img/icons/connector.svg" alt="Connector Logo" class="icon">
+                Connector<br>Design
+            </a>
+            <a href="#instruction_data" class="icon-link">
+                <img src="static/img/icons/data.svg" alt="Data Logo" class="icon">
+                Instruction<br>Data
+            </a>
+            <a href="#sec:inst_tuning" class="icon-link">
+                <img src="static/img/icons/recipe.svg" alt="Recipe Logo" class="icon">
+                Instruction<br>Recipes
+            </a>
+            <a href="#sec:benchmarking" class="icon-link">
+                <img src="static/img/icons/eval.svg" alt="Eval Logo" class="icon">
+                Evaluation<br>Protocol
             </a>
         </div>
 

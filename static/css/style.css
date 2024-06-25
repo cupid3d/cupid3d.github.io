@@ -24,20 +24,48 @@ body {
 }
 
 
-
-.image-row {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  padding: 20px; /* Padding around the images */
+.icon {
+    height: 1.8em; /* Set a fixed height for all icons */
+    width: auto; /* Adjust width to maintain aspect ratio */
+    margin-bottom: 5px; /* Space between icon and text */
 }
 
-.image-row img {
-  height: 71px; /* Set a fixed height for all images */
-  width: auto; /* Adjust width to maintain aspect ratio */
-  margin: 0 5px; /* Space between images */
+.icon-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping to the next line */
+    width: 100%;
+    padding: 20px; /* Padding around the images */
+    line-height: 1rem;
 }
+
+.icon-link {
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center; /* Center the image and text */
+    text-align: center; /* Center text below the image */
+    color: inherit; /* Inherit color from parent */
+    padding: 10px; /* Add padding around the link */
+    margin: 10px; /* Add margin around each link for spacing */
+    border: 3px solid #508af6;
+    border-radius: 10px;
+    background-color: #d6eefb;
+    flex: 1 1 100px; /* Allow flex items to grow and shrink */
+}
+
+.icon-link:hover {
+    background-color: #88c2fa;
+}
+
+@media (max-width: 600px) {
+    .icon-link {
+        flex: 1 1 45%; /* Allow each icon link to take up about half the width */
+    }
+}
+
+
+
 .header-content h1 {
   font-size: 1.5em; /* Adjust font size for small screens */
   margin-bottom: 0.5em;
@@ -957,8 +985,8 @@ aside blockquote {
 .click-hint{
   display: block;
   margin: auto;
-  width: 80%;
-  font-size: 16px; /* Adjust the font size */
+  width: 60%;
+  font-size: 15px; /* Adjust the font size */
   color: #333333; /* Set text color */
   /* background-color: #f2f2f2; */
   border: 2px solid #cccccc; /* Add border */
