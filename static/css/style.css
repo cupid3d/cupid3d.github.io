@@ -1312,6 +1312,12 @@ div.takeaway-tags img {
     font-weight: bold;
 }
 
+.tb-hdr {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center !important;
+}
+
 .highlight {
     background-color: #e6ffe6;
     font-weight: bold;
