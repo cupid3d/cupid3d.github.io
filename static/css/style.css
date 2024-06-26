@@ -659,9 +659,6 @@ aside th:first-child, aside td:first-child {
   border-right: 1px solid #dee2e6;
 }
 
-figcaption {
-    font-size: 1em;
-}
 
 figcaption .table-caption {
   text-align: center;
@@ -1106,26 +1103,87 @@ h2.text {
   display: none;
 }
 
+
+.figure-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .figure {
+    /* width: 150%; */
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+figure {
     width: 150%;
-    margin-left: -25%
+    margin-left: -20%;
 }
 
-#nav-bar-benchmark {
-    padding-bottom: 10px;
-    /* background-color: #d2e3c845; */
-    background-color: #ffc1c145;
+#fig-vision_connector figure {
+    width: 120%;
+    margin-left: -10%;
 }
 
-#nav-bar-system {
-  /* background-color: #b4d5ff32; */
-    background-color: #ac87c52a;
+#fig-dataengine figure {
+    width: 120%;
+    margin-left: -10%;
 }
 
-@media (max-width: 768px) {
+#fig-filter_k figure {
+    width: 110%;
+    margin-left: -7.5%;
+}
+
+#fig-data_ratio figure {
+    width: 120%;
+    margin-left: 0%;
+}
+
+figcaption {
+    font-size: 1.125em;
+    margin-top: 0.25em;
+    text-align: center;
+}
+
+/* Default: show iframe, hide image */
+.responsive-content iframe {
+    display: block;
+    justify-content: center;
+    width: 150%;
+    margin-left: -5%;
+}
+
+.responsive-content img {
+    display: none;
+}
+
+@media (max-width: 720px) {
     .figure {
         width: 100%;
         margin-left: -1%;
+    }
+    figure {
+        width: 100% !important;
+        margin-left: 0% !important;
+    }
+    figure > iframe {
+        max-width: 100%;
+    }
+
+    /* For mobile devices: hide iframe, show image */
+    .responsive-content iframe {
+        display: none;
+    }
+
+    .responsive-content img {
+        display: block;
+    }
+    
+    .responsive-content .click-hint {
+        display: none;
     }
 }
 
@@ -1287,12 +1345,6 @@ div.takeaway-tags img {
   .text {
     width: 100%;
     margin: 1em 0 1em 0;
-  }
-
-  .auto-video, .diego-revise-img,
-  #diego-plan-video, #diego-plan-video-cap {
-    width: 100%;
-    margin-left: 0%;
   }
 
   div.takeaway-tags img {
