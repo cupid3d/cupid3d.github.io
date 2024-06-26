@@ -1126,6 +1126,10 @@ figure {
     width: 120%;
     margin-left: -10%;
 }
+#fig-narrowgap figure {
+    width: 130%;
+    margin-left: -15%;
+}
 
 #fig-dataengine figure {
     width: 120%;
@@ -1154,6 +1158,8 @@ figcaption {
     justify-content: center;
     width: 150%;
     margin-left: -5%;
+    margin-top: -2em;
+    margin-bottom: -2em;
 }
 
 .responsive-content img {
