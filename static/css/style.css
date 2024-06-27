@@ -1423,7 +1423,10 @@ div.takeaway-tags img {
 
 .highlight-green {
     background-color: #e6ffe6;
-    font-weight: bold;
+}
+
+.highlight-orange {
+    background-color: #fff2e6;
 }
 
 .highlight-gray td {
