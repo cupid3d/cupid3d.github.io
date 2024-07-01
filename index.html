@@ -173,17 +173,13 @@
             <br><br>
             Cambrian-1 is structured around five key pillars, each offering important insights into the design space of MLLMs:
             <ol class="text">
-                <li><strong>Visual Representations</strong>: We explore various vision encoders and their combinations. (see <a href="#visual_representations">§Evaluating Visual Representations through MLLMs</a>)</li>
-                <li><strong>Connector Design</strong>: We design a new dynamic and <i>spatially-aware</i> connector that integrates visual features from several models with LLMs while reducing the number of tokens. (see <a href="#connector_design">§Spatial Vision Aggregator</a>)</li>
-                <li><strong>Instruction Tuning Data</strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing. (see <a href="#instruction_data">§Instruction Tuning Data for Training MLLMs</a>)</li>
-                <li><strong>Instruction Tuning Recipes</strong>: We discuss instruction tuning strategies and practices. (see <a href="#sec:inst_tuning">§Instruction Tuning Recipes</a>) </li> 
-                <li><strong>Benchmarking</strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench". (see <a href="#cv-bench">§Analysis the Benchmark and Cambrian Vision-Centric Benchmark (CV-Bench)</a>)</li>
+                <li><strong><a href="#visual_representations">&sect;Visual Representations</a></strong>: We explore various vision encoders and their combinations.</li>
+                <li><strong><a href="#connector_design">&sect;Connector Design</a></strong>: We design a new dynamic and <i>spatially-aware</i> connector that integrates visual features from several models with LLMs while reducing the number of tokens.</li>
+                <li><strong><a href="#instruction_data">&sect;Instruction Tuning Data</a></strong>: We curate high-quality visual instruction-tuning data from public sources, emphasizing the importance of distribution balancing.</li>
+                <li><strong><a href="#sec:inst_tuning">&sect;Instruction Tuning Recipes</a></strong>: We discuss instruction tuning strategies and practices.</li>
+                <li><strong><a href="#sec:benchmarking">&sect;Benchmarking</a></strong>: We examine existing MLLM benchmarks and introduce a new vision-centric benchmark "CV-Bench".</li>
             </ol>
         </p>
-
-        <p class="click-hint" style="width: 85%;"><strong><img src="static/img/icons/click.gif" style="width: 1.5rem">
-            Click to jump to each section.
-        </strong></p>
 
         <div class="icon-row">
             <a href="#visual-representation" class="icon-link">
@@ -208,6 +204,11 @@
             </a>
         </div>
 
+        <p class="click-hint" style="width: 85%;">
+            <img src="static/img/icons/click.gif" style="width: 1.5rem">
+            <strong>Click to jump to each section.</strong>
+        </p>
+
 
         <p class="text abstract">
             To this end, Cambrian-1 not only achieves state-of-the-art performance, but also serves as a comprehensive, open cookbook for instruction-tuned MLLMs. See <a href="#State-of-the-art-MLLM-performance">§State-of-the-art MLLM performance</a>. 
@@ -228,10 +229,11 @@
 
                     <p class="text">
                         <p class="text">
-                        <strong>Who's answering: LLM or MLLM?:</strong> We compare performance between visual-disabled and visual-enabled settings across MLLMs trained with 23 different vision backbones. Our findings reveal that some benchmarks such as MMMU and AI2D are less reliant on visual inputs, whereas others such as MMVP and MME experience significant performance declines, indicating their effective evaluation of multimodality</li>
+                        <strong>Who's answering: LLM or MLLM?:</strong> We compare performance between vision-disabled and vision-enabled settings across MLLMs trained with 23 different vision backbones. Our findings reveal that some benchmarks such as MMMU and AI2D are less reliant on visual inputs, whereas others such as MMVP and MME experience significant performance declines, indicating their effective evaluation of multimodality</li>
                         </p>
                         <p class="text">
-                            <strong>Benchmark Clustering and Analysis:</strong> Through correlation analysis and principal component analysis of MLLM performances across various benchmarks, distinct clusters emerge categorized as "General," "Knowledge," "Chart & OCR," and "Vision-Centric." There is also <i>difficiency</i> on the size of vision-centric benchmarks</li>
+                            <strong>Benchmark Clustering and Analysis:</strong> Through correlation analysis and principal component analysis of MLLM performances across various benchmarks, distinct clusters emerge categorized as "General," "Knowledge," "Chart & OCR," and "Vision-Centric." 
+                            We also find that vision-centric benchmarks are underrepresented in the current evaluation landscape.
                         </p>
                     <d-figure id="fig-comparison" >
                         <figure>
@@ -246,14 +248,14 @@
             <div id="cv-bench" class="sub-section">
 
                     <p class="text"><strong>Cambrian Vision-Centric Benchmark (CV-Bench) </strong>
-                        To address the scarcity of vision-centric benchmarks, we introduce CV-Bench&mdash;repurposing standard vision tasks for multimodal evaluation. CV-Bench contains approximately 2600 vision-centric VQA questions, addressing the issue of insufficient questions in previous benchmark.
+                        To address the scarcity of vision-centric benchmarks, we introduce CV-Bench&mdash;repurposing standard vision tasks for multimodal evaluation. CV-Bench contains approximately 2600 vision-centric VQA questions, addressing the issues with existing vision-centric bechmark size.
                     </p>
 
                     <d-figure id="fig-cvcb" >
                         <figure>
                             <img data-zoomable="" draggable="false" src="static/img/cvcb.jpg" alt="benchmark category">
                             <figcaption>
-                                <strong>Figure 2:</strong> Example questions in CV-Bench that focuses of 2D and 3D visual understanding.
+                                <strong>Figure 2:</strong> Example questions in CV-Bench that focuses on 2D and 3D visual understanding.
                             </figcaption>
                         </figure>
                     </d-figure>
@@ -267,7 +269,7 @@
                 </p>
                 <p class="text">
                     <strong>One Stage vs Two Stage Training</strong> Recent work suggests skipping connector pre-training to reduce compute costs without harming performance. 
-                    We experiment with 0, 0.5M, and 1.2M adapter data. Following LLaVA's method <d-cite key="liu2023visual"></d-cite>, we initially tune only the connector, then unfreeze both the LLM and connector for instruction tuning with a 737K data mix. <a href="#fig-studyadapter">Figure 3</a> indicates that pre-training the connector boosts performance, and using more adapter data enhances it further, leading us to standardize on a 2-stage training approach with 1.2M adapter data.
+                    We experiment with 0, 0.5M, and 1.2M adapter data. Following LLaVA's method<d-cite key="liu2023visual"></d-cite>, we initially tune only the connector, then unfreeze both the LLM and connector for instruction tuning with a 737K data mix. <a href="#fig-studyadapter">Figure 3</a> indicates that pre-training the connector boosts performance, and using more adapter data enhances it further, leading us to standardize on a 2-stage training approach with 1.2M adapter data.
                 </p>
                 
                 <p class="text">
@@ -290,7 +292,7 @@
             <h1 class="text">MLLMs as a Vision Model Evaluator </h1>
                 
                 <p class="text">
-                    MLLMs explore new aspects of vision models beyond traditional benchmarks like ImageNet-1k. We use 2-stage instruction tuning with 1.2M adapter data and 737K fine-tuning data to compare a variety of vision models on downstream MLLM performance.
+                    MLLMs provide a more real-world evaluation of visual representations than traditional benchmarks like ImageNet-1k. We use 2-stage instruction tuning with 1.2M adapter data and 737K fine-tuning data to compare a variety of vision models on downstream MLLM performance.
                     Our evaluations show language-supervised models exhibit strong advantages across all benchmark categories, especially in OCR & chart tasks. However, despite the smaller dataset size of SSL models like DINOv2, they perform competitively in vision-centric benchmarks. 
                 </p>
 
@@ -302,11 +304,11 @@
                         <figcaption>
                             <strong>Figure 4:</strong> MLLMs as an interface to evaluate visual representations.
                         </figcaption>
-                        <p class="click-hint" style="width: 85%;"><strong><img src="static/img/icons/click.gif" style="width: 1.5rem">
-                            Hover & click to interact.
-                        </strong></p>
-
                     </figure>
+                    <p class="click-hint" style="width: 85%; margin-top: -2em;" id="mllm_interface_click_hint">
+                        <img src="static/img/icons/click.gif" style="width: 1.5rem">
+                        <strong>Hover & click to interact.</strong>
+                    </p>                
                 </d-figure>
                 <p class="text">
                     <strong>Narrowing the gap between CLIP and SSL models</strong> 
@@ -518,8 +520,9 @@
                 </div>
             
                 <p class="text">
-                    However, this strategy has two limitations: 1) it employs interpolation, which can potentially lead to information loss, 
-                    especially on vision encoders with high-resolution feature maps, and 2) it treats each model equally by simple concatenation. 
+                    However, this strategy has two limitations:
+                    1) it employs interpolation, which can potentially lead to information loss, especially on vision encoders with high-resolution feature maps, and 
+                    2) it treats each model equally by simple concatenation. 
                     Therefore, we seek a more effective strategy that fully leverages model combinations with less information loss and more flexibility.
                 </p>
 
@@ -534,7 +537,7 @@
                 In particular, our approach incorporates two new vision-centric design principles: 
                 <ol class="text">
                     <li>We encode spatial inductive bias by explicitly localizing the aggregation space for each token in the query.</li>
-                    <li>We perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly refer necessary visual information.</li>
+                    <li>We perform vision feature aggregation multiple times across the LLM layers, allowing the model to repeatedly reference necessary visual information.</li>
                 </ol>
             </p>
             <d-figure id="fig-vision_connector">
@@ -775,8 +778,8 @@
             <p class="text">
                 Finally, we leverage the insights from all of our previous studies to train a high-performance Cambrian model.
                 We train with three different sizes of LLM backbones: LLaMA-3-Instruct-8B, Vicuna-1.5-13B, and Hermes-2-Yi-34B.
-                We have a vision combination of four models&mdash;SigLIP, CLIP, DINOv2, and OpenCLIP ConvNeXt 
-                (see <a href="#sec:model_ensemble">Combining Multiple Vision Encoders</a>) with <a href="#connector_design">Spatial Vision Aggregator</a>.
+                Our visual tower uses a combination of four models&mdash;SigLIP, CLIP, DINOv2, and OpenCLIP ConvNeXt 
+                (see <a href="#sec:model_ensemble">Combining Multiple Vision Encoders</a>) with the <a href="#connector_design">Spatial Vision Aggregator</a>.
                 We use 2.5M adapter data and Cambrian-7M instruction tuning data (see <a href="#sec:data_curation">Data Curation</a>).
                 We evaluate our models on the <a href="#sec:benchmarking">categorized benchmarks</a>, and tabulate the results in <a href="#tab:final_table">Table 5</a>. Cambrian-1 exceeds other open-source models such as LLaVA-NeXT and Mini-Gemini, and achieves comparable performance on a number of benchmarks with the best proprietary models such as GPT-4V, Gemini-Pro, and MM-1.
             </p>
