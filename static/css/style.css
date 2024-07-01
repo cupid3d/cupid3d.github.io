@@ -879,34 +879,6 @@ img {
   width: auto;
 }
 
-.explorer-aside, .tourist-aside {
-  display: none;
-  background-color: #F3F8FF;
-  border: 1px solid #ccc;
-  padding: 10px;
-  z-index: 100;
-  width: 300px;
-  color: rgb(0, 0, 0);
-  font-size: 13px;
-  height: fit-content;
-  position: absolute;
-  left: 105%;
-}
-
-.tourist-aside {
-  top: 39%;
-}
-
-.explorer-aside {
-  top: 37%;
-}
-
-.virl-tag {
-    height: 20px;
-    margin-right: 5px;
-    pointer-events: none;
-}
-
 blockquote.place-review {
   border-left: 2px solid #FFAE42; /* Brighter border color */
   padding-left: 5px !important;
@@ -1166,6 +1138,10 @@ figcaption {
     display: none;
 }
 
+#mllm_interface_click_hint {
+    display: block;
+}
+
 @media (max-width: 720px) {
     .figure {
         width: 100%;
@@ -1184,12 +1160,12 @@ figcaption {
         display: none;
     }
 
+    #mllm_interface_click_hint {
+        display: none !important;
+    }
+
     .responsive-content img {
         display: block;
-    }
-    
-    .responsive-content .click-hint {
-        display: none;
     }
 }
 
