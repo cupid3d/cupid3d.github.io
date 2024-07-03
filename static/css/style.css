@@ -162,7 +162,7 @@ body {
     margin-top: 20px; /* Add margin above the buttons */
     margin-bottom: 20px; /* Add margin below the buttons */
     /* center */
-    text-align: center;
+    /* text-align: center; */
 }
 
 .button-container a.button {
