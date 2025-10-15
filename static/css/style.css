@@ -1654,3 +1654,102 @@ iframe {
   color: #222;
   font-size: 1em;
 }
+
+/* Rerun Viewer Container */
+.rerun-container {
+  position: relative;
+  width: 150%;
+  margin-left: -20%;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding: 1.5em;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.rerun-container > #viewer {
+  width: 100%;
+  height: 700px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #ffffff;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5em;
+}
+
+/* Force WebViewer canvas/iframe to fill container */
+.rerun-container > #viewer > *,
+.rerun-container > #viewer > * > * {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.rerun-thumbnails {
+  display: flex;
+  gap: 1em;
+  margin-top: 0;
+  margin-bottom: 1.5em;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.rerun-thumbnail {
+  width: 120px;
+  height: 120px;
+  min-width: 120px;
+  min-height: 120px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid transparent;
+}
+
+.rerun-thumbnail:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.rerun-thumbnail.active {
+  border-color: #007bff;
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.rerun-loading {
+  width: 100%;
+  padding: 0.75em 1em;
+  background-color: #ffffff;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  text-align: center;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .rerun-container > div {
+    height: 500px;
+  }
+  
+  .rerun-thumbnail {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+  }
+}
