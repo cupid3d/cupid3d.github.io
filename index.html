@@ -56,6 +56,7 @@
     <script src="./static/js/switch_videos.js"></script>
 
     <link rel="stylesheet" href="./static/css/style.css">
+    <link rel="stylesheet" href="./static/css/rerun-viewer.css">
     <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
@@ -69,6 +70,12 @@
 </head>
 
 <body>
+    <!-- Navigation Bar -->
+    <!-- <nav id="nav-bar" class="nav-bar">
+        <a href="#sec:method" class="nav-link">Method</a>
+        <a href="#sec:interactive_demo" class="nav-link">Demo</a>
+    </nav> -->
+
     <div class="header-wrapper">
         <div class="header-container" id="header-container">
             <div class="header-content">
@@ -348,24 +355,30 @@
                 <h1 class="text">Interactive 3D Visualization</h1>
                 <p class="text">
                     Explore our reconstruction results interactively! The viewer below shows the full pipeline of <strong>Cupid</strong>: from the input image to the reconstructed 3D object with estimated camera pose.
-                    <br><br>
-                    <strong>Instructions:</strong> Use the navigation controls to rotate, pan, and zoom the 3D visualization. Click on the thumbnails below to switch between different reconstruction examples.
                 </p>
+                
+                <!-- <div style="background: #f8f9fa; border-left: 4px solid #007bff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 4px;">
+                    <h3 style="margin-top: 0; color: #007bff;">📖 How to Use the Demo:</h3>
+                    <ul style="margin: 0.5em 0; padding-left: 1.5em; line-height: 1.8;">
+                        <li><strong>Select Examples:</strong> Click on any thumbnail below to switch between different reconstruction results.</li>
+                        <li><strong>Navigate the 3D Scene:</strong>
+                            <ul style="margin-top: 0.3em;">
+                                <li><strong>Rotate:</strong> Click and drag to rotate the view.</li>
+                                <li><strong>Pan:</strong> Right-click and drag (or Shift + drag) to pan.</li>
+                                <li><strong>Zoom:</strong> Scroll to zoom in/out.</li>
+                            </ul>
+                        </li>
+                        <li><strong>View from Camera:</strong> Double-click the camera icon in the 3D scene to switch to the camera's perspective.</li>
+                        <li><strong>Check Pixel Alignment:</strong> Adjust the alpha/transparency slider in the viewer to overlay the input image with the 3D reprojection and verify our nearly-pixel-perfect alignment.</li>
+                        <li><strong>Explore Components:</strong> Toggle different layers in the left panel to show/hide the 3D mesh, camera, and input image.</li>
+                    </ul>
+                </div> -->
 
                 <div class="rerun-container">
                     <div id="viewer"></div>
                     
-                    <div class="rerun-thumbnails">
-                        <div class="rerun-thumbnail active" data-rrd="e7bf7ab5b5ae4eee9e126e59a74a61f1.rrd"
-                            style="background: linear-gradient(135deg, #667eea, #764ba2)">
-                            <span style="font-size: 2em;">🎨</span>
-                            <span style="font-size: 0.8em; margin-top: 0.5em;">Example 1</span>
-                        </div>
-                        <div class="rerun-thumbnail" data-rrd="9dc95735ed6c4b83971ed486a0fa5acb.rrd"
-                            style="background: linear-gradient(135deg, #f093fb, #f5576c)">
-                            <span style="font-size: 2em;">🔬</span>
-                            <span style="font-size: 0.8em; margin-top: 0.5em;">Example 2</span>
-                        </div>
+                    <div class="rerun-thumbnails" id="rerun-thumbnails">
+                        <!-- Thumbnails will be generated dynamically from recordings -->
                     </div>
                     
                     <!-- <div id="status" class="rerun-loading">Loading...</div> -->
@@ -376,21 +389,83 @@
                 import { initRerunViewer } from './static/js/rerun-viewer.js';
 
                 // Initialize the Rerun viewer with recording-blueprint pairs
+                // Recordings are loaded on-demand with caching for better performance
                 initRerunViewer({
                     containerId: 'viewer',
                     statusId: 'status',
-                    baseUrl: 'http://localhost:8000/',
+                    baseUrl: 'http://localhost:8000/static/rrds/',
                     recordings: [
+                        // {
+                        //     rrd: 'pexels-ann-h-45017-4102557.rrd',
+                        //     blueprint: 'single.rbl',
+                        //     thumbnail: 'pexels-ann-h-45017-4102557_input.png'
+                        // },
                         {
-                            rrd: 'e7bf7ab5b5ae4eee9e126e59a74a61f1.rrd',
-                            // blueprint: 'cupid_visualization_1.rbl'
+                            rrd: 'pexels-ata-oy-17626897-26182772.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-ata-oy-17626897-26182772_input.png'
                         },
                         {
-                            rrd: '9dc95735ed6c4b83971ed486a0fa5acb.rrd',
-                            // blueprint: 'cupid_visualization_2.rbl'
+                            rrd: 'pexels-ds-stories-10216074.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-ds-stories-10216074_input.png'
+                        },
+                        {
+                            rrd: 'pexels-franck-patras-2414987-7355365.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-franck-patras-2414987-7355365_input.png'
+                        },
+                        {
+                            rrd: 'pexels-ian-panelo-5786755.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-ian-panelo-5786755_input.png'
+                        },
+                        // {
+                        //     rrd: 'pexels-ian-panelo-5786757.rrd',
+                        //     blueprint: 'single.rbl',
+                        //     thumbnail: 'pexels-ian-panelo-5786757_input.png'
+                        // },
+                        {
+                            rrd: 'pexels-kindelmedia-8982660.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-kindelmedia-8982660_input.png'
+                        },
+                        {
+                            rrd: 'pexels-kindelmedia-9026734.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-kindelmedia-9026734_input.png'
+                        },
+                        {
+                            rrd: 'pexels-lngdik23-12985894.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-lngdik23-12985894_input.png'
+                        },
+                        {
+                            rrd: 'pexels-markus-winkler-1430818-13572265.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-markus-winkler-1430818-13572265_input.png'
+                        },
+                        {
+                            rrd: 'pexels-paulseling-12266846.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-paulseling-12266846_input.png'
+                        },
+                        {
+                            rrd: 'pexels-paulseling-20385166.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-paulseling-20385166_input.png'
+                        },
+                        {
+                            rrd: 'pexels-pixabay-63637.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-pixabay-63637_input.png'
+                        },
+                        {
+                            rrd: 'pexels-polina-zimmerman-3747562.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-polina-zimmerman-3747562_input.png'
                         }
-                    ],
-                    loadOnClick: false  // Preload mode: load all recordings at startup
+                    ]
                 });
             </script>
         </div>

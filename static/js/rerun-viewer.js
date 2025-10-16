@@ -1,6 +1,6 @@
 /**
  * Rerun Multi-Recording Viewer
- * A simple viewer for switching between multiple Rerun recordings
+ * A simple viewer for switching between multiple Rerun recordings with on-demand loading
  * 
  * Usage:
  * const viewer = new RerunMultiViewer({
@@ -10,7 +10,8 @@
  *     recordings: [
  *         { rrd: 'recording1.rrd', blueprint: 'blueprint1.rbl' },
  *         { rrd: 'recording2.rrd', blueprint: 'blueprint2.rbl' }
- *     ]
+ *     ],
+ *     maxCacheSize: 5  // Optional: Maximum number of cached recordings (default: 5)
  * });
  */
 
@@ -25,9 +26,10 @@ export class RerunMultiViewer {
         this.viewer = null;
         this.userScroll = false;
         this.preventScrollJump = config.preventScrollJump !== false; // Default: true
-        this.loadOnClick = config.loadOnClick === true; // Default: false (preload mode)
         this.currentRecording = null;
         this.loadedRecordings = new Set(); // Track loaded recordings for cache
+        this.loadedRecordingsQueue = []; // Track order of loaded recordings for LRU eviction
+        this.maxCacheSize = config.maxCacheSize || 1; // Maximum number of cached recordings
         this.isLoading = false; // Prevent double-clicks
 
         // Setup scroll prevention if enabled
@@ -64,48 +66,56 @@ export class RerunMultiViewer {
 
     async init() {
         try {
+            console.log('🎬 Initializing Rerun viewer...');
+            
             // Create viewer instance
             this.viewer = new WebViewer();
-
-            if (this.loadOnClick) {
-                // On-demand mode: Start with container but no recordings yet
-                const container = document.getElementById(this.containerId);
-                await this.viewer.start([], container, {
-                    render_backend: "webgl",
-                    hide_welcome_screen: true,
-                    panel_state_overrides: { blueprint: "Hidden", time: "Hidden", top: "Hidden" }
-                });
-                this.updateStatus('✓ Ready - Click to load');
-            } else {
-                // Preload mode: Load all recording-blueprint pairs at startup
-                // Build URLs for all recordings and their blueprints
-                const urls = [];
+            const container = document.getElementById(this.containerId);
+            
+            // Load the first recording at startup
+            if (this.recordings.length > 0) {
+                const firstRec = this.recordings[0];
+                const rrdFile = typeof firstRec === 'string' ? firstRec : firstRec.rrd;
+                const blueprintFile = typeof firstRec === 'object' ? firstRec.blueprint : null;
                 
-                // Reverse order so first recording is shown by default
-                const reversedRecordings = [...this.recordings].reverse();
-                
-                for (const rec of reversedRecordings) {
-                    const rrdFile = typeof rec === 'string' ? rec : rec.rrd;
-                    const blueprintFile = typeof rec === 'object' ? rec.blueprint : null;
-                    
-                    urls.push(this.baseUrl + rrdFile);
-                    if (blueprintFile) {
-                        urls.push(this.baseUrl + blueprintFile);
-                    }
+                console.log(`📦 Loading first recording: ${rrdFile}`);
+                if (blueprintFile) {
+                    console.log(`📋 With blueprint: ${blueprintFile}`);
                 }
-
-                const container = document.getElementById(this.containerId);
+                
+                const startTime = performance.now();
+                const urls = [this.baseUrl + rrdFile];
+                if (blueprintFile) {
+                    urls.push(this.baseUrl + blueprintFile);
+                }
+                
                 await this.viewer.start(urls, container, {
                     render_backend: "webgl",
                     hide_welcome_screen: true,
                     panel_state_overrides: { blueprint: "Hidden", time: "Hidden", top: "Hidden" }
                 });
-
-                this.currentRecording = typeof this.recordings[0] === 'string' 
-                    ? this.recordings[0] 
-                    : this.recordings[0].rrd;
-                this.updateStatus('✓ Ready');
+                
+                this.currentRecording = rrdFile;
+                this.loadedRecordings.add(rrdFile);
+                this.loadedRecordingsQueue.push(rrdFile);
+                
+                const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                console.log(`✓ Viewer initialized in ${loadTime}s (cache: 1/${this.maxCacheSize})`);
+                
+                this.updateStatus('✓ Ready - Click thumbnails to switch');
+                this.generateThumbnails();
                 this.activateFirstThumbnail();
+                
+
+            } else {
+                console.warn('⚠️ No recordings provided');
+                // No recordings available
+                await this.viewer.start([], container, {
+                    render_backend: "webgl",
+                    hide_welcome_screen: true,
+                    panel_state_overrides: { blueprint: "Hidden", time: "Hidden", top: "Hidden" }
+                });
+                this.updateStatus('✓ Ready - No recordings');
             }
         } catch (e) {
             console.error("Viewer initialization error:", e);
@@ -138,11 +148,17 @@ export class RerunMultiViewer {
             try {
                 await this.viewer.set_active_recording_id(recordingId);
                 this.currentRecording = rrdFilename;
+                
+                // Move to end of queue (most recently used)
+                this.loadedRecordingsQueue = this.loadedRecordingsQueue.filter(r => r !== rrdFilename);
+                this.loadedRecordingsQueue.push(rrdFilename);
+                
                 this.updateStatus('✓ Ready');
                 return true;
             } catch (e) {
                 console.warn("Cache switch failed, reloading:", e);
                 this.loadedRecordings.delete(rrdFilename);
+                this.loadedRecordingsQueue = this.loadedRecordingsQueue.filter(r => r !== rrdFilename);
             }
         }
 
@@ -171,12 +187,29 @@ export class RerunMultiViewer {
             // Load the recording using open()
             await this.viewer.open(urls);
 
+            // Evict oldest recording if cache is full
+            if (this.loadedRecordings.size >= this.maxCacheSize) {
+                const oldestRecording = this.loadedRecordingsQueue.shift();
+                const oldestRecordingId = oldestRecording.replace('.rrd', '');
+                
+                // Close/remove the recording from the viewer
+                try {
+                    await this.viewer.close(oldestRecordingId);
+                    console.log(`🗑️ Evicted ${oldestRecording} from cache (max: ${this.maxCacheSize})`);
+                } catch (e) {
+                    console.warn(`Failed to close recording ${oldestRecordingId}:`, e);
+                }
+                
+                this.loadedRecordings.delete(oldestRecording);
+            }
+
             this.loadedRecordings.add(rrdFilename);
+            this.loadedRecordingsQueue.push(rrdFilename);
             this.currentRecording = rrdFilename;
 
             const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
             this.updateStatus('✓ Ready');
-            console.log(`✓ Loaded ${rrdFilename} in ${loadTime}s`);
+            console.log(`✓ Loaded ${rrdFilename} in ${loadTime}s (cache: ${this.loadedRecordings.size}/${this.maxCacheSize})`);
             return true;
         } catch (e) {
             console.error("Load error:", e);
@@ -187,37 +220,130 @@ export class RerunMultiViewer {
         }
     }
 
-    async switchRecording(rrdFilename) {
-        if (!this.viewer) {
-            console.error("Viewer not initialized");
-            return false;
-        }
-
-        // Don't switch if already showing this recording
-        if (this.currentRecording === rrdFilename) {
-            console.log(`Already showing ${rrdFilename}`);
-            return true;
-        }
-
-        // Extract recording ID from filename (remove .rrd extension)
-        const recordingId = rrdFilename.replace('.rrd', '');
-
-        try {
-            await this.viewer.set_active_recording_id(recordingId);
-            this.currentRecording = rrdFilename;
-            console.log(`✓ Switched to ${recordingId}`);
-            return true;
-        } catch (e) {
-            console.error("Switch error:", e);
-            return false;
-        }
-    }
-
     updateStatus(message) {
         const statusEl = document.getElementById(this.statusId);
         if (statusEl) {
             statusEl.textContent = message;
         }
+    }
+
+    generateThumbnails() {
+        const thumbnailsContainer = document.getElementById('rerun-thumbnails');
+        if (!thumbnailsContainer) {
+            console.warn('Thumbnails container not found');
+            return;
+        }
+
+        // Clear existing thumbnails
+        thumbnailsContainer.innerHTML = '';
+
+        // Create wrapper for carousel
+        const wrapper = document.createElement('div');
+        wrapper.className = 'rerun-thumbnails-wrapper';
+
+        // Create thumbnails container
+        const thumbnailsDiv = document.createElement('div');
+        thumbnailsDiv.className = 'rerun-thumbnails';
+        thumbnailsDiv.id = 'rerun-thumbnails-scroll';
+
+        // Generate thumbnails for each recording
+        this.recordings.forEach((recording, index) => {
+            const rrdFile = typeof recording === 'string' ? recording : recording.rrd;
+            const thumbnailFile = typeof recording === 'object' && recording.thumbnail 
+                ? recording.thumbnail 
+                : null;
+
+            const thumbnailDiv = document.createElement('div');
+            thumbnailDiv.className = 'rerun-thumbnail';
+            thumbnailDiv.setAttribute('data-rrd', rrdFile);
+            
+            if (thumbnailFile) {
+                // Use actual thumbnail image
+                const img = document.createElement('img');
+                img.src = this.baseUrl + thumbnailFile;
+                img.alt = `Example ${index + 1}`;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '8px';
+                thumbnailDiv.appendChild(img);
+            } else {
+                // Fallback to gradient placeholder
+                thumbnailDiv.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                const span = document.createElement('span');
+                span.textContent = `Example ${index + 1}`;
+                span.style.color = 'white';
+                span.style.fontSize = '0.9em';
+                thumbnailDiv.appendChild(span);
+            }
+
+            thumbnailsDiv.appendChild(thumbnailDiv);
+        });
+
+        // Create navigation buttons
+        const prevButton = document.createElement('button');
+        prevButton.className = 'carousel-button prev';
+        prevButton.innerHTML = '‹';
+        prevButton.setAttribute('aria-label', 'Previous');
+
+        const nextButton = document.createElement('button');
+        nextButton.className = 'carousel-button next';
+        nextButton.innerHTML = '›';
+        nextButton.setAttribute('aria-label', 'Next');
+
+        // Add carousel navigation
+        prevButton.addEventListener('click', () => {
+            thumbnailsDiv.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        nextButton.addEventListener('click', () => {
+            thumbnailsDiv.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+
+        // Update button states based on scroll position
+        const updateButtonStates = () => {
+            const scrollLeft = thumbnailsDiv.scrollLeft;
+            const maxScroll = thumbnailsDiv.scrollWidth - thumbnailsDiv.clientWidth;
+            
+            prevButton.disabled = scrollLeft <= 0;
+            nextButton.disabled = scrollLeft >= maxScroll - 1 || maxScroll <= 0;
+        };
+
+        thumbnailsDiv.addEventListener('scroll', updateButtonStates);
+        
+        // Initial update after a short delay to ensure DOM is ready
+        setTimeout(updateButtonStates, 100);
+        
+        // Update again after images load
+        const images = thumbnailsDiv.querySelectorAll('img');
+        let loadedCount = 0;
+        images.forEach(img => {
+            if (img.complete) {
+                loadedCount++;
+            } else {
+                img.addEventListener('load', () => {
+                    loadedCount++;
+                    if (loadedCount === images.length) {
+                        updateButtonStates();
+                    }
+                });
+            }
+        });
+        
+        // Fallback: update after all images should be loaded
+        if (loadedCount === images.length) {
+            updateButtonStates();
+        }
+
+        // Assemble carousel
+        wrapper.appendChild(prevButton);
+        wrapper.appendChild(thumbnailsDiv);
+        wrapper.appendChild(nextButton);
+
+        // Replace the original container with the wrapper
+        thumbnailsContainer.parentNode.replaceChild(wrapper, thumbnailsContainer);
+
+        console.log(`✓ Generated ${this.recordings.length} thumbnails with carousel`);
     }
 
     activateFirstThumbnail() {
@@ -243,13 +369,8 @@ export class RerunMultiViewer {
 
             const rrdFile = thumb.dataset.rrd;
             if (rrdFile) {
-                if (this.loadOnClick) {
-                    // On-demand mode: Load recording on each click (with caching)
-                    await this.loadRecording(rrdFile);
-                } else {
-                    // Preload mode: Just switch between preloaded recordings
-                    await this.switchRecording(rrdFile);
-                }
+                // Load recording on-demand (with caching)
+                await this.loadRecording(rrdFile);
             }
         });
     }
