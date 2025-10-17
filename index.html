@@ -353,10 +353,10 @@
         <div id='interactive_demo' class="interactive-demo-block">
             <div id="sec:interactive_demo" class="sub-section">
                 <h1 class="text">Interactive 3D Visualization</h1>
-                <p class="text">
+                <!-- <p class="text">
                     Explore our reconstruction results interactively! The viewer below shows the full pipeline of <strong>Cupid</strong>: from the input image to the reconstructed 3D object with estimated camera pose.
                 </p>
-                
+                 -->
                 <!-- <div style="background: #f8f9fa; border-left: 4px solid #007bff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 4px;">
                     <h3 style="margin-top: 0; color: #007bff;">📖 How to Use the Demo:</h3>
                     <ul style="margin: 0.5em 0; padding-left: 1.5em; line-height: 1.8;">
@@ -395,11 +395,11 @@
                     statusId: 'status',
                     baseUrl: 'http://localhost:8000/static/rrds/',
                     recordings: [
-                        // {
-                        //     rrd: 'pexels-ann-h-45017-4102557.rrd',
-                        //     blueprint: 'single.rbl',
-                        //     thumbnail: 'pexels-ann-h-45017-4102557_input.png'
-                        // },
+                        {
+                            rrd: 'pexels-polina-zimmerman-3747562.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-polina-zimmerman-3747562_input.png'
+                        },
                         {
                             rrd: 'pexels-ata-oy-17626897-26182772.rrd',
                             blueprint: 'single.rbl',
@@ -415,16 +415,6 @@
                             blueprint: 'single.rbl',
                             thumbnail: 'pexels-franck-patras-2414987-7355365_input.png'
                         },
-                        {
-                            rrd: 'pexels-ian-panelo-5786755.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-ian-panelo-5786755_input.png'
-                        },
-                        // {
-                        //     rrd: 'pexels-ian-panelo-5786757.rrd',
-                        //     blueprint: 'single.rbl',
-                        //     thumbnail: 'pexels-ian-panelo-5786757_input.png'
-                        // },
                         {
                             rrd: 'pexels-kindelmedia-8982660.rrd',
                             blueprint: 'single.rbl',
@@ -461,10 +451,15 @@
                             thumbnail: 'pexels-pixabay-63637_input.png'
                         },
                         {
-                            rrd: 'pexels-polina-zimmerman-3747562.rrd',
+                            rrd: 'pexels-ann-h-45017-4102557.rrd',
                             blueprint: 'single.rbl',
-                            thumbnail: 'pexels-polina-zimmerman-3747562_input.png'
-                        }
+                            thumbnail: 'pexels-ann-h-45017-4102557_input.png'
+                        },
+                        {
+                            rrd: 'pexels-ian-panelo-5786757.rrd',
+                            blueprint: 'single.rbl',
+                            thumbnail: 'pexels-ian-panelo-5786757_input.png'
+                        },
                     ]
                 });
             </script>

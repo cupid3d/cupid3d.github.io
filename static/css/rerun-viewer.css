@@ -37,6 +37,7 @@
   position: relative;
   width: 100%;
   margin-bottom: 1.5em;
+  padding: 0 50px; 
 }
 
 .rerun-thumbnails {
@@ -45,9 +46,11 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none; /* Firefox */
-  padding: 1em 0;
+  padding: 2.5em 1.5em;
   margin: 0;
   -ms-overflow-style: none; /* IE and Edge */
+  perspective: 700px;
+  position: relative;
 }
 
 .rerun-thumbnails::-webkit-scrollbar {
@@ -55,9 +58,8 @@
 }
 
 .rerun-thumbnail {
-  flex: 0 0 120px;
-  width: 120px;
-  min-width: 120px;
+  flex: 0 0 auto;
+  height: 120px;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
@@ -68,60 +70,60 @@
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 3px solid transparent;
+  border: 3px solid #dee2e6;
   overflow: hidden;
   position: relative;
-  z-index: 1;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .rerun-thumbnail:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-  z-index: 10;
   border-color: rgba(0, 123, 255, 0.3);
 }
 
 .rerun-thumbnail img {
   display: block;
-  width: 100%;
-  height: auto;
+  height: 100%;
+  width: auto;
 }
 
 .carousel-button {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 123, 255, 0.9);
+  top: 60%;
+  /* transform: translateY(-15px); */
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  border-radius: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2em;
-  transition: all 0.3s ease;
+  font-size: 1.8em;
+  line-height: 1;
+  transition: scale 0.1s ease-in-out;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-button:hover {
-  background: rgba(0, 86, 179, 0.95);
-  transform: translateY(-50%) scale(1.1);
+.carousel-button:hover:not(:disabled) {
+  scale: 1.1;
 }
 
-.carousel-button:active {
-  transform: translateY(-50%) scale(0.95);
+.carousel-button:active:not(:disabled) {
+  scale: 0.95;
 }
 
 .carousel-button.prev {
-  left: -20px;
+  left: 0;
 }
 
 .carousel-button.next {
-  right: -20px;
+  right: 0;
 }
 
 .carousel-button:disabled {
@@ -129,13 +131,15 @@
   cursor: not-allowed;
 }
 
-.carousel-button:disabled:hover {
-  transform: translateY(-50%);
+.carousel-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .rerun-thumbnail.active {
   border-color: #007bff;
   box-shadow: 0 8px 20px rgba(0, 123, 255, 0.5);
+  transform: translateZ(20px);
 }
 
 .rerun-loading {

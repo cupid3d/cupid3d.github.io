@@ -92,7 +92,7 @@ export class RerunMultiViewer {
                 await this.viewer.start(urls, container, {
                     render_backend: "webgl",
                     hide_welcome_screen: true,
-                    panel_state_overrides: { blueprint: "Hidden", time: "Hidden", top: "Hidden" }
+                    panel_state_overrides: { blueprint: "Hidden", time: "Hidden"}
                 });
                 
                 this.currentRecording = rrdFile;
@@ -335,7 +335,7 @@ export class RerunMultiViewer {
             updateButtonStates();
         }
 
-        // Assemble carousel
+        // Assemble carousel with flexbox layout
         wrapper.appendChild(prevButton);
         wrapper.appendChild(thumbnailsDiv);
         wrapper.appendChild(nextButton);
@@ -360,6 +360,11 @@ export class RerunMultiViewer {
 
             // Prevent interaction during loading
             if (this.isLoading) {
+                return;
+            }
+
+            // Check if already active
+            if (thumb.classList.contains('active')) {
                 return;
             }
 
