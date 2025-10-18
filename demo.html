@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js GLB Loader with Camera Frustums</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        #controls div {
+            margin-bottom: 10px;
+        }
+        
+        #loadingText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="info">
+            <strong>Three.js GLB Loader with Camera Frustums</strong><br>
+            • Mouse: Rotate camera<br>
+            • Wheel: Zoom<br>
+            • Right-click + drag: Pan<br>
+            • Double-click frustum: Animate to camera view<br>
+            • Shows original colors with shadows on ground
+        </div>
+        
+        <div id="controls">
+            <div>
+                <input type="file" id="glbFile" accept=".glb,.gltf" />
+                <label for="glbFile">Load GLB/GLTF</label>
+            </div>
+            <div>
+                <input type="file" id="imageFile" accept=".jpg,.jpeg,.png" />
+                <label for="imageFile">Load Camera Image</label>
+            </div>
+            <div>
+                <button id="addCamera">Add Camera Frustum</button>
+            </div>
+            <div>
+                <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="showAxes" checked /> Show global axes</label>
+            </div>
+        </div>
+        
+        <div id="loadingText" style="display: none;">Loading...</div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        
+        document.getElementById('container').appendChild(renderer.domElement);
+
+        // OrbitControls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 1;
+        controls.maxDistance = 100;
+
+        // Raycaster for double-click detection
+        const raycaster = new THREE.Raycaster();
+        raycaster.params.Line.threshold = 0.2;
+        const mouse = new THREE.Vector2();
+
+        // Ambient light for general illumination
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        // Directional light for shadows only
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        directionalLight.position.set(5, 10, 5);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 50;
+        directionalLight.shadow.camera.left = -10;
+        directionalLight.shadow.camera.right = 10;
+        directionalLight.shadow.camera.top = 10;
+        directionalLight.shadow.camera.bottom = -10;
+        scene.add(directionalLight);
+
+        // Ground plane at y = -0.5 with shadow receiving capability
+        const groundGeometry = new THREE.PlaneGeometry(20, 20);
+        const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.5;
+        ground.receiveShadow = true;
+        // scene.add(ground);
+
+        // Default cube (will be replaced when GLB is loaded)
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        // const defaultCube = new THREE.Mesh(geometry, material);
+        // defaultCube.position.y = 0.5;
+        // defaultCube.castShadow = true;
+        // scene.add(defaultCube);
+
+        // Set initial camera position
+        camera.position.set(3, 3, 3);
+        controls.target.set(0, 1, 0);
+        controls.update();
+
+        // GLB Loader
+        const loader = new GLTFLoader();
+        let currentModel = null;
+        let currentImage = null;
+        let cameraFrustums = [];
+
+        // Global axes helper factory
+        function createGlobalAxes(size = 1.5) {
+            const axesGroupLocal = new THREE.Group();
+            axesGroupLocal.name = 'globalAxesGroup';
+
+            function addAxisLocal(dir, colorHex, labelText, s = 1.0) {
+                const dirVec = new THREE.Vector3(dir[0], dir[1], dir[2]).clone().normalize();
+                const arrow = new THREE.ArrowHelper(dirVec, new THREE.Vector3(0, 0, 0), s, colorHex, 0.2 * s, 0.12 * s);
+                axesGroupLocal.add(arrow);
+
+                const label = makeLabelSprite(labelText, (colorHex === 0xff0000) ? '#ff0000' : (colorHex === 0x00ff00) ? '#00ff00' : '#00a0ff');
+                label.scale.set(0.25 * s, 0.25 * s, 0.25 * s);
+                label.position.copy(dirVec.clone().multiplyScalar(s * 1.15));
+                axesGroupLocal.add(label);
+            }
+
+            // X (red), Y (green), Z (blue)
+            addAxisLocal([1, 0, 0], 0xff0000, 'X', size);
+            addAxisLocal([0, 1, 0], 0x00ff00, 'Y', size);
+            addAxisLocal([0, 0, 1], 0x0066ff, 'Z', size);
+
+            return axesGroupLocal;
+        }
+
+        // Create and add the global axes group
+        const axesGroup = createGlobalAxes(1.0);
+        function makeLabelSprite(text, color = '#ffffff') {
+            const canvas = document.createElement('canvas');
+            const size = 256;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0,0,0,0)';
+            ctx.fillRect(0, 0, size, size);
+            ctx.font = 'bold 140px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = color;
+            ctx.fillText(text, size / 2, size / 2 + 10);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.encoding = THREE.sRGBEncoding;
+            const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, depthWrite: false });
+            const sprite = new THREE.Sprite(mat);
+            return sprite;
+        }
+
+        scene.add(axesGroup);
+
+        // Animation utilities
+        let animationTokens = new Map();
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function lerp(start, end, t) {
+            return start + (end - start) * t;
+        }
+
+        function slerp(start, end, t) {
+            return start.clone().slerp(end, t);
+        }
+
+        function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov, duration = 0.8, steps = 60) {
+            const token = Date.now();
+            animationTokens.set('camera', token);
+
+            const startTime = performance.now();
+            const endTime = startTime + duration * 1000;
+            const worldUp = new THREE.Vector3(0, 1, 0);
+
+
+            function frame(now) {
+                if (animationTokens.get('camera') !== token) return; // cancelled
+
+                const tRaw = (now - startTime) / (endTime - startTime);
+                const tClamped = Math.max(0, Math.min(1, tRaw));
+                const te = easeInOutCubic(tClamped);
+
+
+                // Interpolate based on te
+                const currentPos = new THREE.Vector3().lerpVectors(startPos, endPos, te);
+                const currentQuat = slerp(startQuat, endQuat, te);
+                const currentFov = lerp(startFov, endFov, te);
+
+                camera.position.copy(currentPos);
+                camera.quaternion.copy(currentQuat);
+                camera.fov = currentFov;
+                camera.updateProjectionMatrix();
+
+                // Set controls' up vector to match camera's up
+                controls.object.up.copy(new THREE.Vector3(0, 1, 0).applyQuaternion(currentQuat).normalize());
+                const forwardPoint = new THREE.Vector3(0, 0, -1).applyQuaternion(currentQuat).normalize();
+                controls.target.copy(currentPos).add(forwardPoint);
+                controls.update();
+
+                if (tClamped < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    // Ensure exact final state
+                    if (animationTokens.get('camera') === token) {
+                        camera.position.copy(endPos);
+                        camera.quaternion.copy(endQuat);
+                        camera.fov = endFov;
+                        camera.updateProjectionMatrix();
+                        controls.object.up.copy(new THREE.Vector3(0, 1, 0).applyQuaternion(endQuat).normalize());
+                        controls.target.copy(endPos).add(new THREE.Vector3(0, 0, -1).applyQuaternion(endQuat));
+                        controls.update();
+                    }
+                }
+            }
+
+            requestAnimationFrame(frame);
+        }
+
+
+        function loadGLB(url) {
+            const loadingText = document.getElementById('loadingText');
+            loadingText.style.display = 'block';
+
+            loader.load(
+                url,
+                function (gltf) {
+                    loadingText.style.display = 'none';
+                    
+                    // Remove previous model
+                    if (currentModel) {
+                        scene.remove(currentModel);
+                    }
+                    
+                    // Remove default cube
+                    // scene.remove(defaultCube);
+                    
+                    currentModel = gltf.scene;
+                    
+                    // Enable shadow casting and convert materials to preserve original colors
+                    currentModel.traverse(function (child) {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            
+                            if (child.material) {
+                                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                                
+                                const newMaterials = materials.map(material => {
+                                    const basicMaterial = new THREE.MeshBasicMaterial();
+                                    
+                                    if (material.color) {
+                                        basicMaterial.color.copy(material.color);
+                                    }
+                                    
+                                    if (material.map) {
+                                        basicMaterial.map = material.map;
+                                    }
+                                    
+                                    if (material.transparent) {
+                                        basicMaterial.transparent = material.transparent;
+                                        basicMaterial.opacity = material.opacity;
+                                    }
+                                    
+                                    if (material.side !== undefined) {
+                                        basicMaterial.side = material.side;
+                                    }
+                                    
+                                    return basicMaterial;
+                                });
+                                
+                                child.material = Array.isArray(child.material) ? newMaterials : newMaterials[0];
+                            }
+                        }
+                    });
+                    
+                    // Add the model as-is (no auto scale or translation)
+                    scene.add(currentModel);
+                    controls.update();
+                    console.log('GLB loaded successfully');
+                },
+                function (progress) {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                function (error) {
+                    loadingText.style.display = 'none';
+                    console.error('Error loading GLB:', error);
+                    alert('Error loading GLB file. Please check the console for details.');
+                }
+            );
+        }
+
+        // Event handlers
+        document.getElementById('glbFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                loadGLB(url);
+            }
+        });
+
+        document.getElementById('imageFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const loader = new THREE.TextureLoader();
+                loader.load(url, function(texture) {
+                    currentImage = texture;
+                    console.log('Image loaded successfully');
+                });
+            }
+        });
+
+        async function loadTexture(url) {
+            return await new Promise((resolve, reject) => {
+                const texLoader = new THREE.TextureLoader();
+                texLoader.load(url, (tex) => resolve(tex), undefined, (err) => reject(err));
+            });
+        }
+
+        document.getElementById('addCamera').addEventListener('click', async function() {
+            // Path to metadata JSON (hardcoded for this demo)
+            const metadataPath = 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/metadata.json';
+            const imagePath = 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/images_crop/input_no_mask.png';
+
+            try {
+                // Use currentImage if available; otherwise try to load from metadata folder
+                let texture = currentImage;
+                let imageWidth = texture && texture.image ? texture.image.width : null;
+                let imageHeight = texture && texture.image ? texture.image.height : null;
+
+                if (!texture) {
+                    // Try load image from same folder as metadata
+                    const tryImage = imagePath;
+                    console.log('Loading camera image from metadata folder:', tryImage);
+                    try {
+                        texture = await loadTexture(tryImage);
+                        imageWidth = texture.image.width;
+                        imageHeight = texture.image.height;
+                    } catch (err) {
+                        console.warn('Failed to load image from metadata folder, using placeholder size', err);
+                        // fallback sizes
+                        imageWidth = 1024;
+                        imageHeight = 1024;
+                    }4
+                }
+                // --- Build a PerspectiveCamera from normalized intrinsic (scale to pixels like Python helper) ---
+                try {
+                    const res = await fetch(metadataPath);
+                    if (!res.ok) throw new Error('Failed to fetch metadata');
+                    const metadata = await res.json();
+
+                    // pick intrinsics and extrinsics from metadata (supports both shapes)
+                    const intrinsic = metadata.pose && metadata.pose.intrinsic ? metadata.pose.intrinsic[0] : (metadata.intrinsic || metadata.K);
+                    // Parse extrinsic (4x4 or 3x4)
+                    let extrinsic = null;
+                    if (metadata.pose && metadata.pose.extrinsic) {
+                        extrinsic = metadata.pose.extrinsic[0];
+                    } else if (metadata.extrinsic) {
+                        extrinsic = metadata.extrinsic;
+                    } else if (metadata.RT) {
+                        extrinsic = metadata.RT;
+                    }
+
+                    // image sizes
+                    const imgW = imageWidth || 1024;
+                    const imgH = imageHeight || 1024;
+
+                    // pad to square like Python helper
+                    const maxDim = Math.max(imgW, imgH);
+                    const left = Math.floor((maxDim - imgW) / 2);
+                    const top = Math.floor((maxDim - imgH) / 2);
+
+                    // intrinsic entries are normalized relative to the square maxDim
+                    const fx = intrinsic[0][0];
+                    const fy = intrinsic[1][1];
+                    const cx = intrinsic[0][2];
+                    const cy = intrinsic[1][2];
+
+                    const focal_length_x = fx * maxDim;
+                    const focal_length_y = fy * maxDim;
+                    const principal_point_x_px = cx * maxDim - left;
+                    const principal_point_y_px = cy * maxDim - top;
+
+                    // Compute vertical fov from intrinsics
+                    // fov = 2 * atan(0.5 * h / fy)
+                    const fov = 2 * Math.atan(0.5 * imgH / focal_length_y) * 180 / Math.PI;
+                    const aspect = imgW / imgH;
+                    const near = 0.5;
+                    const far = 0.500001;
+                    console.log('Computed camera parameters:', {fov, aspect, focal_length_x, focal_length_y, principal_point_x_px, principal_point_y_px});
+                    // Create a PerspectiveCamera with these intrinsics
+
+                    const cam = new THREE.PerspectiveCamera(fov, aspect, near, far);
+                    
+                    // Use setViewOffset to account for principal point shift in the intrinsic
+                    // See: https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset
+                    // The offset is in pixels, so we use the difference from the image center
+                    const fullWidth = imgW;
+                    const fullHeight = imgH;
+                    const viewWidth = imgW;
+                    const viewHeight = imgH;
+                    const offsetX = principal_point_x_px - imgW / 2;
+                    const offsetY = principal_point_y_px - imgH / 2;
+                    cam.setViewOffset(fullWidth, fullHeight, -offsetX, -offsetY, viewWidth, viewHeight);
+                    
+
+                    // If extrinsic is available, transform camera by extrinsic (OpenCV to Three.js)
+                    if (extrinsic) {
+                        // OpenCV: x-right, y-down, z-forward
+                        // Three.js: x-right, y-up, z-backward
+                        // Extrinsic is w2c (world to camera), so invert to get c2w
+                        
+
+                        const extFlat = extrinsic.flat();
+                        const w2c = new THREE.Matrix4().set(
+                            extFlat[0], extFlat[1], extFlat[2], extFlat[3],
+                            extFlat[4], extFlat[5], extFlat[6], extFlat[7],
+                            extFlat[8], extFlat[9], extFlat[10], extFlat[11],
+                            extFlat[12], extFlat[13], extFlat[14], extFlat[15]
+                        );
+                        const c2w = new THREE.Matrix4().copy(w2c).invert();
+                        // Compose with world_opencv2gl and camera_opencv2gl
+                        const world_opencv2gl = new THREE.Matrix4().set(
+                            1, 0, 0, 0,
+                            0, 0, 1, 0,
+                            0, -1, 0, 0,
+                            0, 0, 0, 1
+                        );
+                        const camera_opencv2gl = new THREE.Matrix4().set(
+                            1, 0, 0, 0,
+                            0, -1, 0, 0,
+                            0, 0, -1, 0,
+                            0, 0, 0, 1
+                        );
+
+
+                        // final_transform = world_opencv2gl @ c2w @ camera_opencv2gl
+                        const principal_shift = new THREE.Matrix4().makeTranslation(0, 0, 0);
+                        // temp = c2w @ camera_opencv2gl
+                        const temp = new THREE.Matrix4().multiplyMatrices(c2w, camera_opencv2gl);
+                        // temp2 = temp @ principal_shift
+                        const temp2 = new THREE.Matrix4().multiplyMatrices(temp, principal_shift);
+                        // final_transform = world_opencv2gl @ temp2
+                        const final_transform = new THREE.Matrix4().multiplyMatrices(world_opencv2gl, temp2);
+                        cam.matrixAutoUpdate = false;
+                        cam.matrix.copy(final_transform);
+                        cam.matrix.decompose(cam.position, cam.quaternion, cam.scale);
+                    }
+
+                    // Optionally, visualize the image as a plane in front of the camera
+                    if (texture) {
+                        // Compute the size of the near plane in world units
+                        // height_near = 2 * tan(fov/2) * near
+                        // width_near = height_near * aspect
+                        const height_near = 2 * Math.tan((fov * Math.PI / 180) / 2) * near;
+                        const width_near = height_near * aspect;
+                        const planeGeometry = new THREE.PlaneGeometry(width_near, height_near);
+                        const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+                        const imagePlane = new THREE.Mesh(planeGeometry, planeMaterial);
+                        // Place the image exactly at the near plane, and shift it to match the principal point offset
+                        imagePlane.position.z = -near;
+                        // Compute the same dx, dy as for the camera/frustum
+                        const dx = (principal_point_x_px - imgW / 2) * (width_near / imgW);
+                        const dy = (principal_point_y_px - imgH / 2) * (height_near / imgH);
+                        console.log('Image plane:', {dx, dy, width_near, height_near, imgH, imgW});
+                        imagePlane.position.x = -dx;
+                        imagePlane.position.y = dy;
+                        cam.add(imagePlane);
+                    }
+
+                    // Add camera to scene for visualization (e.g., as a frustum helper)
+                    const camHelper = new THREE.CameraHelper(cam);
+                    
+                    
+
+                    // Set userData for double-click animation
+                    cam.updateMatrixWorld(true);
+                    camHelper.userData.isClickable = true;
+                    // Get world position and quaternion of the camera
+                    const camWorldPos = new THREE.Vector3();
+                    cam.getWorldPosition(camWorldPos);
+                    const camWorldQuat = new THREE.Quaternion();
+                    cam.getWorldQuaternion(camWorldQuat);
+                    camHelper.userData.cameraPosition = camWorldPos.clone();
+                    camHelper.userData.cameraQuaternion = camWorldQuat.clone();
+                    camHelper.userData.cameraFov = cam.fov;
+
+                    scene.add(camHelper);
+                    scene.add(cam);
+
+                    // Store for later reference
+                    cameraFrustums.push(camHelper);
+                    
+                    // Optionally, log for debugging
+                    // console.log('Camera intrinsics:', {fov, aspect, focal_length_x, focal_length_y, principal_point_x_px, principal_point_y_px});
+                } catch (err) {
+                    console.warn('Failed to construct pixel-based PerspectiveCamera:', err);
+                }
+            } catch (err) {
+                console.error('Error creating camera from metadata:', err);
+                alert('Failed to create camera frustum from metadata. See console for details.');
+            }
+        });
+
+        // Toggle axes visibility
+        document.getElementById('showAxes').addEventListener('change', function(event) {
+            axesGroup.visible = event.target.checked;
+        });
+        // default
+        document.getElementById('showAxes').checked = true;
+
+        // Double-click handler
+        renderer.domElement.addEventListener('dblclick', function(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cameraFrustums, true);
+
+            // console.log('Raycaster intersects:', intersects[0]);
+
+            if (intersects.length > 0) {
+                // Find the frustum group
+                let frustumGroup = intersects[0].object;
+                // console.log('Double-click location (screen):', { x: event.clientX, y: event.clientY });
+                // console.log('Double-click location (normalized):', { x: mouse.x, y: mouse.y });
+                // console.log('Double-clicked object:', frustumGroup);
+
+                while (frustumGroup.parent && !frustumGroup.userData.isClickable) {
+                    frustumGroup = frustumGroup.parent;
+                }
+
+                if (frustumGroup.userData.isClickable) {
+                    console.log('Animating to camera view');
+                    
+                    const startPos = camera.position.clone();
+                    const startQuat = camera.quaternion.clone();
+                    const startFov = camera.fov;
+                    
+                    const endPos = frustumGroup.userData.cameraPosition;
+                    const endQuat = frustumGroup.userData.cameraQuaternion;
+                    const endFov = frustumGroup.userData.cameraFov;
+                    
+                    animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov);
+                }
+            }
+        });
+
+
+        // pointermove listener: log and highlight only if intersects is not empty
+    let lastHighlightedSet = new Set();
+    let lastIntersectionSpheres = [];
+        renderer.domElement.addEventListener('pointermove', function(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cameraFrustums, true);
+            // if (intersects.length > 0) {
+            //     console.log('Pointermove intersects:', intersects);
+            //     console.log('Intersected object types:', intersects.map(i => i.object.type));
+            // }
+
+
+
+            // // Highlight all intersected objects (lines)
+            // const intersectedObjs = intersects.map(i => i.object);
+            // // Restore previous highlights if not intersected now
+            // for (const obj of lastHighlightedSet) {
+            //     if (!intersectedObjs.includes(obj) && obj.material) {
+            //         obj.material.color.set(0xffff00); // yellow
+            //     }
+            // }
+            // // Highlight all currently intersected
+            // for (const obj of intersectedObjs) {
+            //     if (obj.material) obj.material.color.set(0xff8800); // orange
+            // }
+            // lastHighlightedSet = new Set(intersectedObjs);
+
+            // // Remove previous intersection spheres
+            // for (const s of lastIntersectionSpheres) {
+            //     scene.remove(s);
+            // }
+            // lastIntersectionSpheres = [];
+            // // Visualize intersection points as spheres
+            // if (intersects && intersects.length > 0) {
+            //     for (const i of intersects) {
+            //         const sphereGeom = new THREE.SphereGeometry(0.05, 16, 16);
+            //         const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            //         const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+            //         sphere.position.copy(i.point);
+            //         scene.add(sphere);
+            //         lastIntersectionSpheres.push(sphere);
+            //     }
+            // }
+        });
+
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate default cube
+            // if (scene.getObjectByName('defaultCube') || defaultCube.parent) {
+            //     defaultCube.rotation.x += 0.01;
+            //     defaultCube.rotation.y += 0.01;
+            // }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start animation
+        animate();
+
+        console.log('Three.js GLB Loader with Camera Frustums initialized');
+    </script>
+</body>
+</html>
