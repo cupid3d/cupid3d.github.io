@@ -116,21 +116,21 @@
 
                 <div class="button-container">
                     <!-- replace arxiv -->
-                    <a href="https://arxiv.org/abs/2406.16860" class="button paper-link" target="_blank">
+                    <a href="https://arxiv.org/abs/xxx" class="button paper-link" target="_blank">
                         <span class="icon is-small">
                             <i class="ai ai-arxiv"></i>
                         </span>
                         arXiv
                     </a>
                     <!-- replace pdf -->
-                    <a href="https://arxiv.org/pdf/2406.16860" class="button paper-link" target="_blank">
+                    <a href="https://arxiv.org/pdf/xxx" class="button paper-link" target="_blank">
                         <span class="icon is-small">
                             <i class="fas fa-file-pdf"></i>
                         </span>
                         <span>pdf</span>
                     </a>
                     <!-- replace image -->
-                    <a href="https://github.com/cambrian-mllm/cambrian" class="button" target="_blank">
+                    <a class="button" aria-disabled="true" tabindex="-1" style="pointer-events: none; opacity: 0.6;">
                         <span class="icon is-small">
                             <i class="fab fa-github"></i>
                         </span>
@@ -227,8 +227,8 @@
         </div>
 
         <!-- Abstract Section -->
-        <h1 class="text" style="text-align: center;">Abstract</h1>
-        <p class="text abstract">
+        <!-- <h1 class="text" style="text-align: center;">Abstract</h1> -->
+        <!-- <p class="text abstract">
         This work proposes a new generation-based 3D reconstruction method, named <strong>Cupid</strong>, that
         accurately infers the camera pose, 3D shape, and texture of an object from a single 2D image. Cupid casts 3D
         reconstruction as a conditional sampling process from a learned distribution of 3D objects, and it jointly
@@ -240,9 +240,9 @@
         demonstrate Cupid outperforms leading 3D reconstruction methods with an over 3 dB PSNR gain and an over 10%
         Chamfer Distance reduction, while matching monocular estimators on pose accuracy and delivering superior visual
         fidelity over baseline 3D generative models.
-        </p>
+        </p> -->
 
-        <div class="icon-row">
+        <!-- <div class="icon-row">
             <a href="#visual-representation" class="icon-link">
                 <img src="static/img/icons/visual.svg" alt="Visual Representation Logo" class="icon">
                 Visual<br>Representations
@@ -268,7 +268,7 @@
         <p class="click-hint" style="width: 85%;">
             <img src="static/img/icons/click.gif" style="width: 1.5rem">
             <strong>Click to jump to each section.</strong>
-        </p>
+        </p> -->
 
         <hr>
 
@@ -302,7 +302,7 @@
                 </p>
                 <p class="text" style="text-align: center;">
                     $$
-                    \mathbf{P}^{*} = \argmin_{\mathbf{P}} \sum_{i} \big\Vert\pi(\mathbf{P},\mathbf{x}_i) - \mathbf{u}_i\big\Vert^2. \tag{1}\label{eq:pnp}
+                    \mathbf{P}^{*} = \argmin_{\mathbf{P}} \sum_{i} \big\Vert\pi(\mathbf{P},\mathbf{x}_i) - \mathbf{u}_i\big\Vert^2. \tag{1}
                     $$
                 </p>
 
@@ -353,35 +353,15 @@
         <div id='interactive_demo' class="interactive-demo-block">
             <div id="sec:interactive_demo" class="sub-section">
                 <h1 class="text">Interactive 3D Visualization</h1>
-                <!-- <p class="text">
-                    Explore our reconstruction results interactively! The viewer below shows the full pipeline of <strong>Cupid</strong>: from the input image to the reconstructed 3D object with estimated camera pose.
-                </p>
-                 -->
-                <!-- <div style="background: #f8f9fa; border-left: 4px solid #007bff; padding: 1em 1.5em; margin: 1.5em 0; border-radius: 4px;">
-                    <h3 style="margin-top: 0; color: #007bff;">📖 How to Use the Demo:</h3>
-                    <ul style="margin: 0.5em 0; padding-left: 1.5em; line-height: 1.8;">
-                        <li><strong>Select Examples:</strong> Click on any thumbnail below to switch between different reconstruction results.</li>
-                        <li><strong>Navigate the 3D Scene:</strong>
-                            <ul style="margin-top: 0.3em;">
-                                <li><strong>Rotate:</strong> Click and drag to rotate the view.</li>
-                                <li><strong>Pan:</strong> Right-click and drag (or Shift + drag) to pan.</li>
-                                <li><strong>Zoom:</strong> Scroll to zoom in/out.</li>
-                            </ul>
-                        </li>
-                        <li><strong>View from Camera:</strong> Double-click the camera icon in the 3D scene to switch to the camera's perspective.</li>
-                        <li><strong>Check Pixel Alignment:</strong> Adjust the alpha/transparency slider in the viewer to overlay the input image with the 3D reprojection and verify our nearly-pixel-perfect alignment.</li>
-                        <li><strong>Explore Components:</strong> Toggle different layers in the left panel to show/hide the 3D mesh, camera, and input image.</li>
-                    </ul>
-                </div> -->
-
                 <div class="rerun-container">
+                    <!-- <h3 style="text-align: center;">Interactive Results</h3> -->
+                    <p class="viewer-tip" style="text-align: center; margin-top: 0.25em; color: #555; font-size: 0.95em;">Tip: Double-click the camera in the scene then adjust the image opacity to check view consistency.</p>
                     <div id="viewer"></div>
                     
                     <div class="rerun-thumbnails" id="rerun-thumbnails">
                         <!-- Thumbnails will be generated dynamically from recordings -->
                     </div>
                     
-                    <!-- <div id="status" class="rerun-loading">Loading...</div> -->
                 </div>
             </div>
 
@@ -395,81 +375,63 @@
             </script>
 
             <script type="module">
-                import { initRerunViewer } from './static/js/rerun-viewer.js';
+                import { initDemoViewer } from './static/js/demo.js';
 
-                // Initialize the Rerun viewer with recording-blueprint pairs
-                // Recordings are loaded on-demand with caching for better performance
-                initRerunViewer({
+                // Build thumbnailList for demo.js
+                const thumbnailList = [
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-alexasfotos-12303386/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-alexasfotos-12303386/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ann-h-45017-4102557/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ann-h-45017-4102557/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ata-oy-17626897-26182772/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ata-oy-17626897-26182772/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-benwithlana-lana-498258353-18714943/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-benwithlana-lana-498258353-18714943/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-berkecanavci-22729433/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-berkecanavci-22729433/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-cigdem-bilgin-2154409770-33844304/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-cigdem-bilgin-2154409770-33844304/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ds-stories-10216074/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ds-stories-10216074/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-entero-30544238/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-entero-30544238/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-eugenia-remark-5767088-17959673/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-eugenia-remark-5767088-17959673/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-franck-patras-2414987-7355365/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-franck-patras-2414987-7355365/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-guvo59-32886993/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-guvo59-32886993/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ian-panelo-5786755/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ian-panelo-5786755/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ian-panelo-5786757/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ian-panelo-5786757/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ingriddietrich-1362595/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ingriddietrich-1362595/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ingriddietrich-1364562/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ingriddietrich-1364562/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-karolina-grabowska-4397882/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-karolina-grabowska-4397882/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-8982660/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-8982660/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-8982692/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-8982692/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-9026734/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-9026734/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-9028868/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-9028868/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-laarkstudio-6441505/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-laarkstudio-6441505/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-laarkstudio-6679149/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-laarkstudio-6679149/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-lngdik23-12985894/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-lngdik23-12985894/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-mario-mota-235376087-14935011/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-mario-mota-235376087-14935011/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-markus-winkler-1430818-13572265/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-markus-winkler-1430818-13572265/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-miggy-rivera-1415514-5665104/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-miggy-rivera-1415514-5665104/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-mikebirdy-3828253/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-mikebirdy-3828253/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-monstera-13041008/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-monstera-13041008/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-njeromin-11049651/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-njeromin-11049651/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050911/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050911/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050916/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050916/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-12266846/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-12266846/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-20385166/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-20385166/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-20483988/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-20483988/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-6873895/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-6873895/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-7881483/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-7881483/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-pixabay-63637/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pixabay-63637/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7118648/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7118648/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7301571/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7301571/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7426390/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7426390/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7928475/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7928475/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-9507780/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-9507780/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-polina-zimmerman-3747562/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-polina-zimmerman-3747562/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-shyam-mishra-31007-9546360/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-shyam-mishra-31007-9546360/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-theshuttervision-11470219/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-theshuttervision-11470219/images_crop/input_no_mask.png' },
+                    { metadataPath: 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/images_crop/input_no_mask.png' }
+                ];
+
+                // Initialize the modular Three.js viewer
+                initDemoViewer({
                     containerId: 'viewer',
-                    statusId: 'status',
-                    baseUrl: 'http://localhost:8000/static/rrds/',
-                    recordings: [
-                        {
-                            rrd: 'pexels-polina-zimmerman-3747562.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-polina-zimmerman-3747562_input.png'
-                        },
-                        {
-                            rrd: 'pexels-ata-oy-17626897-26182772.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-ata-oy-17626897-26182772_input.png'
-                        },
-                        {
-                            rrd: 'pexels-ds-stories-10216074.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-ds-stories-10216074_input.png'
-                        },
-                        {
-                            rrd: 'pexels-franck-patras-2414987-7355365.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-franck-patras-2414987-7355365_input.png'
-                        },
-                        {
-                            rrd: 'pexels-kindelmedia-8982660.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-kindelmedia-8982660_input.png'
-                        },
-                        {
-                            rrd: 'pexels-kindelmedia-9026734.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-kindelmedia-9026734_input.png'
-                        },
-                        {
-                            rrd: 'pexels-lngdik23-12985894.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-lngdik23-12985894_input.png'
-                        },
-                        {
-                            rrd: 'pexels-markus-winkler-1430818-13572265.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-markus-winkler-1430818-13572265_input.png'
-                        },
-                        {
-                            rrd: 'pexels-paulseling-12266846.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-paulseling-12266846_input.png'
-                        },
-                        {
-                            rrd: 'pexels-paulseling-20385166.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-paulseling-20385166_input.png'
-                        },
-                        {
-                            rrd: 'pexels-pixabay-63637.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-pixabay-63637_input.png'
-                        },
-                        {
-                            rrd: 'pexels-ann-h-45017-4102557.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-ann-h-45017-4102557_input.png'
-                        },
-                        {
-                            rrd: 'pexels-ian-panelo-5786757.rrd',
-                            blueprint: 'single.rbl',
-                            thumbnail: 'pexels-ian-panelo-5786757_input.png'
-                        },
-                    ]
+                    galleryId: 'rerun-thumbnails',
+                    thumbnailList
                 });
             </script>
         </div>
@@ -485,9 +447,14 @@
 
         <d-footnote-list></d-footnote-list>
         <d-citation-list></d-citation-list>
+
+        <h3>Acknowledgement</h3>
+        <p>
+            We thank <a href="https://www.sainingxie.com/" target="_blank">NYU VisionX</a> for the nice project page template.
+        </p>
     </d-appendix>
     <!-- bibliography will be inlined during Distill pipeline's pre-rendering -->
     <d-bibliography src="bibliography.bib"></d-bibliography>
-    <script src="./static/js/nav-bar.js"></script>
+    <!-- <script src="./static/js/nav-bar.js"></script> -->
 </body>
 </html>
