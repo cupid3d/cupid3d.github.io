@@ -34,22 +34,18 @@ function createControlPanel(containerId) {
         </div>
 
         <div class="control-section">
-            <h4>📹 Camera</h4>
+            <h4>🖱️ Mouse</h4>
             <div class="control-note">Rotate • Pan • Zoom • Spin (Key: R)</div>
+            <div class="control-note">Double-click ground → reset view<br/>Double-click frustum → camera view</div>
         </div>
 
         <div class="control-section">
-            <h4>🖱️ Interaction</h4>
-            <div class="control-note">Double-click frustum → camera view<br/>Double-click ground → reset view</div>
-        </div>
-
-        <div class="control-section">
-            <h4>⚡ Actions</h4>
+            <h4>🔘 Buttons</h4>
             <div class="actions-row">
-                <button id="resetViewBtn" class="action-button">🏠</button>
-                <button id="cameraViewBtn" class="action-button">📷</button>
-                <button id="toggleAxesBtn" class="action-button" title="Toggle axes">🧭</button>
-                <button id="toggleAutoRotateBtn" class="action-button" title="Toggle auto-rotate">🔁</button>
+                <button id="resetViewBtn" class="action-button" aria-label="Reset view">🏠 <span class="action-text">Reset</span></button>
+                <button id="cameraViewBtn" class="action-button" aria-label="Go to camera view">📷 <span class="action-text">Camera</span></button>
+                <button id="toggleAxesBtn" class="action-button" title="Toggle axes" aria-label="Toggle axes">🧭 <span class="action-text">Axes</span></button>
+                <button id="toggleAutoRotateBtn" class="action-button" title="Toggle auto-rotate" aria-label="Toggle auto-rotate">🔁 <span class="action-text">Spin</span></button>
             </div>
         </div>
 
@@ -309,7 +305,16 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
         window.addEventListener('keydown', function(e) {
             // R: toggle auto-rotate (replaces Space behavior)
             if (e.code === 'KeyR') {
-                if (controls) controls.autoRotate = !controls.autoRotate;
+                if (controls) {
+                    controls.autoRotate = !controls.autoRotate;
+                    // reflect new state on the UI button if present
+                    const toggleAutoRotateBtn = document.getElementById('toggleAutoRotateBtn');
+                    if (toggleAutoRotateBtn) {
+                        toggleAutoRotateBtn.classList.toggle('active', !!controls.autoRotate);
+                        toggleAutoRotateBtn.classList.toggle('inactive', !controls.autoRotate);
+                        toggleAutoRotateBtn.title = controls.autoRotate ? 'Disable auto-rotate' : 'Enable auto-rotate';
+                    }
+                }
             }
         });
 
