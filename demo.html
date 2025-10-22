@@ -55,6 +55,29 @@
             z-index: 100;
         }
     </style>
+    <style>
+        #thumbnailGallery {
+            position: absolute;
+            bottom: 2px;
+            left: 10px;
+            z-index: 101;
+            background: rgba(255,255,255,0.95);
+            padding: 4px 6px;
+            border-radius: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 80vw;
+        }
+        .thumbnail {
+            border: 2px solid #888;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
+        .thumbnail:hover {
+            border-color: #0077ff;
+        }
+    </style>
 </head>
 <body>
     <div id="container">

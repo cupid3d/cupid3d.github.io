@@ -1,4 +1,3 @@
-// This file intentionally left blank. The previous attempt to patch demo.js failed because the file was not found. Please ensure the JS file exists before attempting to patch it again.
 // demo.js
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -12,29 +11,382 @@ let currentImage = null;
 let cameraFrustums = [];
 let currentHoveredFrustum = null;
 let currentHoveredMesh = null;
-// let animationTokens = new Map();
+let imageOpacity = 1.0; // Global image opacity state
+
+// --- Control Panel Functions ---
+function createControlPanel(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Create control panel
+    const controlPanel = document.createElement('div');
+    controlPanel.id = 'controlPanel';
+    // Floating, collapsible control panel inserted into the viewer container (absolute positioning)
+    // so it will be subject to the viewer's layout and the viewer CSS exception in rerun-viewer.css.
+    controlPanel.style.cssText = `
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 220px;
+        max-height: 360px;
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 8px;
+        padding: 8px;
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        z-index: 2000;
+        overflow-y: auto;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+        transition: transform 0.18s ease, opacity 0.18s ease;
+    `;
+
+    controlPanel.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 6px 0;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <h3 style="margin:0;font-size:13px;color:#fff;">🎮 Control</h3>
+            <button id="controlPanelToggle" title="Expand" style="background:transparent;border:none;color:#ddd;cursor:pointer;font-size:14px;padding:4px 6px;">+</button>
+        </div>
+        
+        <!-- OrbitControls Info -->
+        <div class="control-section" style="margin-bottom: 10px;">
+            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">📹 Camera</h4>
+            <div style="background: rgba(255,255,255,0.03); padding: 4px; border-radius: 4px; font-size: 11px; line-height: 1.2;">
+                Rotate • Pan • Zoom • Spin (Key: R)
+            </div>
+        </div>
+
+        <!-- Double Click Info -->
+        <div class="control-section" style="margin-bottom: 10px;">
+            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">🖱️ Interaction</h4>
+            <div style="background: rgba(255,255,255,0.03); padding: 4px; border-radius: 4px; font-size: 11px; line-height: 1.2;">
+                Double-click frustum → camera; double-click object → reset
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="control-section" style="margin-bottom: 10px;">
+            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">⚡ Actions</h4>
+            <div style="display: flex; gap: 6px; justify-content: space-between;">
+                <button id="resetViewBtn" style="
+                    background: #f08fb5;
+                    border: none;
+                    color: white;
+                    padding: 6px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 11px;
+                ">🏠</button>
+                <button id="cameraViewBtn" style="
+                    background: #556bff;
+                    border: none;
+                    color: white;
+                    padding: 6px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 11px;
+                ">📷</button>
+                <button id="toggleAxesBtn" style="
+                    background: #2dd4bf;
+                    border: none;
+                    color: white;
+                    padding: 6px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 11px;
+                " title="Toggle axes">🧭</button>
+                <button id="toggleAutoRotateBtn" style="
+                    background: #ffd166;
+                    border: none;
+                    color: black;
+                    padding: 6px 8px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 11px;
+                " title="Toggle auto-rotate">🔁</button>
+            </div>
+        </div>
+
+        <!-- Visual Settings -->
+        <div class="control-section" style="margin-bottom: 10px;">
+            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">🎨 Visual</h4>
+            <div style="margin-bottom: 8px;">
+                <!-- Axes toggle moved into Actions as an emoji button -->
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 4px; font-size: 11px;">Opacity: <span id="opacityValue">100%</span></label>
+                <input type="range" id="imageOpacitySlider" min="0" max="100" value="100" style="width: 100%; height: 6px; background: #333;">
+            </div>
+        </div>
+
+        <!-- Camera & Scene info removed per user request -->
+    `;
+    // Insert panel into the viewer container so it participates in the viewer's local stacking/layout
+    // and is not affected by global forcing rules. Container is positioned relative in initDemoViewer.
+    container.appendChild(controlPanel);
+
+    // Positioning helper: place panel at a small offset inside the container (local coordinates)
+    function positionPanel() {
+        try {
+            const spacing = 8;
+            controlPanel.style.left = `${spacing}px`;
+            controlPanel.style.top = `${spacing}px`;
+            controlPanel.style.opacity = '1';
+        } catch (e) {
+            controlPanel.style.left = '6px';
+            controlPanel.style.top = '6px';
+            controlPanel.style.opacity = '1';
+        }
+    }
+
+    // keep panel aligned on resize/scroll
+    const ro = new ResizeObserver(positionPanel);
+    try { ro.observe(container); } catch (e) { /* ignore */ }
+    window.addEventListener('resize', positionPanel);
+    // Do NOT reposition on every scroll; keeping the panel fixed in viewport is preferred so it
+    // doesn't follow page scroll. If you want it to stick to the viewer while scrolling, we can
+    // re-enable a scroll handler or implement intersection-based visibility.
+
+    // small state for collapsed/expanded — start collapsed by default
+    controlPanel.dataset.collapsed = 'true';
+    // apply collapsed styles immediately so nothing peeks out on first render
+    controlPanel.style.maxHeight = '36px';
+    controlPanel.style.width = '120px';
+    controlPanel.style.overflow = 'hidden';
+    // hide all panel children except the header so nothing peeks out
+    Array.from(controlPanel.children).forEach((ch, idx) => {
+        if (idx === 0) return; // keep header visible
+        ch.style.display = 'none';
+    });
+    // hide slider and label explicitly
+    const initSlider = document.getElementById('imageOpacitySlider');
+    const initSliderLabel = document.getElementById('opacityValue');
+    if (initSlider) {
+        initSlider.style.display = 'none';
+        initSlider.setAttribute('aria-hidden', 'true');
+    }
+    if (initSliderLabel) initSliderLabel.style.display = 'none';
+
+    setupControlPanelEvents();
+    // initial position
+    positionPanel();
+}
+
+function setupControlPanelEvents() {
+    // Camera View Button
+    const cameraViewBtn = document.getElementById('cameraViewBtn');
+    if (cameraViewBtn) {
+        cameraViewBtn.addEventListener('click', () => {
+            if (cameraFrustums.length > 0) {
+                controls.autoRotate = false;
+                const frustum = cameraFrustums[0]; // Go to first camera
+                if (frustum.userData.isClickable) {
+                    const startPos = camera.position.clone();
+                    const startQuat = camera.quaternion.clone();
+                    const startFov = camera.fov;
+                    const endPos = frustum.userData.cameraPosition;
+                    const endQuat = frustum.userData.cameraQuaternion;
+                    const endFov = frustum.userData.cameraFov;
+                    animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov, 0.8, frustum);
+                }
+            }
+        });
+    }
+
+    // Reset View Button
+    const resetViewBtn = document.getElementById('resetViewBtn');
+    if (resetViewBtn) {
+        resetViewBtn.addEventListener('click', () => {
+            controls.autoRotate = false;
+            const startPos = camera.position.clone();
+            const startQuat = camera.quaternion.clone();
+            const startFov = camera.fov;
+            const endPos = new THREE.Vector3(3, 3, 3);
+
+            let targetCenter = new THREE.Vector3(0, 1, 0);
+            if (currentModel) {
+                let bbox = new THREE.Box3().setFromObject(currentModel);
+                targetCenter = bbox.getCenter(new THREE.Vector3());
+            }
+
+            const tempCam = new THREE.PerspectiveCamera(75, camera.aspect, camera.near, camera.far);
+            tempCam.position.copy(endPos);
+            tempCam.up.set(0, 1, 0);
+            tempCam.lookAt(targetCenter);
+            const endQuat = tempCam.quaternion.clone();
+            const endFov = 75;
+            
+            animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov);
+
+            setTimeout(() => {
+                camera.position.copy(endPos);
+                camera.quaternion.copy(endQuat);
+                camera.fov = endFov;
+                camera.up.set(0, 1, 0);
+                camera.updateProjectionMatrix();
+                controls.target.copy(targetCenter);
+                controls.object.up.set(0, 1, 0);
+                controls.update();
+            }, 850);
+        });
+    }
+
+    // Axes Toggle (emoji button)
+    const toggleAxesBtn = document.getElementById('toggleAxesBtn');
+    if (toggleAxesBtn) {
+        const updateAxesButton = () => {
+            if (!axesGroup) return;
+            const on = !!axesGroup.visible;
+            toggleAxesBtn.style.opacity = on ? '1.0' : '0.55';
+            toggleAxesBtn.title = on ? 'Hide axes' : 'Show axes';
+        };
+        toggleAxesBtn.addEventListener('click', () => {
+            if (!axesGroup) return;
+            axesGroup.visible = !axesGroup.visible;
+            updateAxesButton();
+        });
+        // initialize state
+        updateAxesButton();
+    }
+
+    // Auto-rotate Toggle (emoji button)
+    const toggleAutoRotateBtn = document.getElementById('toggleAutoRotateBtn');
+    if (toggleAutoRotateBtn) {
+        const updateAutoRotateButton = () => {
+            if (!controls) return;
+            const on = !!controls.autoRotate;
+            toggleAutoRotateBtn.style.opacity = on ? '1.0' : '0.6';
+            toggleAutoRotateBtn.title = on ? 'Disable auto-rotate' : 'Enable auto-rotate';
+        };
+        toggleAutoRotateBtn.addEventListener('click', () => {
+            if (!controls) return;
+            controls.autoRotate = !controls.autoRotate;
+            updateAutoRotateButton();
+        });
+        // initialize state
+        updateAutoRotateButton();
+    }
+
+    // Add hover/focus affordance for action buttons (scale + shadow)
+    function addButtonAffordance(btn) {
+        if (!btn) return;
+        btn.style.transition = 'transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease';
+        const enter = () => { btn.style.transform = 'scale(1.08)'; btn.style.boxShadow = '0 6px 18px rgba(0,0,0,0.28)'; btn.style.opacity = '1'; };
+        const leave = () => { btn.style.transform = ''; btn.style.boxShadow = ''; btn.style.opacity = ''; };
+        btn.addEventListener('mouseenter', enter);
+        btn.addEventListener('focus', enter);
+        btn.addEventListener('mouseleave', leave);
+        btn.addEventListener('blur', leave);
+    }
+
+    // Apply affordance to the action buttons
+    addButtonAffordance(document.getElementById('resetViewBtn'));
+    addButtonAffordance(document.getElementById('cameraViewBtn'));
+    addButtonAffordance(document.getElementById('toggleAxesBtn'));
+    addButtonAffordance(document.getElementById('toggleAutoRotateBtn'));
+
+    // Image Opacity Slider
+    const imageOpacitySlider = document.getElementById('imageOpacitySlider');
+    const opacityValue = document.getElementById('opacityValue');
+    if (imageOpacitySlider && opacityValue) {
+        imageOpacitySlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            imageOpacity = value / 100;
+            opacityValue.textContent = `${value}%`;
+            
+            // Update all camera image planes
+            scene.traverse(obj => {
+                if (obj.userData && obj.userData.isImagePlane && obj.material) {
+                    obj.material.opacity = imageOpacity;
+                    obj.material.needsUpdate = true;
+                }
+            });
+        });
+    }
+
+    // Collapse toggle (panel is appended to body, toggle by changing transform/height)
+    const panelToggle = document.getElementById('controlPanelToggle');
+    const controlPanel = document.getElementById('controlPanel');
+    if (panelToggle && controlPanel) {
+        panelToggle.addEventListener('click', () => {
+            const collapsed = controlPanel.dataset.collapsed === 'true';
+            // helper to hide/show the image opacity slider and other controls
+            const slider = document.getElementById('imageOpacitySlider');
+            const sliderLabel = document.getElementById('opacityValue');
+            if (collapsed) {
+                // expand
+                controlPanel.style.transform = '';
+                controlPanel.style.maxHeight = '';
+                controlPanel.style.width = '';
+                controlPanel.style.overflow = '';
+                controlPanel.dataset.collapsed = 'false';
+                panelToggle.textContent = '—';
+                panelToggle.title = 'Collapse';
+                // restore visibility of all panel children except the header
+                const children = Array.from(controlPanel.children);
+                children.forEach((ch, idx) => {
+                    if (idx === 0) return; // header stays
+                    ch.style.display = '';
+                });
+                // restore slider visibility
+                if (slider) slider.style.display = '';
+                if (sliderLabel) sliderLabel.style.display = '';
+                if (slider) slider.removeAttribute('aria-hidden');
+            } else {
+                // collapse to header-only: hide overflow and reduce to header height
+                controlPanel.style.transform = '';
+                controlPanel.style.maxHeight = '36px';
+                // explicitly set a small fixed width so scrollbars can't appear
+                controlPanel.style.width = '120px';
+                // hide any overflowing scrollbars
+                controlPanel.style.overflow = 'hidden';
+                controlPanel.dataset.collapsed = 'true';
+                panelToggle.textContent = '+';
+                panelToggle.title = 'Expand';
+                // hide all panel children except the header so nothing peeks out
+                const children = Array.from(controlPanel.children);
+                children.forEach((ch, idx) => {
+                    if (idx === 0) return; // keep header visible
+                    ch.style.display = 'none';
+                });
+                // explicitly hide slider and mark it aria-hidden
+                if (slider) {
+                    slider.style.display = 'none';
+                    slider.setAttribute('aria-hidden', 'true');
+                }
+                if (sliderLabel) {
+                    sliderLabel.style.display = 'none';
+                }
+            }
+        });
+    }
+}
+
+function updateControlPanelInfo() {
+    // Camera and Scene info removed; nothing to update here
+}
 
 // --- Modular Initialization ---
 export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailGallery', thumbnailList = [] } = {}) {
     // Setup scene, camera, renderer
     scene = new THREE.Scene();
-    // Create camera with temporary aspect; we'll set the real aspect after measuring the container
     camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
     const container = document.getElementById(containerId);
     container.innerHTML = '';
-    // Append canvas early so getBoundingClientRect can measure properly
+    container.style.position = 'relative'; // Ensure container is positioned for absolute children
     container.appendChild(renderer.domElement);
-    // Ensure the canvas fills the container visually
+    
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.objectFit = 'cover';
     renderer.domElement.style.display = 'block';
-    // Size renderer and camera to match the container's actual size (fallback to window if container has zero size)
+    
     const rect = container.getBoundingClientRect();
     const initW = rect.width > 0 ? rect.width : window.innerWidth;
     const initH = rect.height > 0 ? rect.height : window.innerHeight;
@@ -48,14 +400,16 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     controls.screenSpacePanning = false;
     controls.minDistance = 1;
     controls.maxDistance = 100;
-    controls.autoRotate = false;
+        // Enable auto-rotate by default so the scene gently spins on load. Can be toggled in the UI.
+        controls.autoRotate = true;
     controls.autoRotateSpeed = 3.5;
 
-    window.addEventListener('keydown', function(e) {
-        if (e.code === 'Space') {
-            controls.autoRotate = !controls.autoRotate;
-        }
-    });
+        window.addEventListener('keydown', function(e) {
+            // R: toggle auto-rotate (replaces Space behavior)
+            if (e.code === 'KeyR') {
+                if (controls) controls.autoRotate = !controls.autoRotate;
+            }
+        });
 
     raycaster = new THREE.Raycaster();
     raycaster.params.Line.threshold = 0.1;
@@ -91,7 +445,6 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.50;
     ground.receiveShadow = true;
-    // mark ground so hover/highlight code can ignore it
     ground.userData.isGround = true;
     scene.add(ground);
 
@@ -121,13 +474,21 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     bgTexture.colorSpace = THREE.SRGBColorSpace;
     bgTexture.minFilter = THREE.LinearFilter;
     bgTexture.magFilter = THREE.LinearFilter;
-    renderer.setClearColor(0xffffff, 1);
-    scene.background = bgTexture;
+    // Use a plain, neutral light-gray background for the viewer
+    // Use a very light, perceptually neutral gray for the background (5% gray)
+    const neutralGray = new THREE.Color(0xf2f2f2); // sRGB ~95% gray
+    renderer.setClearColor(neutralGray, 1);
+    scene.background = null;
+    // scene.background = bgTexture;
+
+    // Create control panel
+    createControlPanel(containerId);
 
     // Animation loop
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
+        updateControlPanelInfo();
         renderer.render(scene, camera);
     }
     animate();
@@ -143,9 +504,7 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
 
     // Double-click camera animation
     renderer.domElement.addEventListener('dblclick', function(event) {
-        // Stop auto-rotate if active
         controls.autoRotate = false;
-        // Use canvas bounding rect to compute correct normalized device coords
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -163,35 +522,28 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
                 const endPos = frustumGroup.userData.cameraPosition;
                 const endQuat = frustumGroup.userData.cameraQuaternion;
                 const endFov = frustumGroup.userData.cameraFov;
-                // Pass the frustum helper so its stored view offset (principal point) is applied during animation
                 animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov, 0.8, frustumGroup);
-                return; // Frustum double-click takes priority
+                return;
             }
         }
 
-        // If not frustum, check mesh
         const meshObjects = [];
         scene.traverse(obj => {
-            // Skip image planes that belong to camera frustums
             if (obj.isMesh && !obj.userData.isImagePlane) meshObjects.push(obj);
         });
         const meshIntersects = raycaster.intersectObjects(meshObjects, true);
         if (meshIntersects.length > 0) {
-            // Animate camera to default view and reset controls
             const startPos = camera.position.clone();
             const startQuat = camera.quaternion.clone();
             const startFov = camera.fov;
             const endPos = new THREE.Vector3(3, 3, 3);
 
-            // Find center of current model/group (default behavior)
             let targetCenter = new THREE.Vector3(0, 1, 0);
             if (currentModel) {
-                // Compute bounding box center for group or mesh
                 let bbox = new THREE.Box3().setFromObject(currentModel);
                 targetCenter = bbox.getCenter(new THREE.Vector3());
             }
 
-            // Look at target center
             const tempCam = new THREE.PerspectiveCamera(75, camera.aspect, camera.near, camera.far);
             tempCam.position.copy(endPos);
             tempCam.up.set(0, 1, 0);
@@ -200,7 +552,6 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
             const endFov = 75;
             animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, endFov);
 
-            // Reset OrbitControls target and up after animation
             setTimeout(() => {
                 camera.position.copy(endPos);
                 camera.quaternion.copy(endQuat);
@@ -210,13 +561,12 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
                 controls.target.copy(targetCenter);
                 controls.object.up.set(0, 1, 0);
                 controls.update();
-            }, 850); // Slightly longer than animation duration
+            }, 850);
         }
     });
 
-    // Pointer move: highlight frustums in red when hovered
-    // Use bounding rect to account for canvas placement/scaling and avoid inaccurate picks
-    raycaster.params.Line.threshold = 0.1; // slightly increase line pick tolerance
+    // Pointer move hover effects
+    raycaster.params.Line.threshold = 0.1;
     renderer.domElement.addEventListener('pointermove', function(event) {
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -232,7 +582,6 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
                     applyFrustumHover(fr);
                     currentHoveredFrustum = fr;
                 }
-                // When hovering a frustum, ensure any hovered mesh is restored
                 if (currentHoveredMesh) {
                     restoreMeshHover(currentHoveredMesh);
                     currentHoveredMesh = null;
@@ -240,15 +589,12 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
                 return;
             }
         }
-        // not hovering any frustum
         if (currentHoveredFrustum) {
             restoreFrustumHover(currentHoveredFrustum);
             currentHoveredFrustum = null;
         }
-        // Raycast meshes (exclude image planes) for hover
         const meshCandidates = [];
         scene.traverse(obj => {
-            // Skip image planes and the ground plane
             if (obj.isMesh && !obj.userData.isImagePlane && !obj.userData.isGround) meshCandidates.push(obj);
         });
         const meshIntersects = raycaster.intersectObjects(meshCandidates, true);
@@ -256,7 +602,6 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
             const m = meshIntersects[0].object;
             if (currentHoveredMesh !== m) {
                 if (currentHoveredMesh) restoreMeshHover(currentHoveredMesh);
-                // don't highlight the ground or static helpers
                 if (!m.userData.isGround) {
                     applyMeshHover(m);
                     currentHoveredMesh = m;
@@ -279,21 +624,28 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
         }
     });
 
-    // Setup thumbnails
     setupThumbnails(thumbnailList, galleryId);
 
-    // Load first thumbnail by default
-    if (thumbnailList.length > 0) {
-        setTimeout(() => {
-            const gallery = document.getElementById(galleryId);
-            if (gallery && gallery.firstChild) {
-                gallery.firstChild.click();
-            }
-        }, 100);
-    }
+        if (thumbnailList.length > 0) {
+            // After a short delay, mark the first thumbnail active and trigger its click handler
+            // using the same DOM event path as a real user click so all handlers run consistently.
+            setTimeout(() => {
+                const gallery = document.getElementById(galleryId);
+                if (gallery) {
+                    const first = gallery.querySelector('.rerun-thumbnail');
+                    if (first) {
+                        // mark active for visual consistency
+                        first.classList.add('active');
+                        // dispatch a real click event so existing listeners handle loading the scene
+                        const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+                        first.dispatchEvent(ev);
+                    }
+                }
+            }, 100);
+        }
 }
 
-// --- Helper functions (modularized) ---
+// --- Rest of the helper functions remain the same ---
 function createGlobalAxes(size = 1.5) {
     const axesGroupLocal = new THREE.Group();
     axesGroupLocal.name = 'globalAxesGroup';
@@ -311,6 +663,7 @@ function createGlobalAxes(size = 1.5) {
     addAxisLocal([0, 0, 1], 0x0066ff, 'Z', size);
     return axesGroupLocal;
 }
+
 function makeLabelSprite(text, color = '#ffffff') {
     const canvas = document.createElement('canvas');
     const size = 256;
@@ -332,8 +685,11 @@ function makeLabelSprite(text, color = '#ffffff') {
 }
 
 async function loadGLB(glbPath, transformMatrix = null, scale = 1.0, group = null, entityName = null) {
-    // Loads a GLB and applies transform/scale if provided
     return await new Promise((resolve, reject) => {
+        // show loading overlay for this file
+        ensureLoadingOverlay();
+        setLoadingProgress(0, `Loading model`);
+
         loader.load(
             glbPath,
             function (gltf) {
@@ -372,19 +728,107 @@ async function loadGLB(glbPath, transformMatrix = null, scale = 1.0, group = nul
                     currentModel = model;
                 }
                 controls.update();
+                // hide loading overlay on success for this file
+                try { hideLoadingOverlay(); } catch (e) { /* ignore */ }
                 resolve(model);
             },
-            undefined,
+            // onProgress
+            function (xhr) {
+                try {
+                    if (xhr && xhr.lengthComputable) {
+                        const pct = Math.round((xhr.loaded / xhr.total) * 100);
+                        setLoadingProgress(pct, `Loading model (${pct}%)`);
+                    } else {
+                        // indeterminate progress
+                        setLoadingProgress(null, `Loading model…`);
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            },
             function (error) {
                 console.error('Error loading GLB:', error);
+                hideLoadingOverlay();
                 reject(error);
             }
         );
     });
 }
 
+// Simple loading overlay helpers
+let _loadingOverlay = null;
+function ensureLoadingOverlay() {
+    if (_loadingOverlay) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'glbLoadingOverlay';
+
+    // If control panel exists, place overlay inside the same container so CSS rules for the viewer apply.
+    const controlPanel = document.getElementById('controlPanel');
+    let parentEl = document.body;
+    let zIndexBase = 2000;
+    if (controlPanel && controlPanel.parentElement) {
+        parentEl = controlPanel.parentElement; // should be the viewer container
+        const z = window.getComputedStyle(controlPanel).zIndex;
+        zIndexBase = z && !isNaN(parseInt(z)) ? parseInt(z) : zIndexBase;
+    }
+
+    // Positioning and layout handled in CSS (#glbLoadingOverlay).
+    // Keep only dynamic z-index so the overlay stacks correctly relative to the control panel.
+    wrap.style.zIndex = (zIndexBase - 10).toString();
+
+    const inner = document.createElement('div');
+    // Use CSS classes (defined in static/css/rerun-viewer.css) for appearance/positioning
+    inner.className = 'glb-loading-inner';
+    inner.innerHTML = `
+        <div id="glbLoadingText">Loading...</div>
+        <div class="glb-loading-track"><div id="glbLoadingBar"></div></div>
+    `;
+
+    wrap.appendChild(inner);
+    parentEl.appendChild(wrap);
+    _loadingOverlay = wrap;
+}
+
+function setLoadingProgress(percent, text) {
+    ensureLoadingOverlay();
+    const txt = document.getElementById('glbLoadingText');
+    const bar = document.getElementById('glbLoadingBar');
+    if (txt && text) txt.textContent = text;
+    if (bar) {
+        if (percent === null || percent === undefined) {
+            // indeterminate animation
+            bar.style.width = '60%';
+            bar.style.transition = 'none';
+            bar.style.transform = 'translateX(-20%)';
+            bar.style.animation = 'glb-indeterminate 1.2s infinite linear';
+            if (!document.getElementById('glb-indeterminate-style')) {
+                const s = document.createElement('style');
+                s.id = 'glb-indeterminate-style';
+                s.textContent = `@keyframes glb-indeterminate { 0% { transform: translateX(-40%); } 100% { transform: translateX(200%); } } #glbLoadingBar { will-change: transform; }`;
+                // Append style to the parent element when possible so viewer-local CSS can override if needed
+                document.head.appendChild(s);
+            }
+        } else {
+            // determinate
+            bar.style.animation = '';
+            bar.style.transition = 'width 220ms linear';
+            bar.style.width = `${Math.max(3, percent)}%`;
+        }
+    }
+}
+
+function hideLoadingOverlay() {
+    if (!_loadingOverlay) return;
+    try {
+        if (_loadingOverlay.parentElement) _loadingOverlay.parentElement.removeChild(_loadingOverlay);
+        else _loadingOverlay.remove();
+    } catch (e) {}
+    _loadingOverlay = null;
+    const s = document.getElementById('glb-indeterminate-style');
+    if (s) s.remove();
+}
+
 async function loadGLBFromMetadata(metadata, parentDir) {
-    // Implements the Python logic for multi-object and single-object scenes
     let intrinsic = null;
     let extrinsic = null;
     let imagePath = parentDir + '/images_crop/input_no_mask.png';
@@ -394,12 +838,9 @@ async function loadGLBFromMetadata(metadata, parentDir) {
         multiGroup.name = 'multiObjectGroup';
         let camera_c2w = null;
         for (let i = 0; i < metadata["glb_path"].length; ++i) {
-            // if (i >= 1) continue;
             const meshPath = parentDir + '/' + `mesh${i}.glb`;
-            // Get transformation data for this mesh
             const pose = metadata["pose"][String(i)];
             if (!pose) continue;
-            // Deep copy RT_mesh to avoid mutating input
             const camera_opencv2gl = new THREE.Matrix4().set(
                 1, 0, 0, 0,
                 0, -1, 0, 0,
@@ -438,7 +879,6 @@ async function loadGLBFromMetadata(metadata, parentDir) {
             if (i == 0) {
                 camera_c2w = c2w_transform.clone();
                 intrinsic = metadata["pose"]["0"]["new_intrinsic"];
-                // ground.scale.set(scale, scale, scale);
                 ground.position.y = -0.5 * scale;
                 gridHelper.position.y = -0.49 * scale;
             }
@@ -453,7 +893,6 @@ async function loadGLBFromMetadata(metadata, parentDir) {
         scene.add(multiGroup);
         currentModel = multiGroup;
     } else {
-        // Single object case
         console.log(`📦 Processing single object scene`);
         const glbPath = parentDir + '/mesh.glb';
         await loadGLB(glbPath);
@@ -467,7 +906,6 @@ async function loadGLBFromMetadata(metadata, parentDir) {
             extrinsic = metadata.extrinsic;
         }
 
-        // Defensive: unwrap [1,3,3] intrinsic if needed
         if (intrinsic && Array.isArray(intrinsic)) {
             if (intrinsic.length === 1 && Array.isArray(intrinsic[0]) && intrinsic[0].length === 3 && Array.isArray(intrinsic[0][0]) && intrinsic[0][0].length === 3) {
                 intrinsic = intrinsic[0];
@@ -508,11 +946,24 @@ async function loadGLBFromMetadata(metadata, parentDir) {
 async function loadTexture(url) {
     return await new Promise((resolve, reject) => {
         const texLoader = new THREE.TextureLoader();
-        texLoader.load(url, (tex) => resolve(tex), undefined, (err) => reject(err));
+        texLoader.load(url, (tex) => {
+            try {
+                if (tex && 'colorSpace' in tex) {
+                    tex.colorSpace = THREE.SRGBColorSpace;
+                } else if (tex && 'encoding' in tex) {
+                    tex.encoding = THREE.sRGBEncoding;
+                }
+                tex.minFilter = tex.minFilter || THREE.LinearFilter;
+                tex.magFilter = tex.magFilter || THREE.LinearFilter;
+                tex.needsUpdate = true;
+            } catch (e) {
+                // ignore and resolve with original texture
+            }
+            resolve(tex);
+        }, undefined, (err) => reject(err));
     });
 }
 
-// --- Camera Frustum Loader ---
 export async function addCameraFrustum(intrinsic, camera_c2w, imagePath) {
     let texture = null;
     let imageWidth = null;
@@ -526,103 +977,104 @@ export async function addCameraFrustum(intrinsic, camera_c2w, imagePath) {
         imageWidth = 1024;
         imageHeight = 1024;
     }
-    // try {
-        // Use provided intrinsic and extrinsic directly
-        const imgW = imageWidth || 1024;
-        const imgH = imageHeight || 1024;
-        const maxDim = Math.max(imgW, imgH);
-        const left = Math.floor((maxDim - imgW) / 2);
-        const top = Math.floor((maxDim - imgH) / 2);
-        const fx = intrinsic[0][0];
-        const fy = intrinsic[1][1];
-        const cx = intrinsic[0][2];
-        const cy = intrinsic[1][2];
-        const focal_length_x = fx * maxDim;
-        const focal_length_y = fy * maxDim;
-        const principal_point_x_px = cx * maxDim - left;
-        const principal_point_y_px = cy * maxDim - top;
-        const fov = 2 * Math.atan(0.5 * imgH / focal_length_y) * 180 / Math.PI;
-        const aspect = imgW / imgH;
-        const near = 0.5;
-        const far = 0.500001;
-        const cam = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        const fullWidth = imgW;
-        const fullHeight = imgH;
-        const viewWidth = imgW;
-        const viewHeight = imgH;
-        const offsetX = principal_point_x_px - imgW / 2;
-        const offsetY = principal_point_y_px - imgH / 2;
-        cam.setViewOffset(fullWidth, fullHeight, -offsetX, -offsetY, viewWidth, viewHeight);
-        if (camera_c2w) {
-            cam.matrixAutoUpdate = false;
-            cam.matrix.copy(camera_c2w);
-            cam.matrix.decompose(cam.position, cam.quaternion, cam.scale);
-        }
-        if (texture) {
-            const height_near = 2 * Math.tan((fov * Math.PI / 180) / 2) * near;
-            const width_near = height_near * aspect;
-            const planeGeometry = new THREE.PlaneGeometry(width_near, height_near);
-            const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
-            const imagePlane = new THREE.Mesh(planeGeometry, planeMaterial);
-            imagePlane.userData.isImagePlane = true; // mark so raycasts can ignore it
-            imagePlane.position.z = -near + 0.0001; // Slightly in front of near plane to avoid z-fighting
-            const dx = (principal_point_x_px - imgW / 2) * (width_near / imgW);
-            const dy = (principal_point_y_px - imgH / 2) * (height_near / imgH);
-            imagePlane.position.x = -dx;
-            imagePlane.position.y = dy;
-            cam.add(imagePlane);
-        }
-        const camHelper = new THREE.CameraHelper(cam);
-
-        // Set line width for CameraHelper's LineSegments
-        // Note: linewidth only works in some renderers/platforms (not all browsers)
-        camHelper.traverse(obj => {
-            if (obj.isLineSegments && obj.material && obj.material instanceof THREE.LineBasicMaterial) {
-                console.log('Setting line width for camera frustum helper');
-                // no effect
-                // obj.material.linewidth = 10; // Set desired line width
-            }
+    
+    const imgW = imageWidth || 1024;
+    const imgH = imageHeight || 1024;
+    const maxDim = Math.max(imgW, imgH);
+    const left = Math.floor((maxDim - imgW) / 2);
+    const top = Math.floor((maxDim - imgH) / 2);
+    const fx = intrinsic[0][0];
+    const fy = intrinsic[1][1];
+    const cx = intrinsic[0][2];
+    const cy = intrinsic[1][2];
+    const focal_length_x = fx * maxDim;
+    const focal_length_y = fy * maxDim;
+    const principal_point_x_px = cx * maxDim - left;
+    const principal_point_y_px = cy * maxDim - top;
+    const fov = 2 * Math.atan(0.5 * imgH / focal_length_y) * 180 / Math.PI;
+    const aspect = imgW / imgH;
+    const near = 0.5;
+    const far = 0.500001;
+    const cam = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    const fullWidth = imgW;
+    const fullHeight = imgH;
+    const viewWidth = imgW;
+    const viewHeight = imgH;
+    const offsetX = principal_point_x_px - imgW / 2;
+    const offsetY = principal_point_y_px - imgH / 2;
+    cam.setViewOffset(fullWidth, fullHeight, -offsetX, -offsetY, viewWidth, viewHeight);
+    
+    if (camera_c2w) {
+        cam.matrixAutoUpdate = false;
+        cam.matrix.copy(camera_c2w);
+        cam.matrix.decompose(cam.position, cam.quaternion, cam.scale);
+    }
+    
+    if (texture) {
+        const height_near = 2 * Math.tan((fov * Math.PI / 180) / 2) * near;
+        const width_near = height_near * aspect;
+        const planeGeometry = new THREE.PlaneGeometry(width_near, height_near);
+        const planeMaterial = new THREE.MeshBasicMaterial({ 
+            map: texture, 
+            side: THREE.DoubleSide, 
+            transparent: true, 
+            opacity: imageOpacity // Use global opacity
         });
+        const imagePlane = new THREE.Mesh(planeGeometry, planeMaterial);
+        imagePlane.userData.isImagePlane = true;
+        imagePlane.position.z = -near + 0.0001;
+        const dx = (principal_point_x_px - imgW / 2) * (width_near / imgW);
+        const dy = (principal_point_y_px - imgH / 2) * (height_near / imgH);
+        imagePlane.position.x = -dx;
+        imagePlane.position.y = dy;
+        cam.add(imagePlane);
+    }
+    
+    const camHelper = new THREE.CameraHelper(cam);
 
-        // Use THREE.Color and set unwanted lines to transparent
-        const colorFrustum = new THREE.Color(0x444444); // medium gray
-        const colorCone = new THREE.Color(0x444444);    // dark gray
-        const colorUp = new THREE.Color(0x4444ff);      // transparent
-        const colorCross = new THREE.Color(0x888888);   // transparent
-        const colorTarget = new THREE.Color(0x888888);  // transparent
-        camHelper.setColors(
-            colorFrustum,
-            colorCone,
-            colorUp,
-            colorCross,
-            colorTarget,
-        );
+    const colorFrustum = new THREE.Color(0x444444);
+    const colorCone = new THREE.Color(0x444444);
+    const colorUp = new THREE.Color(0x4444ff);
+    const colorCross = new THREE.Color(0x888888);
+    const colorTarget = new THREE.Color(0x888888);
+    camHelper.setColors(
+        colorFrustum,
+        colorCone,
+        colorUp,
+        colorCross,
+        colorTarget,
+    );
 
-
-        cam.updateMatrixWorld(true);
-        camHelper.userData.isClickable = true;
-        camHelper.userData.isFrustum = true;
-        // Store the camera view offset (if any) so we can restore it when animating
-        camHelper.userData.cameraView = cam.view ? { fullWidth: cam.view.fullWidth, fullHeight: cam.view.fullHeight, offsetX: cam.view.offsetX, offsetY: cam.view.offsetY, width: cam.view.width, height: cam.view.height } : null;
-        const camWorldPos = new THREE.Vector3();
-        cam.getWorldPosition(camWorldPos);
-        const camWorldQuat = new THREE.Quaternion();
-        cam.getWorldQuaternion(camWorldQuat);
-        camHelper.userData.cameraPosition = camWorldPos.clone();
-        camHelper.userData.cameraQuaternion = camWorldQuat.clone();
+    cam.updateMatrixWorld(true);
+    camHelper.userData.isClickable = true;
+    camHelper.userData.isFrustum = true;
+    camHelper.userData.cameraView = cam.view ? { 
+        fullWidth: cam.view.fullWidth, 
+        fullHeight: cam.view.fullHeight, 
+        offsetX: cam.view.offsetX, 
+        offsetY: cam.view.offsetY, 
+        width: cam.view.width, 
+        height: cam.view.height 
+    } : null;
+    
+    const camWorldPos = new THREE.Vector3();
+    cam.getWorldPosition(camWorldPos);
+    const camWorldQuat = new THREE.Quaternion();
+    cam.getWorldQuaternion(camWorldQuat);
+    camHelper.userData.cameraPosition = camWorldPos.clone();
+    camHelper.userData.cameraQuaternion = camWorldQuat.clone();
     camHelper.userData.cameraFov = cam.fov;
-    // keep a reference to the camera so we can highlight its image plane on hover
     camHelper.userData.camera = cam;
+    
     scene.add(camHelper);
-        scene.add(cam);
-        cameraFrustums.push(camHelper);
+    scene.add(cam);
+    cameraFrustums.push(camHelper);
 }
 
-// Frustum hover helpers: apply red material on hover, restore on leave
+// Hover effect functions remain the same
 const _frustumOriginalMaterials = new WeakMap();
 function applyFrustumHover(frustum) {
     if (!frustum) return;
-    // Save originals: materials + helper scale + image plane state
     const saved = { materials: [], scale: null, imagePlane: null };
     frustum.traverse(obj => {
         if (obj.material) {
@@ -630,7 +1082,7 @@ function applyFrustumHover(frustum) {
             const entry = { obj: obj, color: mat.color ? mat.color.getHex() : null, opacity: mat.opacity !== undefined ? mat.opacity : null };
             saved.materials.push(entry);
             try {
-                const shine = new THREE.Color(0x00ff00);
+                const shine = new THREE.Color(0x0000ff);
                 if (mat.color) mat.color.set(shine);
                 if (mat.emissive) {
                     mat.emissive.set(shine);
@@ -643,7 +1095,6 @@ function applyFrustumHover(frustum) {
             }
         }
     });
-    // save and grow helper
     try {
         if (frustum.scale) saved.scale = frustum.scale.clone();
         if (frustum.scale) frustum.scale.multiplyScalar(1.06);
@@ -651,25 +1102,23 @@ function applyFrustumHover(frustum) {
         // ignore
     }
 
-    // highlight image plane if present
     try {
         const cam = frustum.userData && frustum.userData.camera;
         if (cam && cam.children && cam.children.length > 0) {
             const img = cam.children.find(c => c.userData && c.userData.isImagePlane && c.isMesh);
             if (img) {
                 const mat = img.material;
-                    saved.imagePlane = {
-                        obj: img,
-                        materialProps: { color: mat.color ? mat.color.getHex() : null, opacity: mat.opacity !== undefined ? mat.opacity : null }
-                    };
-                    try {
-                        // For image plane highlight: only lower opacity to 0.5 (keep colors intact)
-                        if (mat.transparent === undefined) mat.transparent = true;
-                        mat.opacity = 0.5;
-                        mat.needsUpdate = true;
-                    } catch (e) {
-                        // ignore
-                    }
+                saved.imagePlane = {
+                    obj: img,
+                    materialProps: { color: mat.color ? mat.color.getHex() : null, opacity: mat.opacity !== undefined ? mat.opacity : null }
+                };
+                try {
+                    if (mat.transparent === undefined) mat.transparent = true;
+                    // mat.opacity = 1.0;
+                    mat.needsUpdate = true;
+                } catch (e) {
+                    // ignore
+                }
             }
         }
     } catch (e) {
@@ -683,7 +1132,6 @@ function restoreFrustumHover(frustum) {
     if (!frustum) return;
     const saved = _frustumOriginalMaterials.get(frustum);
     if (!saved) return;
-    // restore materials
     saved.materials.forEach(entry => {
         const mat = entry.obj.material;
         try {
@@ -694,13 +1142,11 @@ function restoreFrustumHover(frustum) {
             // ignore
         }
     });
-    // restore helper scale
     try {
         if (saved.scale && frustum.scale) frustum.scale.copy(saved.scale);
     } catch (e) {
         // ignore
     }
-    // restore image plane
     try {
         if (saved.imagePlane && saved.imagePlane.obj) {
             const img = saved.imagePlane.obj;
@@ -718,16 +1164,14 @@ function restoreFrustumHover(frustum) {
 
     _frustumOriginalMaterials.delete(frustum);
 }
-// Mesh hover helpers: non-destructive grow + emissive/color highlight
+
 const _meshOriginalState = new WeakMap();
 function applyMeshHover(mesh) {
     if (!mesh || !mesh.material) return;
-    // Save original state
     const orig = {
         scale: mesh.scale.clone(),
         materialProps: null
     };
-    // store color/opacity/emissive if present
     const mat = mesh.material;
     orig.materialProps = {
         color: mat.color ? mat.color.getHex() : null,
@@ -737,8 +1181,7 @@ function applyMeshHover(mesh) {
     };
     _meshOriginalState.set(mesh, orig);
 
-    // Apply highlight: subtle grow + bright color/emissive
-    mesh.scale.multiplyScalar(1.06);
+    mesh.scale.multiplyScalar(1.02);
     try {
         const shine = new THREE.Color(0xffff66);
         if (mat.color) mat.color.set(shine);
@@ -772,7 +1215,7 @@ function restoreMeshHover(mesh) {
     }
     _meshOriginalState.delete(mesh);
 }
-// --- Double-click camera animation ---
+
 let animationTokens = new Map();
 function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -792,16 +1235,13 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
     const startTime = performance.now();
     const endTime = startTime + duration * 1000;
 
-    // Determine client sizes (use renderer size as authoritative)
     const clientSize = new THREE.Vector2();
     renderer.getSize(clientSize);
     const clientFullW = Math.round(clientSize.x);
     const clientFullH = Math.round(clientSize.y);
-    // The view size used on the client (typically same as full for our viewer)
     const clientViewW = clientFullW;
     const clientViewH = clientFullH;
 
-    // Original camera offsets (if any)
     const originalViewOffset = camera.view ? {
         fullWidth: camera.view.fullWidth,
         fullHeight: camera.view.fullHeight,
@@ -818,11 +1258,9 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
         height: clientViewH
     };
 
-    // If a target frustum was provided and has a stored cameraView, map its principal-point offsets
     let mappedTargetView = null;
     if (targetCamera && targetCamera.userData && targetCamera.userData.cameraView) {
         const tv = targetCamera.userData.cameraView;
-        // Map target offsets (which are in the target's full-size space) into the client's full-size space
         if (tv && tv.fullWidth && tv.fullHeight) {
             const mappedOffsetX = (tv.offsetX / tv.fullWidth) * clientFullW;
             const mappedOffsetY = (tv.offsetY / tv.fullHeight) * clientFullH;
@@ -843,7 +1281,6 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
         const tClamped = Math.max(0, Math.min(1, tRaw));
         const te = easeInOutCubic(tClamped);
 
-        // Interpolate transform
         const currentPos = new THREE.Vector3().lerpVectors(startPos, endPos, te);
         const currentQuat = slerp(startQuat, endQuat, te);
         const currentFov = lerp(startFov, endFov, te);
@@ -851,14 +1288,13 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
         camera.quaternion.copy(currentQuat);
         camera.fov = currentFov;
 
-        // Interpolate only the principal-point offsets (mapped into client sizes) if a mapped target exists
         if (mappedTargetView) {
             const curOffsetX = lerp(originalViewOffset.offsetX, mappedTargetView.offsetX, te);
             const curOffsetY = lerp(originalViewOffset.offsetY, mappedTargetView.offsetY, te);
             try {
                 camera.setViewOffset(clientFullW, clientFullH, Math.round(curOffsetX), Math.round(curOffsetY), clientViewW, clientViewH);
             } catch (e) {
-                // Some environments may not support setViewOffset or intermediate values; ignore errors
+                // ignore
             }
         }
 
@@ -871,7 +1307,6 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
         if (tClamped < 1) {
             requestAnimationFrame(frame);
         } else {
-            // Finalize camera transform and ensure final offsets applied
             if (animationTokens.get('camera') === token) {
                 camera.position.copy(endPos);
                 camera.quaternion.copy(endQuat);
@@ -883,7 +1318,6 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
                         // ignore
                     }
                 } else {
-                    // Restore original view if no targetView
                     if (originalViewOffset) {
                         try {
                             camera.setViewOffset(originalViewOffset.fullWidth, originalViewOffset.fullHeight, Math.round(originalViewOffset.offsetX), Math.round(originalViewOffset.offsetY), originalViewOffset.width, originalViewOffset.height);
@@ -901,50 +1335,67 @@ function animateClientCamera(startPos, startQuat, startFov, endPos, endQuat, end
     requestAnimationFrame(frame);
 }
 
-// Double-click event for camera animation
-// Moved inside initDemoViewer to ensure renderer is initialized
-
 export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
     const gallery = document.getElementById(galleryId);
     if (!gallery) return;
     gallery.innerHTML = '';
 
+    const wrapper = document.createElement('div');
+    wrapper.className = 'rerun-thumbnails-wrapper';
+    wrapper.style.margin = '0';
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.gap = '8px';
+
     const thumbnailsDiv = document.createElement('div');
     thumbnailsDiv.className = 'rerun-thumbnails';
+    thumbnailsDiv.style.display = 'flex';
+    thumbnailsDiv.style.gap = '8px';
+    thumbnailsDiv.style.overflowX = 'auto';
+    thumbnailsDiv.style.padding = '4px 6px';
+    thumbnailsDiv.style.scrollBehavior = 'smooth';
+    thumbnailsDiv.style.alignItems = 'center';
+    thumbnailsDiv.style.maxWidth = '100%';
 
     thumbnailList.forEach((item, idx) => {
         const thumbnailDiv = document.createElement('div');
         thumbnailDiv.className = 'rerun-thumbnail';
         thumbnailDiv.setAttribute('data-label', item.label || `Scene ${idx+1}`);
         thumbnailDiv.setAttribute('data-idx', idx);
+    
+        thumbnailDiv.style.minWidth = 'auto';
+        thumbnailDiv.style.height = '140px';
+        thumbnailDiv.style.borderRadius = '8px';
+        thumbnailDiv.style.overflow = 'hidden';
+        thumbnailDiv.style.flex = '0 0 auto';
 
-        // Use thumbnail image if available
         if (item.thumbnail) {
             const img = document.createElement('img');
             img.src = item.thumbnail;
             img.alt = item.label || `Scene ${idx+1}`;
-            img.style.width = '100%';
             img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '8px';
+            img.style.width = 'auto';
+            img.style.objectFit = 'contain';
+            img.style.display = 'block';
             thumbnailDiv.appendChild(img);
         } else {
-            // Fallback to gradient placeholder
             thumbnailDiv.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
             const span = document.createElement('span');
             span.textContent = item.label || `Scene ${idx+1}`;
             span.style.color = 'white';
             span.style.fontSize = '0.9em';
+            span.style.display = 'inline-block';
+            span.style.padding = '8px';
+            span.style.height = '100%';
+            span.style.lineHeight = '64px';
             thumbnailDiv.appendChild(span);
         }
 
         thumbnailDiv.style.cursor = 'pointer';
         thumbnailDiv.onclick = async () => {
-            // Remove active state from all thumbnails
             thumbnailsDiv.querySelectorAll('.rerun-thumbnail').forEach(t => t.classList.remove('active'));
             thumbnailDiv.classList.add('active');
 
-            // Clear previous model/frustums
             if (currentModel) {
                 scene.remove(currentModel);
                 currentModel = null;
@@ -961,7 +1412,6 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
                     f.camera.parent.remove(f.camera);
                 }
             });
-            // Remove any floating camera image children
             scene.traverse(obj => {
                 if (obj.type === 'PerspectiveCamera' && obj.children && obj.children.length > 0) {
                     obj.children.forEach(child => {
@@ -974,7 +1424,6 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
             });
             cameraFrustums = [];
 
-            // Fetch metadata and load scene
             let metadata = null;
             if (item.metadataPath) {
                 try {
@@ -993,15 +1442,66 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
         thumbnailsDiv.appendChild(thumbnailDiv);
     });
 
-    gallery.appendChild(thumbnailsDiv);
-    // Activate first thumbnail by default
-    if (thumbnailsDiv.firstChild) thumbnailsDiv.firstChild.classList.add('active');
+    const prevButton = document.createElement('button');
+    prevButton.className = 'carousel-button prev';
+    prevButton.innerHTML = '‹';
+    prevButton.setAttribute('aria-label', 'Previous');
+    prevButton.style.height = '40px';
+    prevButton.style.flex = '0 0 auto';
+    prevButton.style.display = 'flex';
+    prevButton.style.alignItems = 'center';
+    prevButton.style.justifyContent = 'center';
+
+    const nextButton = document.createElement('button');
+    nextButton.className = 'carousel-button next';
+    nextButton.innerHTML = '›';
+    nextButton.setAttribute('aria-label', 'Next');
+    nextButton.style.height = '40px';
+    nextButton.style.flex = '0 0 auto';
+    nextButton.style.display = 'flex';
+    nextButton.style.alignItems = 'center';
+    nextButton.style.justifyContent = 'center';
+
+    prevButton.addEventListener('click', () => {
+        thumbnailsDiv.scrollBy({ left: -300, behavior: 'smooth' });
+    });
+    nextButton.addEventListener('click', () => {
+        thumbnailsDiv.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+
+    const updateButtonStates = () => {
+        const scrollLeft = thumbnailsDiv.scrollLeft;
+        const maxScroll = thumbnailsDiv.scrollWidth - thumbnailsDiv.clientWidth;
+        prevButton.disabled = scrollLeft <= 0;
+        nextButton.disabled = scrollLeft >= maxScroll - 1 || maxScroll <= 0;
+    };
+
+    thumbnailsDiv.addEventListener('scroll', updateButtonStates);
+
+    const images = thumbnailsDiv.querySelectorAll('img');
+    let loadedCount = 0;
+    images.forEach(img => {
+        if (img.complete) {
+            loadedCount++;
+        } else {
+            img.addEventListener('load', () => {
+                loadedCount++;
+                if (loadedCount === images.length) updateButtonStates();
+            });
+        }
+    });
+    setTimeout(updateButtonStates, 100);
+
+    wrapper.appendChild(prevButton);
+    wrapper.appendChild(thumbnailsDiv);
+    wrapper.appendChild(nextButton);
+
+    gallery.appendChild(wrapper);
+
+    const firstThumb = thumbnailsDiv.querySelector('.rerun-thumbnail');
+    if (firstThumb) firstThumb.classList.add('active');
 }
 
-// --- Remove direct DOM event listeners for file/axes toggles ---
-// These can be added externally if needed
-
-// --- Export for HTML to call ---
 export default {
     addCameraFrustum,
     setupThumbnails,
