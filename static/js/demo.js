@@ -13,6 +13,8 @@ let cameraFrustums = [];
 let currentHoveredFrustum = null;
 let currentHoveredMesh = null;
 let imageOpacity = 1.0; // Global image opacity state
+// Token to identify the latest requested load; incrementing cancels prior loads logically
+let _currentLoadToken = 0;
 
 // --- Control Panel Functions ---
 function createControlPanel(containerId) {
@@ -591,7 +593,7 @@ function makeLabelSprite(text, color = '#ffffff') {
     return sprite;
 }
 
-async function loadGLB(glbPath, transformMatrix = null, scale = 1.0, group = null, entityName = null) {
+async function loadGLB(glbPath, transformMatrix = null, scale = 1.0, group = null, entityName = null, loadToken = null) {
     return await new Promise((resolve, reject) => {
         // show loading overlay for this file
         ensureLoadingOverlay();
@@ -628,6 +630,25 @@ async function loadGLB(glbPath, transformMatrix = null, scale = 1.0, group = nul
                 if (scale !== undefined && scale !== 1.0) {
                     model.scale.set(scale, scale, scale);
                 }
+                // If a load token is provided and it no longer matches the current token,
+                // this load was superseded — dispose model and resolve(null).
+                if (loadToken !== null && loadToken !== undefined && loadToken !== _currentLoadToken) {
+                    try {
+                        model.traverse(c => {
+                            if (c.isMesh) {
+                                if (c.geometry) c.geometry.dispose();
+                                if (c.material) {
+                                    if (Array.isArray(c.material)) c.material.forEach(m => { if (m.map) m.map.dispose(); if (m.dispose) m.dispose(); });
+                                    else { if (c.material.map) c.material.map.dispose(); if (c.material.dispose) c.material.dispose(); }
+                                }
+                            }
+                        });
+                    } catch (e) { /* ignore disposal errors */ }
+                    try { hideLoadingOverlay(); } catch (e) {}
+                    resolve(null);
+                    return;
+                }
+
                 if (group) {
                     group.add(model);
                 } else {
@@ -735,13 +756,13 @@ function hideLoadingOverlay() {
     if (s) s.remove();
 }
 
-async function loadGLBFromMetadata(metadata, parentDir) {
+async function loadGLBFromMetadata(metadata, parentDir, loadToken = null) {
     let intrinsic = null;
     let extrinsic = null;
     let imagePath = parentDir + '/images_crop/input_no_mask.png';
     if (metadata["glb_path"] && Array.isArray(metadata["glb_path"])) {
         console.log(`🎭 Processing multi-object scene with ${metadata['glb_path'].length} objects`);
-        const multiGroup = new THREE.Group();
+    const multiGroup = new THREE.Group();
         multiGroup.name = 'multiObjectGroup';
         let camera_c2w = null;
         for (let i = 0; i < metadata["glb_path"].length; ++i) {
@@ -793,8 +814,12 @@ async function loadGLBFromMetadata(metadata, parentDir) {
             let final_transform = scale_mat;
             final_transform = new THREE.Matrix4().multiplyMatrices(c2w_transform.invert(), final_transform);
             final_transform = new THREE.Matrix4().multiplyMatrices(camera_c2w, final_transform);
-            loadGLB(meshPath, final_transform, 1.0, multiGroup, `object_${i}`);
+            await loadGLB(meshPath, final_transform, 1.0, multiGroup, `object_${i}`, loadToken);
+            // If this load has been superseded, stop processing further parts
+            if (loadToken !== null && loadToken !== undefined && loadToken !== _currentLoadToken) return;
         }
+
+        if (loadToken !== null && loadToken !== undefined && loadToken !== _currentLoadToken) return;
 
         addCameraFrustum(intrinsic, camera_c2w, imagePath);
         scene.add(multiGroup);
@@ -802,7 +827,10 @@ async function loadGLBFromMetadata(metadata, parentDir) {
     } else {
         console.log(`📦 Processing single object scene`);
         const glbPath = parentDir + '/mesh.glb';
-        await loadGLB(glbPath);
+    const loadedModel = await loadGLB(glbPath, null, 1.0, null, null, loadToken);
+    if (loadToken !== null && loadToken !== undefined && loadToken !== _currentLoadToken) return;
+    // if loadGLB returned null it was superseded
+    if (!loadedModel) return;
         ground.position.y = -0.5;
         gridHelper.position.y = -0.49;
         if (metadata.pose) {
@@ -1275,6 +1303,9 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
 
     // cursor/presentation handled via CSS (.rerun-thumbnail)
         thumbnailDiv.onclick = async () => {
+            // each click starts a new logical load; bump token so prior loads are ignored
+            const myLoadToken = ++_currentLoadToken;
+
             thumbnailsDiv.querySelectorAll('.rerun-thumbnail').forEach(t => t.classList.remove('active'));
             thumbnailDiv.classList.add('active');
 
@@ -1317,7 +1348,7 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
             }
             if (metadata) {
                 const parentDir = item.metadataPath.split('/').slice(0, -1).join('/');
-                await loadGLBFromMetadata(metadata, parentDir);
+                await loadGLBFromMetadata(metadata, parentDir, myLoadToken);
             }
         };
 
