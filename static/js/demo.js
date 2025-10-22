@@ -1,5 +1,6 @@
 // demo.js
 import * as THREE from 'three';
+// demo.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -23,103 +24,40 @@ function createControlPanel(containerId) {
     controlPanel.id = 'controlPanel';
     // Floating, collapsible control panel inserted into the viewer container (absolute positioning)
     // so it will be subject to the viewer's layout and the viewer CSS exception in rerun-viewer.css.
-    controlPanel.style.cssText = `
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        width: 220px;
-        max-height: 360px;
-        background: rgba(30, 30, 30, 0.95);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 8px;
-        padding: 8px;
-        color: white;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 12px;
-        z-index: 2000;
-        overflow-y: auto;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.45);
-        transition: transform 0.18s ease, opacity 0.18s ease;
-    `;
+    // Presentation for #controlPanel is handled in static/css/rerun-viewer.css
+    controlPanel.className = 'control-panel';
 
     controlPanel.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 6px 0;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.04);">
-            <h3 style="margin:0;font-size:13px;color:#fff;">🎮 Control</h3>
-            <button id="controlPanelToggle" title="Expand" style="background:transparent;border:none;color:#ddd;cursor:pointer;font-size:14px;padding:4px 6px;">+</button>
+        <div class="control-header">
+            <h3>🎮 Control</h3>
+            <button id="controlPanelToggle" class="control-toggle" title="Expand">+</button>
         </div>
-        
-        <!-- OrbitControls Info -->
-        <div class="control-section" style="margin-bottom: 10px;">
-            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">📹 Camera</h4>
-            <div style="background: rgba(255,255,255,0.03); padding: 4px; border-radius: 4px; font-size: 11px; line-height: 1.2;">
-                Rotate • Pan • Zoom • Spin (Key: R)
+
+        <div class="control-section">
+            <h4>📹 Camera</h4>
+            <div class="control-note">Rotate • Pan • Zoom • Spin (Key: R)</div>
+        </div>
+
+        <div class="control-section">
+            <h4>🖱️ Interaction</h4>
+            <div class="control-note">Double-click frustum → camera view<br/>Double-click ground → reset view</div>
+        </div>
+
+        <div class="control-section">
+            <h4>⚡ Actions</h4>
+            <div class="actions-row">
+                <button id="resetViewBtn" class="action-button">🏠</button>
+                <button id="cameraViewBtn" class="action-button">📷</button>
+                <button id="toggleAxesBtn" class="action-button" title="Toggle axes">🧭</button>
+                <button id="toggleAutoRotateBtn" class="action-button" title="Toggle auto-rotate">🔁</button>
             </div>
         </div>
 
-        <!-- Double Click Info -->
-        <div class="control-section" style="margin-bottom: 10px;">
-            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">🖱️ Interaction</h4>
-            <div style="background: rgba(255,255,255,0.03); padding: 4px; border-radius: 4px; font-size: 11px; line-height: 1.2;">
-                Double-click frustum → camera; double-click object → reset
-            </div>
+        <div class="control-section">
+            <h4>🎨 Image</h4>
+            <div class="control-label">Opacity: <span id="opacityValue">100%</span></div>
+            <input type="range" id="imageOpacitySlider" min="0" max="100" value="100" class="control-range">
         </div>
-
-        <!-- Quick Actions -->
-        <div class="control-section" style="margin-bottom: 10px;">
-            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">⚡ Actions</h4>
-            <div style="display: flex; gap: 6px; justify-content: space-between;">
-                <button id="resetViewBtn" style="
-                    background: #f08fb5;
-                    border: none;
-                    color: white;
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 11px;
-                ">🏠</button>
-                <button id="cameraViewBtn" style="
-                    background: #556bff;
-                    border: none;
-                    color: white;
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 11px;
-                ">📷</button>
-                <button id="toggleAxesBtn" style="
-                    background: #2dd4bf;
-                    border: none;
-                    color: white;
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 11px;
-                " title="Toggle axes">🧭</button>
-                <button id="toggleAutoRotateBtn" style="
-                    background: #ffd166;
-                    border: none;
-                    color: black;
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 11px;
-                " title="Toggle auto-rotate">🔁</button>
-            </div>
-        </div>
-
-        <!-- Visual Settings -->
-        <div class="control-section" style="margin-bottom: 10px;">
-            <h4 style="margin: 0 0 6px 0; color: #ccc; font-size: 12px;">🎨 Visual</h4>
-            <div style="margin-bottom: 8px;">
-                <!-- Axes toggle moved into Actions as an emoji button -->
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 4px; font-size: 11px;">Opacity: <span id="opacityValue">100%</span></label>
-                <input type="range" id="imageOpacitySlider" min="0" max="100" value="100" style="width: 100%; height: 6px; background: #333;">
-            </div>
-        </div>
-
-        <!-- Camera & Scene info removed per user request -->
     `;
     // Insert panel into the viewer container so it participates in the viewer's local stacking/layout
     // and is not affected by global forcing rules. Container is positioned relative in initDemoViewer.
@@ -149,23 +87,12 @@ function createControlPanel(containerId) {
 
     // small state for collapsed/expanded — start collapsed by default
     controlPanel.dataset.collapsed = 'true';
-    // apply collapsed styles immediately so nothing peeks out on first render
-    controlPanel.style.maxHeight = '36px';
-    controlPanel.style.width = '120px';
-    controlPanel.style.overflow = 'hidden';
-    // hide all panel children except the header so nothing peeks out
-    Array.from(controlPanel.children).forEach((ch, idx) => {
-        if (idx === 0) return; // keep header visible
-        ch.style.display = 'none';
-    });
-    // hide slider and label explicitly
+    // use CSS collapsed class to hide details
+    controlPanel.classList.add('collapsed');
+    // mark slider as aria-hidden initially
     const initSlider = document.getElementById('imageOpacitySlider');
     const initSliderLabel = document.getElementById('opacityValue');
-    if (initSlider) {
-        initSlider.style.display = 'none';
-        initSlider.setAttribute('aria-hidden', 'true');
-    }
-    if (initSliderLabel) initSliderLabel.style.display = 'none';
+    if (initSlider) initSlider.setAttribute('aria-hidden', 'true');
 
     setupControlPanelEvents();
     // initial position
@@ -237,7 +164,8 @@ function setupControlPanelEvents() {
         const updateAxesButton = () => {
             if (!axesGroup) return;
             const on = !!axesGroup.visible;
-            toggleAxesBtn.style.opacity = on ? '1.0' : '0.55';
+            toggleAxesBtn.classList.toggle('active', on);
+            toggleAxesBtn.classList.toggle('inactive', !on);
             toggleAxesBtn.title = on ? 'Hide axes' : 'Show axes';
         };
         toggleAxesBtn.addEventListener('click', () => {
@@ -255,7 +183,8 @@ function setupControlPanelEvents() {
         const updateAutoRotateButton = () => {
             if (!controls) return;
             const on = !!controls.autoRotate;
-            toggleAutoRotateBtn.style.opacity = on ? '1.0' : '0.6';
+            toggleAutoRotateBtn.classList.toggle('active', on);
+            toggleAutoRotateBtn.classList.toggle('inactive', !on);
             toggleAutoRotateBtn.title = on ? 'Disable auto-rotate' : 'Enable auto-rotate';
         };
         toggleAutoRotateBtn.addEventListener('click', () => {
@@ -270,9 +199,9 @@ function setupControlPanelEvents() {
     // Add hover/focus affordance for action buttons (scale + shadow)
     function addButtonAffordance(btn) {
         if (!btn) return;
-        btn.style.transition = 'transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease';
-        const enter = () => { btn.style.transform = 'scale(1.08)'; btn.style.boxShadow = '0 6px 18px rgba(0,0,0,0.28)'; btn.style.opacity = '1'; };
-        const leave = () => { btn.style.transform = ''; btn.style.boxShadow = ''; btn.style.opacity = ''; };
+        // CSS handles transitions and hover/focus states; toggle a helper class for non-CSS states
+        const enter = () => btn.classList.add('btn-hover');
+        const leave = () => btn.classList.remove('btn-hover');
         btn.addEventListener('mouseenter', enter);
         btn.addEventListener('focus', enter);
         btn.addEventListener('mouseleave', leave);
@@ -314,49 +243,22 @@ function setupControlPanelEvents() {
             const slider = document.getElementById('imageOpacitySlider');
             const sliderLabel = document.getElementById('opacityValue');
             if (collapsed) {
-                // expand
-                controlPanel.style.transform = '';
-                controlPanel.style.maxHeight = '';
-                controlPanel.style.width = '';
-                controlPanel.style.overflow = '';
-                controlPanel.dataset.collapsed = 'false';
-                panelToggle.textContent = '—';
-                panelToggle.title = 'Collapse';
-                // restore visibility of all panel children except the header
-                const children = Array.from(controlPanel.children);
-                children.forEach((ch, idx) => {
-                    if (idx === 0) return; // header stays
-                    ch.style.display = '';
-                });
-                // restore slider visibility
-                if (slider) slider.style.display = '';
-                if (sliderLabel) sliderLabel.style.display = '';
-                if (slider) slider.removeAttribute('aria-hidden');
+                        // expand (use CSS class)
+                        controlPanel.classList.remove('collapsed');
+                        controlPanel.dataset.collapsed = 'false';
+                        panelToggle.textContent = '—';
+                        panelToggle.title = 'Collapse';
+                        if (slider) slider.removeAttribute('aria-hidden');
+                        if (sliderLabel) sliderLabel.removeAttribute('aria-hidden');
             } else {
-                // collapse to header-only: hide overflow and reduce to header height
-                controlPanel.style.transform = '';
-                controlPanel.style.maxHeight = '36px';
-                // explicitly set a small fixed width so scrollbars can't appear
-                controlPanel.style.width = '120px';
-                // hide any overflowing scrollbars
-                controlPanel.style.overflow = 'hidden';
-                controlPanel.dataset.collapsed = 'true';
-                panelToggle.textContent = '+';
-                panelToggle.title = 'Expand';
-                // hide all panel children except the header so nothing peeks out
-                const children = Array.from(controlPanel.children);
-                children.forEach((ch, idx) => {
-                    if (idx === 0) return; // keep header visible
-                    ch.style.display = 'none';
-                });
-                // explicitly hide slider and mark it aria-hidden
-                if (slider) {
-                    slider.style.display = 'none';
-                    slider.setAttribute('aria-hidden', 'true');
-                }
-                if (sliderLabel) {
-                    sliderLabel.style.display = 'none';
-                }
+                        // collapse to header-only: rely on CSS collapsed class
+                        controlPanel.classList.add('collapsed');
+                        controlPanel.dataset.collapsed = 'true';
+                        panelToggle.textContent = '+';
+                        panelToggle.title = 'Expand';
+                        // mark slider aria-hidden
+                        if (slider) slider.setAttribute('aria-hidden', 'true');
+                        if (sliderLabel) sliderLabel.setAttribute('aria-hidden', 'true');
             }
         });
     }
@@ -433,8 +335,8 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     axesGroup = createGlobalAxes(0.8);
     scene.add(axesGroup);
 
-    camera.position.set(3, 3, 3);
-    controls.target.set(0, 1, 0);
+    camera.position.set(-2, 2, -2);
+    controls.target.set(0, 0, 0);
     controls.update();
 
     // Ground plane
@@ -1341,57 +1243,32 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
     gallery.innerHTML = '';
 
     const wrapper = document.createElement('div');
-    wrapper.className = 'rerun-thumbnails-wrapper';
-    wrapper.style.margin = '0';
-    wrapper.style.display = 'flex';
-    wrapper.style.alignItems = 'center';
-    wrapper.style.gap = '8px';
+    wrapper.className = 'rerun-thumbnails-wrapper compact';
 
     const thumbnailsDiv = document.createElement('div');
-    thumbnailsDiv.className = 'rerun-thumbnails';
-    thumbnailsDiv.style.display = 'flex';
-    thumbnailsDiv.style.gap = '8px';
-    thumbnailsDiv.style.overflowX = 'auto';
-    thumbnailsDiv.style.padding = '4px 6px';
-    thumbnailsDiv.style.scrollBehavior = 'smooth';
-    thumbnailsDiv.style.alignItems = 'center';
-    thumbnailsDiv.style.maxWidth = '100%';
+    thumbnailsDiv.className = 'rerun-thumbnails compact';
 
     thumbnailList.forEach((item, idx) => {
         const thumbnailDiv = document.createElement('div');
         thumbnailDiv.className = 'rerun-thumbnail';
         thumbnailDiv.setAttribute('data-label', item.label || `Scene ${idx+1}`);
         thumbnailDiv.setAttribute('data-idx', idx);
-    
-        thumbnailDiv.style.minWidth = 'auto';
-        thumbnailDiv.style.height = '140px';
-        thumbnailDiv.style.borderRadius = '8px';
-        thumbnailDiv.style.overflow = 'hidden';
-        thumbnailDiv.style.flex = '0 0 auto';
 
         if (item.thumbnail) {
             const img = document.createElement('img');
             img.src = item.thumbnail;
             img.alt = item.label || `Scene ${idx+1}`;
-            img.style.height = '100%';
-            img.style.width = 'auto';
-            img.style.objectFit = 'contain';
-            img.style.display = 'block';
+            // Let CSS (.rerun-thumbnail img) control sizing and object-fit
             thumbnailDiv.appendChild(img);
         } else {
             thumbnailDiv.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
             const span = document.createElement('span');
+            span.className = 'fallback-label';
             span.textContent = item.label || `Scene ${idx+1}`;
-            span.style.color = 'white';
-            span.style.fontSize = '0.9em';
-            span.style.display = 'inline-block';
-            span.style.padding = '8px';
-            span.style.height = '100%';
-            span.style.lineHeight = '64px';
             thumbnailDiv.appendChild(span);
         }
 
-        thumbnailDiv.style.cursor = 'pointer';
+    // cursor/presentation handled via CSS (.rerun-thumbnail)
         thumbnailDiv.onclick = async () => {
             thumbnailsDiv.querySelectorAll('.rerun-thumbnail').forEach(t => t.classList.remove('active'));
             thumbnailDiv.classList.add('active');
@@ -1446,34 +1323,47 @@ export function setupThumbnails(thumbnailList, galleryId = 'thumbnailGallery') {
     prevButton.className = 'carousel-button prev';
     prevButton.innerHTML = '‹';
     prevButton.setAttribute('aria-label', 'Previous');
-    prevButton.style.height = '40px';
-    prevButton.style.flex = '0 0 auto';
-    prevButton.style.display = 'flex';
-    prevButton.style.alignItems = 'center';
-    prevButton.style.justifyContent = 'center';
+    // presentation handled via CSS (.carousel-button)
 
     const nextButton = document.createElement('button');
     nextButton.className = 'carousel-button next';
     nextButton.innerHTML = '›';
     nextButton.setAttribute('aria-label', 'Next');
-    nextButton.style.height = '40px';
-    nextButton.style.flex = '0 0 auto';
-    nextButton.style.display = 'flex';
-    nextButton.style.alignItems = 'center';
-    nextButton.style.justifyContent = 'center';
+    // presentation handled via CSS (.carousel-button)
 
     prevButton.addEventListener('click', () => {
-        thumbnailsDiv.scrollBy({ left: -300, behavior: 'smooth' });
+        const scrollLeft = thumbnailsDiv.scrollLeft;
+        const maxScroll = thumbnailsDiv.scrollWidth - thumbnailsDiv.clientWidth;
+        if (scrollLeft <= 0) {
+            // wrap to rightmost
+            thumbnailsDiv.scrollTo({ left: maxScroll, behavior: 'smooth' });
+        } else {
+            thumbnailsDiv.scrollBy({ left: -300, behavior: 'smooth' });
+        }
     });
     nextButton.addEventListener('click', () => {
-        thumbnailsDiv.scrollBy({ left: 300, behavior: 'smooth' });
+        const scrollLeft = thumbnailsDiv.scrollLeft;
+        const maxScroll = thumbnailsDiv.scrollWidth - thumbnailsDiv.clientWidth;
+        if (scrollLeft >= maxScroll - 1 || maxScroll <= 0) {
+            // wrap to leftmost
+            thumbnailsDiv.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            thumbnailsDiv.scrollBy({ left: 300, behavior: 'smooth' });
+        }
     });
 
     const updateButtonStates = () => {
+        const itemsCount = thumbnailsDiv.querySelectorAll('.rerun-thumbnail').length;
         const scrollLeft = thumbnailsDiv.scrollLeft;
         const maxScroll = thumbnailsDiv.scrollWidth - thumbnailsDiv.clientWidth;
-        prevButton.disabled = scrollLeft <= 0;
-        nextButton.disabled = scrollLeft >= maxScroll - 1 || maxScroll <= 0;
+        const hasItems = itemsCount > 0;
+        // Keep buttons enabled when there are thumbnails so wrap-around can work.
+        // Only disable when there are no items at all.
+        prevButton.disabled = !hasItems;
+        nextButton.disabled = !hasItems;
+        // For accessibility, update aria-disabled when not active
+        prevButton.setAttribute('aria-disabled', (!hasItems).toString());
+        nextButton.setAttribute('aria-disabled', (!hasItems).toString());
     };
 
     thumbnailsDiv.addEventListener('scroll', updateButtonStates);

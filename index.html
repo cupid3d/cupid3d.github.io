@@ -123,7 +123,7 @@
                         arXiv
                     </a>
                     <!-- replace pdf -->
-                    <a href="https://arxiv.org/pdf/xxx" class="button paper-link" target="_blank">
+                    <a href="./cupid_paper.pdf" class="button paper-link" target="_blank">
                         <span class="icon is-small">
                             <i class="fas fa-file-pdf"></i>
                         </span>
@@ -151,19 +151,19 @@
                 <div class="byline-column" style="line-height: 1.2;">
                     <h3 style="font-size: 1.2em; margin-bottom: 0.2em;">Authors</h3>
                     <p style="margin: 0;">
-                        <span class="author-link" style="font-size: 0.9em;">Binbin Huang</span>
+                        <a href="https://github.com/hbb1", class="author-link" style="font-size: 0.9em;">Binbin Huang</a>
                         <sup style="font-size: 0.9em;">1,2,†</sup>
                     </p>
                     <p style="margin: 0;">
-                        <span class="author-link" style="font-size: 0.9em;">Haobin Duan</span>
+                        <a href="https://scholar.google.com/citations?user=LTzbpW8AAAAJ&hl=zh-CN" class="author-link" style="font-size: 0.9em;">Haobin Duan</a>
                         <sup style="font-size: 0.9em;">1,†</sup>
                     </p>
                     <p style="margin: 0;">
-                        <span class="author-link" style="font-size: 0.9em;">Yiqun Zhao</span>
+                        <a href="https://scholar.google.com/citations?user=1UD_eBQAAAAJ&hl=en" class="author-link" style="font-size: 0.9em;">Yiqun Zhao</a>
                         <sup style="font-size: 0.9em;">1,2</sup>
                     </p>
                     <p style="margin: 0;">
-                        <span class="author-link" style="font-size: 0.9em;">Zibo Zhao</span>
+                        <a href="https://maikouuu.github.io/" class="author-link" style="font-size: 0.9em;">Zibo Zhao</a>
                         <sup style="font-size: 0.9em;">3</sup>
                     </p>
                     <p style="margin: 0;">
@@ -194,11 +194,19 @@
                         <a href="https://www.tencent.com/" class="affiliation-link" target="_blank"
                             style="font-size: 0.9em;">Tencent</a>
                     </p>
+                    <br>
+                    <br>
+                    <br>
+                    <p style="text-align: left; margin: 0; font-size: 0.85em; color: #666;">
+                        <span><sup>†</sup>Equal contribution</span><br>
+                        <span><sup>‡</sup>Corresponding author</span><br>
+                    </p>
                 </div>
 
                 <div class="byline-column" style="line-height: 1.2;">
-                    <h3 style="font-size: 1.2em; margin-bottom: 0.2em;">Contact</h3>
-                    <p style="margin: 0; font-size: 0.8em;">
+                    <h3 style="font-size: 1.2em; margin-bottom: 0.2em;">Date</h3>
+                    <p style="margin: 0; font-size: 0.95em;">Oct 2025</p>
+                    <!-- <p style="margin: 0; font-size: 0.8em;">
                         binbinhuang@connect.hku.hk
                     </p>
                     <p style="margin: 0; font-size: 0.8em;">
@@ -216,20 +224,21 @@
                     <p style="margin: 0; font-size: 0.8em;">
                         gaosh@hku.hk
                     </p>
-                    <br>
+                    <br> -->
 
-                    <p style="text-align: left; margin: 0; font-size: 0.85em; color: #666;">
+                    <!-- <p style="text-align: left; margin: 0; font-size: 0.85em; color: #666;">
                         <span><sup>†</sup>Equal contribution</span><br>
                         <span><sup>‡</sup>Corresponding author</span><br>
-                    </p>
+                    </p> -->
                 </div>
             </div>
         </div>
 
         <!-- Abstract Section -->
-        <!-- <h1 class="text" style="text-align: center;">Abstract</h1> -->
-        <!-- <p class="text abstract">
-        This work proposes a new generation-based 3D reconstruction method, named <strong>Cupid</strong>, that
+        <h1 class="text" style="text-align: center;">Abstract</h1>
+        <p class="text abstract">
+        We present Cupid, a new generation-based method for single-image 3D reconstruction. Our approach jointly infers camera pose, 3D shape, and texture by formulating the task as a conditional sampling process within a two-stage flow matching pipeline. This unified framework enables robust pose estimation and achieves state-of-the-art results in both geometric accuracy and visual fidelity.
+        <!-- This work proposes a new generation-based 3D reconstruction method, named <strong>Cupid</strong>, that
         accurately infers the camera pose, 3D shape, and texture of an object from a single 2D image. Cupid casts 3D
         reconstruction as a conditional sampling process from a learned distribution of 3D objects, and it jointly
         generates voxels and pixel-voxel correspondences, enabling robust pose and shape estimation under a unified
@@ -239,8 +248,8 @@
         pose-aligned image features to enhance structural fidelity and appearance details. Extensive experiments
         demonstrate Cupid outperforms leading 3D reconstruction methods with an over 3 dB PSNR gain and an over 10%
         Chamfer Distance reduction, while matching monocular estimators on pose accuracy and delivering superior visual
-        fidelity over baseline 3D generative models.
-        </p> -->
+        fidelity over baseline 3D generative models. -->
+        </p> 
 
         <!-- <div class="icon-row">
             <a href="#visual-representation" class="icon-link">
@@ -269,8 +278,92 @@
             <img src="static/img/icons/click.gif" style="width: 1.5rem">
             <strong>Click to jump to each section.</strong>
         </p> -->
+        <div id='interactive_demo' class="interactive-demo-block">
+            <div id="sec:interactive_demo" class="sub-section">
+                <h1 class="text">Interactive 3D Visualization</h1>
+                <div class="rerun-container">
+                    <!-- <h3 style="text-align: center;">Interactive Results</h3> -->
+                    <p class="viewer-tip" style="text-align: center; margin-top: 0.25em; color: #555; font-size: 0.95em;">Tip: Double-click the camera in the scene then adjust the image opacity to check view consistency.</p>
+                    <div id="viewer"></div>
+                    
+                    <div class="rerun-thumbnails" id="rerun-thumbnails">
+                        <!-- Thumbnails will be generated dynamically from recordings -->
+                    </div>
+                    
+                </div>
+            </div>
 
-        <hr>
+            <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+                }
+            }
+            </script>
+
+            <script type="module">
+                import { initDemoViewer } from './static/js/demo.js';
+
+                // Build thumbnailList for demo.js
+                const thumbnailList = [
+                    { metadataPath: 'static/results/nikhil-w5bh67zHnLc-unsplash/metadata.json', thumbnail: 'static/results/nikhil-w5bh67zHnLc-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/david-kristianto-woqky4GR2CY-unsplash/metadata.json', thumbnail: 'static/results/david-kristianto-woqky4GR2CY-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/maria-kovalets-o9mXWquSfk8-unsplash/metadata.json', thumbnail: 'static/results/maria-kovalets-o9mXWquSfk8-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/mike-van-den-bos-NJUuTqckplc-unsplash/metadata.json', thumbnail: 'static/results/mike-van-den-bos-NJUuTqckplc-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/mrushad-khombhadia-KyHmSJ1GWRQ-unsplash/metadata.json', thumbnail: 'static/results/mrushad-khombhadia-KyHmSJ1GWRQ-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/aldi-sigun-pmACe385Ruo-unsplash/metadata.json', thumbnail: 'static/results/aldi-sigun-pmACe385Ruo-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/muneeb-malhotra-IRGo0Q0-IJc-unsplash/metadata.json', thumbnail: 'static/results/muneeb-malhotra-IRGo0Q0-IJc-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/oscar-ivan-esquivel-arteaga-at5-1nW3UCY-unsplash/metadata.json', thumbnail: 'static/results/oscar-ivan-esquivel-arteaga-at5-1nW3UCY-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-benwithlana-lana-498258353-18714943/metadata.json', thumbnail: 'static/results/pexels-benwithlana-lana-498258353-18714943/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-berkecanavci-22729433/metadata.json', thumbnail: 'static/results/pexels-berkecanavci-22729433/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-cigdem-bilgin-2154409770-33844304/metadata.json', thumbnail: 'static/results/pexels-cigdem-bilgin-2154409770-33844304/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-ds-stories-10216074/metadata.json', thumbnail: 'static/results/pexels-ds-stories-10216074/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-eugenia-remark-5767088-17959673/metadata.json', thumbnail: 'static/results/pexels-eugenia-remark-5767088-17959673/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-franck-patras-2414987-7355365/metadata.json', thumbnail: 'static/results/pexels-franck-patras-2414987-7355365/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-ian-panelo-5786755/metadata.json', thumbnail: 'static/results/pexels-ian-panelo-5786755/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-kindelmedia-8982660/metadata.json', thumbnail: 'static/results/pexels-kindelmedia-8982660/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-kindelmedia-9026734/metadata.json', thumbnail: 'static/results/pexels-kindelmedia-9026734/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-markus-winkler-1430818-13572265/metadata.json', thumbnail: 'static/results/pexels-markus-winkler-1430818-13572265/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-miggy-rivera-1415514-5665104/metadata.json', thumbnail: 'static/results/pexels-miggy-rivera-1415514-5665104/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-monstera-13041008/metadata.json', thumbnail: 'static/results/pexels-monstera-13041008/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-ox-street-3848035-6050916/metadata.json', thumbnail: 'static/results/pexels-ox-street-3848035-6050916/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-paulseling-12266846/metadata.json', thumbnail: 'static/results/pexels-paulseling-12266846/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-pavel-danilyuk-6873895/metadata.json', thumbnail: 'static/results/pexels-pavel-danilyuk-6873895/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-polina-zimmerman-3747562/metadata.json', thumbnail: 'static/results/pexels-polina-zimmerman-3747562/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-shyam-mishra-31007-9546360/metadata.json', thumbnail: 'static/results/pexels-shyam-mishra-31007-9546360/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/pexels-theshuttervision-11470219/metadata.json', thumbnail: 'static/results/pexels-theshuttervision-11470219/images_crop/input_no_mask.png' },
+                    // { metadataPath: 'static/results/pexels-ox-street-3848035-6050911/metadata.json', thumbnail: 'static/results/pexels-ox-street-3848035-6050911/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/david-kristianto-4_vjBlYl2hY-unsplash/metadata.json', thumbnail: 'static/results/david-kristianto-4_vjBlYl2hY-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/simon-lee-U00xWfo5yJA-unsplash/metadata.json', thumbnail: 'static/results/simon-lee-U00xWfo5yJA-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/joseph-corl-BRThNnloBoc-unsplash/metadata.json', thumbnail: 'static/results/joseph-corl-BRThNnloBoc-unsplash/images_crop/input_no_mask.png' },
+                    
+                    // animal
+                    { metadataPath: 'static/results/william-warby-4FXlDuwgHWk-unsplash/metadata.json', thumbnail: 'static/results/william-warby-4FXlDuwgHWk-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/ruslan-bardash-4kTbAMRAHtQ-unsplash/metadata.json', thumbnail: 'static/results/ruslan-bardash-4kTbAMRAHtQ-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/jonnelle-yankovich-MQ4pyvRdXnY-unsplash/metadata.json', thumbnail: 'static/results/jonnelle-yankovich-MQ4pyvRdXnY-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/karsten-winegeart-71xbJ_no56g-unsplash/metadata.json', thumbnail: 'static/results/karsten-winegeart-71xbJ_no56g-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/devin-woody-C97we177hTs-unsplash/metadata.json', thumbnail: 'static/results/devin-woody-C97we177hTs-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/wolfgang-hasselmann-M0K-eR-KYM8-unsplash/metadata.json', thumbnail: 'static/results/wolfgang-hasselmann-M0K-eR-KYM8-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/danny-greenberg-8uePGgc54LY-unsplash/metadata.json', thumbnail: 'static/results/danny-greenberg-8uePGgc54LY-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/raoul-croes-q4fxCjCj_GI-unsplash/metadata.json', thumbnail: 'static/results/raoul-croes-q4fxCjCj_GI-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/dominik-lange-BFsm5vldl2I-unsplash/metadata.json', thumbnail: 'static/results/dominik-lange-BFsm5vldl2I-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/thomas-evans-NVXY8_M1n40-unsplash/metadata.json', thumbnail: 'static/results/thomas-evans-NVXY8_M1n40-unsplash/images_crop/input_no_mask.png' },
+                    // { metadataPath: 'static/results/wexor-tmg-L-2p8fapOA8-unsplash/metadata.json', thumbnail: 'static/results/wexor-tmg-L-2p8fapOA8-unsplash/images_crop/input_no_mask.png' },
+                    // { metadataPath: 'static/results/invex-gVkzZKGKgBI-unsplash/metadata.json', thumbnail: 'static/results/invex-gVkzZKGKgBI-unsplash/images_crop/input_no_mask.png' },
+                    { metadataPath: 'static/results/maximilian-muller-7Nm3E3Dz0io-unsplash/metadata.json', thumbnail: 'static/results/maximilian-muller-7Nm3E3Dz0io-unsplash/images_crop/input_no_mask.png' },
+                ];
+                
+                // Initialize the modular Three.js viewer
+                initDemoViewer({
+                    containerId: 'viewer',
+                    galleryId: 'rerun-thumbnails',
+                    thumbnailList
+                });
+            </script>
+        </div>
+
+        <!-- <hr> -->
 
         <div id='method' class="vision-block">
             <div id="sec:method" class="sub-section">
@@ -348,92 +441,6 @@
                     </figure>
                 </d-figure>
             </div>
-        </div>
-
-        <div id='interactive_demo' class="interactive-demo-block">
-            <div id="sec:interactive_demo" class="sub-section">
-                <h1 class="text">Interactive 3D Visualization</h1>
-                <div class="rerun-container">
-                    <!-- <h3 style="text-align: center;">Interactive Results</h3> -->
-                    <p class="viewer-tip" style="text-align: center; margin-top: 0.25em; color: #555; font-size: 0.95em;">Tip: Double-click the camera in the scene then adjust the image opacity to check view consistency.</p>
-                    <div id="viewer"></div>
-                    
-                    <div class="rerun-thumbnails" id="rerun-thumbnails">
-                        <!-- Thumbnails will be generated dynamically from recordings -->
-                    </div>
-                    
-                </div>
-            </div>
-
-            <script type="importmap">
-            {
-                "imports": {
-                    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-                    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
-                }
-            }
-            </script>
-
-            <script type="module">
-                import { initDemoViewer } from './static/js/demo.js';
-
-                // Build thumbnailList for demo.js
-                const thumbnailList = [
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-alexasfotos-12303386/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-alexasfotos-12303386/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ann-h-45017-4102557/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ann-h-45017-4102557/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ata-oy-17626897-26182772/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ata-oy-17626897-26182772/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-benwithlana-lana-498258353-18714943/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-benwithlana-lana-498258353-18714943/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-berkecanavci-22729433/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-berkecanavci-22729433/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-cigdem-bilgin-2154409770-33844304/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-cigdem-bilgin-2154409770-33844304/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ds-stories-10216074/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ds-stories-10216074/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-entero-30544238/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-entero-30544238/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-eugenia-remark-5767088-17959673/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-eugenia-remark-5767088-17959673/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-franck-patras-2414987-7355365/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-franck-patras-2414987-7355365/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-guvo59-32886993/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-guvo59-32886993/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ian-panelo-5786755/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ian-panelo-5786755/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ian-panelo-5786757/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ian-panelo-5786757/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ingriddietrich-1362595/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ingriddietrich-1362595/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ingriddietrich-1364562/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ingriddietrich-1364562/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-karolina-grabowska-4397882/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-karolina-grabowska-4397882/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-8982660/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-8982660/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-8982692/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-8982692/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-9026734/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-9026734/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-kindelmedia-9028868/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-kindelmedia-9028868/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-laarkstudio-6441505/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-laarkstudio-6441505/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-laarkstudio-6679149/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-laarkstudio-6679149/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-lngdik23-12985894/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-lngdik23-12985894/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-mario-mota-235376087-14935011/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-mario-mota-235376087-14935011/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-markus-winkler-1430818-13572265/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-markus-winkler-1430818-13572265/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-miggy-rivera-1415514-5665104/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-miggy-rivera-1415514-5665104/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-mikebirdy-3828253/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-mikebirdy-3828253/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-monstera-13041008/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-monstera-13041008/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-njeromin-11049651/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-njeromin-11049651/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050911/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050911/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050916/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-ox-street-3848035-6050916/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-12266846/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-12266846/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-20385166/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-20385166/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-paulseling-20483988/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-paulseling-20483988/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-6873895/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-6873895/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-7881483/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pavel-danilyuk-7881483/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-pixabay-63637/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-pixabay-63637/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7118648/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7118648/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7301571/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7301571/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7426390/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7426390/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7928475/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-7928475/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-plantsandgraphics-9507780/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-plantsandgraphics-9507780/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-polina-zimmerman-3747562/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-polina-zimmerman-3747562/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-shyam-mishra-31007-9546360/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-shyam-mishra-31007-9546360/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-theshuttervision-11470219/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-theshuttervision-11470219/images_crop/input_no_mask.png' },
-                    { metadataPath: 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/metadata.json', thumbnail: 'data/samples_example_object_new_color/pexels-thienleduyphoto-33807302/images_crop/input_no_mask.png' }
-                ];
-
-                // Initialize the modular Three.js viewer
-                initDemoViewer({
-                    containerId: 'viewer',
-                    galleryId: 'rerun-thumbnails',
-                    thumbnailList
-                });
-            </script>
         </div>
     </d-article>
 

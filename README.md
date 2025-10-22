@@ -1,4 +1,4 @@
-# Cambrian-1 Webpage
+# Cupid Webpage
 
 ### local development:
 run a local http server to preview the webpage
