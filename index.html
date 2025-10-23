@@ -9,16 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Open Graph -->
-    <meta property="og:url" content="YOUR_PROJECT_URL_HERE" />
-    <meta property="og:image" content="YOUR_PROJECT_URL_HERE/static/img/preview.png" />
+    <meta property="og:url" content="https://cupid3d.github.io/" />
+    <meta property="og:image" content="https://cupid3d.github.io/static/img/Cupid.png" />
     <meta property="og:title" content="Cupid: Pose-Grounded Generative 3D Reconstruction from a Single Image" />
     <meta property="og:description"
         content="A new generation-based 3D reconstruction method that accurately infers the camera pose, 3D shape, and texture of an object from a single 2D image." />
 
     <!-- Twitter -->
-    <meta name="twitter:url" content="YOUR_PROJECT_URL_HERE" />
+    <meta name="twitter:url" content="https://cupid3d.github.io/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="YOUR_PROJECT_URL_HERE/static/img/preview.png" />
+    <meta name="twitter:image" content="https://cupid3d.github.io/static/img/Cupid.png" />
     <meta name="twitter:title" content="Cupid: Pose-Grounded Generative 3D Reconstruction from a Single Image" />
     <meta name="twitter:description"
         content="A new generation-based 3D reconstruction method that accurately infers the camera pose, 3D shape, and texture of an object from a single 2D image." />
@@ -139,6 +139,7 @@
                     <br>
                 </div>
             </div>
+            <!-- header image (intentionally left blank; teaser video placed above Abstract) -->
             <div class="header-image">
                 <img draggable="false" src="static/img/Cupid.png" alt="Teaser Image" class="teaser-image">
             </div>
@@ -234,8 +235,24 @@
             </div>
         </div>
 
+
+
+        <!-- Teaser video: placed above the Abstract section -->
+        <div class="teaser-container">
+            <video id="co3d-grid" poster="static/teaser_frame.png" class="teaser-video rounded" autoplay loop muted controls playsinline preload="metadata">
+                <source src="static/teaser_video.mp4" type="video/mp4">
+                Your browser does not support the video tag. <a href="static/teaser_video.mp4">Download the teaser</a>.
+            </video>
+        </div>
+        <div class="teaser-caption">
+            <div class="rounded" style="text-align: center; padding-bottom: 0px; padding-top: 5px;">
+                <div style="text-align: center; color:rgb(0, 0, 0); margin-top: 10px; margin-bottom: 10px;"><strong>TL;DR</strong>: Create 3D objects and cameras from any images in a few forward steps.</div>
+            </div>
+        </div>
+        <br><br>
+
         <!-- Abstract Section -->
-        <h1 class="text" style="text-align: center;">Abstract</h1>
+        <h1 class="text">Abstract</h1>
         <p class="text abstract">
         We present Cupid, a new generation-based method for single-image 3D reconstruction. Our approach jointly infers camera pose, 3D shape, and texture by formulating the task as a conditional sampling process within a two-stage flow matching pipeline. This unified framework enables robust pose estimation and achieves state-of-the-art results in both geometric accuracy and visual fidelity.
         <!-- This work proposes a new generation-based 3D reconstruction method, named <strong>Cupid</strong>, that
@@ -250,6 +267,8 @@
         Chamfer Distance reduction, while matching monocular estimators on pose accuracy and delivering superior visual
         fidelity over baseline 3D generative models. -->
         </p> 
+
+
 
         <!-- <div class="icon-row">
             <a href="#visual-representation" class="icon-link">
