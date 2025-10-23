@@ -2,23 +2,27 @@
 
 /* Rerun Viewer Container */
 .rerun-container {
-  position: relative;
+  /* Constrain to site content width and center. Uses site variables from style.css */
   width: 150%;
-  margin-left: -20%;
-  margin-top: 2em;
-  margin-bottom: 2em;
-  padding: 1.5em;
+  margin: 1em 0 1em -20%;
+
+  max-width: var(--content-max-width, 1600px);
+  /* margin: 1em auto; */
+  padding: 1.5em var(--content-side-padding, 50px);
   background-color: rgb(190, 219, 235);
-  /* border: 2px solid rgb(215, 138, 160); */
-  /* background-color: #f8f9fa; */
   border: 2px solid #dee2e6;
   border-radius: 8px;
+  box-sizing: border-box;
+  transition: padding 220ms ease, margin 220ms ease, width 220ms ease;
+  will-change: padding, width, margin;
 }
 
 .rerun-container > #viewer {
-  /* width: 100%; */
-  width: 720px;
-  height: 480px;
+  width: 70%;
+  /* Use aspect-ratio when supported to maintain 3:2 viewer size; fallback to fixed height */
+  aspect-ratio: 3 / 2;
+  height: auto;
+  min-height: 240px;
   border: 1px solid #dee2e6;
   border-radius: 8px;
   background-color: #ffffff;
@@ -398,14 +402,46 @@
 }
 
 @media (max-width: 768px) {
-  .rerun-container > div {
-    height: 500px;
+  /* Ensure rerun viewer fits the mobile content width and aligns with other content */
+  .rerun-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 1em 0 !important;
+    padding: 0.8em 16px !important;
+    box-sizing: border-box;
+    transition: padding 220ms ease, margin 220ms ease, width 220ms ease;
   }
-  
+
+  .rerun-container > #viewer {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    min-height: 200px;
+  }
+
+  .rerun-thumbnails-wrapper {
+    padding: 0 8px;
+  }
+
   .rerun-thumbnail {
-    width: 100px;
-    height: 100px;
-    min-width: 100px;
-    min-height: 100px;
+    min-width: 84px;
+    min-height: 84px;
+  }
+
+  /* Make the control panel smaller and scrollable on mobile */
+  #controlPanel,
+  .control-panel {
+    /* width: 160px !important; */
+    max-height: 220px !important;
+    font-size: 11px !important;
+    left: 6px !important;
+    top: 6px !important;
+    background: rgba(30, 30, 30, 0.7);
+    /* padding: 6px !important; */
+    /* overflow-y: auto !important; */
+  }
+
+  #controlPanel .control-header h3,
+  .control-panel .control-header h3 {
+    font-size: 12px !important;
   }
 }
