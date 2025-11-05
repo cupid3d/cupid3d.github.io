@@ -833,48 +833,98 @@ async function loadGLBFromMetadata(metadata, parentDir, loadToken = null) {
     if (!loadedModel) return;
         ground.position.y = -0.5;
         gridHelper.position.y = -0.49;
-        if (metadata.pose) {
-            intrinsic = (metadata.pose["intrinsic"] && metadata.pose["intrinsic"][0]) || metadata.intrinsic;
-            extrinsic = (metadata.pose["extrinsic"] && metadata.pose["extrinsic"][0]) || metadata.extrinsic;
-        } else {
-            intrinsic = metadata.intrinsic;
-            extrinsic = metadata.extrinsic;
+        // Gather intrinsics/extrinsics robustly — support arrays for multi-camera captures
+        let intrinsics = [];
+        let extrinsicsArr = [];
+        if (metadata.pose && metadata.pose['intrinsic'] && metadata.pose['extrinsic']) {
+            intrinsics = metadata.pose['intrinsic'];
+            extrinsicsArr = metadata.pose['extrinsic'];
+        } else if (metadata.intrinsic && metadata.extrinsic) {
+            intrinsics = metadata.intrinsic;
+            extrinsicsArr = metadata.extrinsic;
         }
 
-        if (intrinsic && Array.isArray(intrinsic)) {
-            if (intrinsic.length === 1 && Array.isArray(intrinsic[0]) && intrinsic[0].length === 3 && Array.isArray(intrinsic[0][0]) && intrinsic[0][0].length === 3) {
-                intrinsic = intrinsic[0];
+        // Normalize to arrays of camera matrices
+        if (!Array.isArray(intrinsics)) intrinsics = [intrinsics];
+        if (!Array.isArray(extrinsicsArr)) extrinsicsArr = [extrinsicsArr];
+
+        // If intrinsics is nested as [[3x3]] -> unwrap
+        intrinsics = intrinsics.map(i => {
+            if (Array.isArray(i) && i.length === 1 && Array.isArray(i[0]) && i[0].length === 3) return i[0];
+            return i;
+        });
+
+        // For each available camera entry, construct camera and add frustum. If counts differ, iterate over min length.
+        const camCount = Math.min(intrinsics.length, extrinsicsArr.length);
+        for (let ci = 0; ci < camCount; ++ci) {
+            const intr = intrinsics[ci];
+            const ext = extrinsicsArr[ci];
+            if (!intr || !ext) continue;
+
+            // Choose an image per-camera: prefer input_no_mask.png, but if missing try input_no_mask_{ci}.png
+            let imagePathForCam = parentDir + '/images_crop/input_no_mask.png';
+            try {
+                // Try HEAD first to avoid downloading the full image when not present.
+                const headResp = await fetch(imagePathForCam, { method: 'HEAD' });
+                if (!headResp.ok) {
+                    const altPath = parentDir + `/images_crop/input_no_mask_${ci}.png`;
+                    try {
+                        const altResp = await fetch(altPath, { method: 'HEAD' });
+                        if (altResp.ok) imagePathForCam = altPath;
+                    } catch (e) {
+                        // ignore; we'll fall back to original path which will cause loadTexture to use placeholder
+                    }
+                }
+            } catch (e) {
+                // If HEAD is not allowed or fails, try direct existence check for the indexed image.
+                const altPath = parentDir + `/images_crop/input_no_mask_${ci}.png`;
+                try {
+                    const altResp = await fetch(altPath, { method: 'HEAD' });
+                    if (altResp.ok) imagePathForCam = altPath;
+                } catch (e2) {
+                    // ignore and keep default imagePathForCam
+                }
             }
-        }
 
-        const extFlat = extrinsic.flat();
-        const w2c = new THREE.Matrix4().set(
-            extFlat[0], extFlat[1], extFlat[2], extFlat[3],
-            extFlat[4], extFlat[5], extFlat[6], extFlat[7],
-            extFlat[8], extFlat[9], extFlat[10], extFlat[11],
-            extFlat[12], extFlat[13], extFlat[14], extFlat[15]
-        );
+            // ext is expected to be 4x4 matrix (rows)
+            let extFlat = [];
+            try { extFlat = ext.flat(); } catch (e) { extFlat = [].concat(...ext); }
+            if (extFlat.length < 16) {
+                console.warn('Unexpected extrinsic size for camera', ci, ext);
+                continue;
+            }
 
-        console.log('World to Camera (w2c) matrix:', w2c);
+            const w2c = new THREE.Matrix4().set(
+                extFlat[0], extFlat[1], extFlat[2], extFlat[3],
+                extFlat[4], extFlat[5], extFlat[6], extFlat[7],
+                extFlat[8], extFlat[9], extFlat[10], extFlat[11],
+                extFlat[12], extFlat[13], extFlat[14], extFlat[15]
+            );
 
-        const c2w = new THREE.Matrix4().copy(w2c).invert();
-        const camera_opencv2gl = new THREE.Matrix4().set(
+            const c2w = new THREE.Matrix4().copy(w2c).invert();
+            const camera_opencv2gl = new THREE.Matrix4().set(
                 1, 0, 0, 0,
                 0, -1, 0, 0,
                 0, 0, -1, 0,
                 0, 0, 0, 1
-        );
-        const world_opencv2gl = new THREE.Matrix4().set(
-            1, 0, 0, 0,
-            0, 0, 1, 0,
-            0, -1, 0, 0,
-            0, 0, 0, 1
-        );
+            );
+            const world_opencv2gl = new THREE.Matrix4().set(
+                1, 0, 0, 0,
+                0, 0, 1, 0,
+                0, -1, 0, 0,
+                0, 0, 0, 1
+            );
 
-        let camera_c2w = new THREE.Matrix4().multiplyMatrices(world_opencv2gl, c2w);
-        camera_c2w = new THREE.Matrix4().multiplyMatrices(camera_c2w, camera_opencv2gl);
-        console.log('Camera c2w matrix:', camera_c2w);
-        await addCameraFrustum(intrinsic, camera_c2w, imagePath);
+            let camera_c2w = new THREE.Matrix4().multiplyMatrices(world_opencv2gl, c2w);
+            camera_c2w = new THREE.Matrix4().multiplyMatrices(camera_c2w, camera_opencv2gl);
+            console.log('Camera c2w matrix (camera index', ci, '):', camera_c2w);
+
+            try {
+                await addCameraFrustum(intr, camera_c2w, imagePathForCam);
+            } catch (e) {
+                console.warn('Failed to add camera frustum for index', ci, e);
+            }
+        }
     }
 }
 
