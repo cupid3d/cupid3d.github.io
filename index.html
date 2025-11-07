@@ -146,6 +146,14 @@
                         </span>
                         <span>Code</span>
                     </a>
+                    <!-- YouTube teaser button -->
+                    <a href="https://youtu.be/S7Bqwg_q4W0" class="button paper-link" target="_blank" rel="noopener noreferrer" aria-label="Watch teaser on YouTube">
+                        <span class="icon is-small">
+                            <i class="fab fa-youtube"></i>
+                        </span>
+                        <span>Video</span>
+                    </a>
+                    
                     <br>
                 </div>
             </div>
@@ -259,7 +267,7 @@
                 <div style="text-align: center; color:rgb(0, 0, 0); margin-top: 10px; margin-bottom: 10px;"><strong>TL;DR</strong>: Create <i>canonically posed</i> 3D objects and <i>object-centric cameras</i> from any images in a few forward steps.</div>
             </div>
         </div>
-        <br><br>
+
 
         <!-- Abstract Section -->
         <h1 class="text">Abstract</h1>
@@ -307,6 +315,22 @@
             <img src="static/img/icons/click.gif" style="width: 1.5rem">
             <strong>Click to jump to each section.</strong>
         </p> -->
+        <!-- Embedded YouTube teaser (aligned to site content width) -->
+        <h1 class="text">Video</h1>
+        <div class="iframe-aligned">
+            <div class="embed-wrapper">
+                <iframe src="https://www.youtube.com/embed/S7Bqwg_q4W0" allowfullscreen
+                    style="display:block;" title="Cupid teaser video"></iframe>
+            </div>
+            <!-- <div class="video-caption" style="text-align:center; margin-top:0.6em; color:#333; font-size:0.95em;">
+                <small>
+                    Introduction video — "Pose-Grounded Generative 3D Reconstruction from a Single Image".
+                    Watch on <a href="https://youtu.be/S7Bqwg_q4W0" target="_blank" rel="noopener noreferrer">YouTube</a>.
+                </small>
+            </div> -->
+        </div>
+
+        <!-- <hr> -->
         <div id='interactive_demo' class="interactive-demo-block">
             <div id="sec:interactive_demo" class="sub-section">
                 <h1 class="text">Interactive 3D Visualization</h1>
@@ -426,11 +450,11 @@
             </script>
         </div>
 
-        <!-- <hr> -->
 
         <div id='method' class="vision-block">
             <div id="sec:method" class="sub-section">
                 <h1 class="text">How Cupid Works?</h1>
+
                 <!-- <p class="text">
                     Reconstructing a 3D object from a single 2D image is a classic challenge. A key difficulty is determining the camera's viewpoint. Our method, <strong>Cupid</strong>, introduces a novel solution: we don't just generate the 3D object, we <strong>jointly generate the object and its camera pose</strong> at the same time.
                 </p> -->
