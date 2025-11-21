@@ -43,11 +43,16 @@ function createControlPanel(containerId) {
 
         <div class="control-section">
             <h4>🔘 Buttons</h4>
-            <div class="actions-row">
-                <button id="resetViewBtn" class="action-button" aria-label="Reset view">🏠 <span class="action-text">Reset</span></button>
-                <button id="cameraViewBtn" class="action-button" aria-label="Go to camera view">📷 <span class="action-text">Camera</span></button>
-                <button id="toggleAxesBtn" class="action-button" title="Toggle axes" aria-label="Toggle axes">🧭 <span class="action-text">Axes</span></button>
-                <button id="toggleAutoRotateBtn" class="action-button" title="Toggle auto-rotate" aria-label="Toggle auto-rotate">🔁 <span class="action-text">Spin</span></button>
+            <div class="actions-row actions-row-two" style="display:flex; flex-direction:column; gap:6px;">
+                <div class="actions-row-top" style="display:flex; gap:8px; align-items:center;">
+                    <button id="resetViewBtn" class="action-button" aria-label="Reset view">🏠 <span class="action-text">Reset</span></button>
+                    <button id="cameraViewBtn" class="action-button" aria-label="Go to camera view">📷 <span class="action-text">Camera</span></button>
+                    <button id="toggleAxesBtn" class="action-button" title="Toggle axes" aria-label="Toggle axes">🧭 <span class="action-text">Axes</span></button>
+                </div>
+                <div class="actions-row-bottom" style="display:flex; gap:8px; align-items:center;">
+                    <button id="toggleAutoRotateBtn" class="action-button" title="Toggle auto-rotate" aria-label="Toggle auto-rotate">🔁 <span class="action-text">Spin</span></button>
+                    <button id="toggleFullscreenBtn" class="action-button" title="Toggle fullscreen" aria-label="Toggle fullscreen" style="color: #2b6fb3;">⤢ <span class="action-text">Full</span></button>
+                </div>
             </div>
         </div>
 
@@ -194,6 +199,37 @@ function setupControlPanelEvents() {
         updateAutoRotateButton();
     }
 
+    // Fullscreen Toggle (use the control panel's parent as the viewer container)
+    const toggleFullscreenBtn = document.getElementById('toggleFullscreenBtn');
+    if (toggleFullscreenBtn) {
+        const updateFullscreenButton = () => {
+            const controlPanel = document.getElementById('controlPanel');
+            const container = controlPanel ? controlPanel.parentElement : document.getElementById('viewer');
+            const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            toggleFullscreenBtn.classList.toggle('active', isFs);
+            toggleFullscreenBtn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
+            const label = toggleFullscreenBtn.querySelector('.action-text');
+            if (label) label.textContent = isFs ? 'Exit' : 'Full';
+        };
+
+        toggleFullscreenBtn.addEventListener('click', () => {
+            const controlPanel = document.getElementById('controlPanel');
+            const container = controlPanel ? controlPanel.parentElement : document.getElementById('viewer');
+            if (!container) return;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (container.requestFullscreen) container.requestFullscreen();
+                else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+            // actual button label/state will update on fullscreenchange event
+        });
+
+        // init button state
+        updateFullscreenButton();
+    }
+
     // Add hover/focus affordance for action buttons (scale + shadow)
     function addButtonAffordance(btn) {
         if (!btn) return;
@@ -211,6 +247,7 @@ function setupControlPanelEvents() {
     addButtonAffordance(document.getElementById('cameraViewBtn'));
     addButtonAffordance(document.getElementById('toggleAxesBtn'));
     addButtonAffordance(document.getElementById('toggleAutoRotateBtn'));
+    addButtonAffordance(document.getElementById('toggleFullscreenBtn'));
 
     // Image Opacity Slider
     const imageOpacitySlider = document.getElementById('imageOpacitySlider');
@@ -266,6 +303,59 @@ function updateControlPanelInfo() {
     // Camera and Scene info removed; nothing to update here
 }
 
+// Helper: find the viewer container element (parent of control panel) or fallback to #viewer
+function getViewerContainer() {
+    const controlPanel = document.getElementById('controlPanel');
+    if (controlPanel && controlPanel.parentElement) return controlPanel.parentElement;
+    return document.getElementById('viewer');
+}
+
+// Centralized renderer sizing so canvas resolution matches container or fullscreen
+function updateRendererSize() {
+    try {
+        const container = getViewerContainer() || document.body;
+        if (!container || !renderer || !camera) return;
+        const rect = container.getBoundingClientRect();
+        const w = rect.width > 0 ? rect.width : window.innerWidth;
+        const h = rect.height > 0 ? rect.height : window.innerHeight;
+        // clamp DPR for performance on very high-DPI displays if desired
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        renderer.setPixelRatio(dpr);
+        // Use integer sizes for the renderer to avoid half-pixel issues
+        renderer.setSize(Math.round(w), Math.round(h), false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.domElement.style.width = '100%';
+        renderer.domElement.style.height = '100%';
+    } catch (e) {
+        // ignore sizing errors
+    }
+}
+
+// Ensure renderer resizes when entering/exiting fullscreen
+document.addEventListener('fullscreenchange', () => {
+    updateRendererSize();
+    const btn = document.getElementById('toggleFullscreenBtn');
+    if (btn) {
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        btn.classList.toggle('active', isFs);
+        btn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
+        const label = btn.querySelector('.action-text');
+        if (label) label.textContent = isFs ? 'Exit' : 'Full';
+    }
+});
+document.addEventListener('webkitfullscreenchange', () => {
+    updateRendererSize();
+    const btn = document.getElementById('toggleFullscreenBtn');
+    if (btn) {
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        btn.classList.toggle('active', isFs);
+        btn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
+        const label = btn.querySelector('.action-text');
+        if (label) label.textContent = isFs ? 'Exit' : 'Full';
+    }
+});
+
 // --- Modular Initialization ---
 export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailGallery', thumbnailList = [] } = {}) {
     // Setup scene, camera, renderer
@@ -287,12 +377,9 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     renderer.domElement.style.objectFit = 'cover';
     renderer.domElement.style.display = 'block';
     
-    const rect = container.getBoundingClientRect();
-    const initW = rect.width > 0 ? rect.width : window.innerWidth;
-    const initH = rect.height > 0 ? rect.height : window.innerHeight;
-    renderer.setSize(initW, initH);
-    camera.aspect = initW / initH;
-    camera.updateProjectionMatrix();
+    // Make renderer match the container size (and handle DPR). This will also be used on
+    // window resize and fullscreen changes via updateRendererSize().
+    updateRendererSize();
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -302,7 +389,7 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     controls.maxDistance = 100;
         // Enable auto-rotate by default so the scene gently spins on load. Can be toggled in the UI.
         controls.autoRotate = true;
-    controls.autoRotateSpeed = 3.5;
+    controls.autoRotateSpeed = 2.5;
 
         window.addEventListener('keydown', function(e) {
             // R: toggle auto-rotate (replaces Space behavior)
@@ -403,12 +490,8 @@ export function initDemoViewer({ containerId = 'viewer', galleryId = 'thumbnailG
     animate();
 
     window.addEventListener('resize', function() {
-        const rect = container.getBoundingClientRect();
-        const w = rect.width > 0 ? rect.width : window.innerWidth;
-        const h = rect.height > 0 ? rect.height : window.innerHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
+        // Recompute sizes based on viewer container / fullscreen state
+        updateRendererSize();
     });
 
     // Double-click camera animation
