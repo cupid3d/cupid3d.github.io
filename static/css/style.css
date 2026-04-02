@@ -421,11 +421,7 @@ video#co3d-grid,
   cursor: pointer;
   /* Changes cursor to pointer to indicate link */
   white-space: nowrap;
-  /* Prevent breaking names across lines */
-  /* Increase vertical spacing */
-  line-height: 2.3rem;
-  /* Increase line height for better readability */
-
+  line-height: 1.6rem;
 }
 
 .author-note {
@@ -1334,7 +1330,7 @@ d-article>div>h3 {
   /* width: 150%; */
   width: 150%;
   margin: 1em 0 1em -20%;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
 }
 
 h1.text {
@@ -1346,7 +1342,7 @@ h2.text {
 }
 
 .abstract {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
 }
 
 .auto-video {
@@ -1778,4 +1774,31 @@ iframe {
   padding: 2em;
   color: #222;
   font-size: 1em;
+}
+
+/* CVPR 2026 conference badge in the byline */
+.conference-badge {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 86, 179, 0.2);
+  font-family: 'Arial', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.conference-badge__venue {
+  background-color: #0056b3;
+  color: #ffffff;
+  padding: 0.35em 0.65em;
+  font-size: 1.1em;
+}
+
+.conference-badge__year {
+  background-color: #ffc107;
+  color: #1a1a1a;
+  padding: 0.35em 0.65em;
+  font-size: 1.1em;
 }
