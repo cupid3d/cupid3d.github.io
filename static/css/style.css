@@ -1776,9 +1776,10 @@ iframe {
   font-size: 1em;
 }
 
-/* CVPR 2026 conference badge in the byline */
+/* CVPR 2026 Highlight conference badge in the byline */
 .conference-badge {
   display: inline-flex;
+  flex-direction: column;
   align-items: stretch;
   border-radius: 6px;
   overflow: hidden;
@@ -1787,18 +1788,19 @@ iframe {
   font-weight: 800;
   letter-spacing: 0.03em;
   user-select: none;
+  text-align: center;
 }
 
 .conference-badge__venue {
   background-color: #0056b3;
   color: #ffffff;
-  padding: 0.35em 0.65em;
-  font-size: 1.1em;
+  padding: 0.3em 0.55em;
+  font-size: 1.0em;
 }
 
-.conference-badge__year {
+.conference-badge__highlight {
   background-color: #ffc107;
   color: #1a1a1a;
-  padding: 0.35em 0.65em;
-  font-size: 1.1em;
+  padding: 0.3em 0.55em;
+  font-size: 1.0em;
 }
